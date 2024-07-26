@@ -11,8 +11,6 @@ repositories {
     mavenCentral()
 }
 
-sourceSets.forEach { s -> println(s.java.srcDirs) }
-
 dependencies {
     annotationProcessor(platform(project(":platform")))
     implementation(platform(project(":platform")))
@@ -21,21 +19,19 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.mapstruct:mapstruct-processor")
     annotationProcessor("org.projectlombok:lombok-mapstruct-binding")
-
     compileOnly("org.projectlombok:lombok")
-
     implementation("org.mapstruct:mapstruct")
-    implementation("by.sakuuj.blogplatform:concurrency-utils")
+    implementation(project(":concurrency-utils"))
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
-
+//    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     runtimeOnly("org.postgresql:postgresql")
 
     testAnnotationProcessor("org.projectlombok:lombok")
-
     testCompileOnly("org.projectlombok:lombok")
-
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
@@ -43,12 +39,21 @@ dependencies {
     intTestImplementation("org.springframework.boot:spring-boot-testcontainers")
 }
 
+val customSystemProps = mapOf(
+    "jdk.virtualThreadScheduler.maxPoolSize" to "8",
+    "jdk.tracePinnedThreads" to "full"
+)
 
-tasks.intTest {
-    val hardwareThreadCount : String = "8"
-    systemProperty("jdk.virtualThreadScheduler.maxPoolSize", hardwareThreadCount)
+tasks.bootRun {
+    systemProperties(customSystemProps)
 }
 
 tasks.test {
+    systemProperties(customSystemProps)
+
     useJUnitPlatform()
+}
+
+tasks.intTest {
+    systemProperties(customSystemProps)
 }
