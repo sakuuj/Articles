@@ -1,4 +1,4 @@
-package by.sakuuj.blogplatform.article.aop;
+package by.sakuuj.blogplatform.article.configs.aop;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

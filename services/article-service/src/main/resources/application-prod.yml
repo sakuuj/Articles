@@ -1,0 +1,7 @@
+spring.config:
+  import: configtree:${DOCKER_SECRETS_DIR:docker/secrets/}
+
+spring.elasticsearch.uris: ["localhost:9200"]
+
+#by.sakuuj.elasticsearch.index-to-json-file-mappings:
+#  "[articles]": elasticsearchQueries/createArticlesIndex.json

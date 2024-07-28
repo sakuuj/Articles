@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "index": {
+      "sort.field": "date_published",
+      "sort.order": "desc"
+    }
+  },
+  "mappings": {
+    "dynamic": "strict",
+    "properties": {
+      "_class": {
+        "type": "constant_keyword",
+        "value": "article"
+      },
+      "title": {
+        "type": "text"
+      },
+      "content": {
+        "type": "text"
+      },
+      "date_published": {
+        "type": "date",
+        "format": "strict_date_hour_minute_second"
+      }
+    }
+  }
+}

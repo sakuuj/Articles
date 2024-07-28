@@ -24,11 +24,10 @@ val integrationTest = task<Test>("intTest") {
     classpath = sourceSets["intTest"].runtimeClasspath
     mustRunAfter("test")
 
-    useJUnitPlatform()
-
     testLogging {
         events("passed")
     }
 }
 
 tasks.check { dependsOn(integrationTest) }
+

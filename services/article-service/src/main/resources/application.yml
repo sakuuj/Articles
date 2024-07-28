@@ -4,8 +4,10 @@ server.tomcat.threads.max: 8
 springdoc.swagger-ui.path: /swagger
 
 spring.aop.proxy-target-class: true
-spring.elasticsearch.password: elastic
-spring.elasticsearch.username: elastic
+
+spring.elasticsearch.connection-timeout: 5s
+spring.elasticsearch.socket-timeout: 3s
+
 spring.threads.virtual.enabled: true
 
 logging.level.tracer: trace

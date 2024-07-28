@@ -1,0 +1,58 @@
+name: blogplatform
+
+secrets:
+  elastic_search_password:
+    file: secrets/spring.elasticsearch.password
+
+services:
+  elastic_search:
+    secrets:
+      - elastic_search_password
+    container_name: elasticsearch_bp
+    image: elasticsearch:8.14.3
+    environment:
+      - ELASTIC_PASSWORD_FILE=/run/secrets/elastic_search_password
+      - ES_SETTING_DISCOVERY_TYPE=single-node
+      - ES_SETTING_XPACK_SECURITY_HTTP_SSL_ENABLED=false
+      - ES_SETTING_XPACK_LICENSE_SELF__GENERATED_TYPE=basic
+    ports:
+      - 127.0.0.1:9200:9200
+    networks:
+      - net_bp
+    volumes:
+      - elastic_data:/usr/share/elasticsearch/data
+      - elastic_logs:/usr/share/elasticsearch/logs
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1gb
+
+#  curl -u elastic:elastic -X POST http://localhost:9200/_security/user/kibana_system/_password -d '{"password":"kibana"}' -H 'Content-Type: application/json'
+  kibana:
+    container_name: kibana_bp
+    image: kibana:8.14.3
+    environment:
+      - ELASTICSEARCH_URL=http://elastic_search:9200
+      - ELASTICSEARCH_HOSTS=http://elastic_search:9200
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=kibana
+      - XPACK_SECURITY_ENABLED=false
+      - XPACK_LICENSE_SELF__GENERATED_TYPE=basic
+    ports:
+      - 127.0.0.1:5601:5601
+    networks:
+      - net_bp
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1gb
+
+volumes:
+  elastic_data:
+  elastic_logs:
+
+networks:
+  net_bp:
+

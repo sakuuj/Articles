@@ -1,6 +1,7 @@
 plugins {
     id("java")
     id("int-test")
+    id("idea")
     alias(libs.plugins.springBoot)
 }
 
@@ -36,24 +37,48 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     intTestImplementation("org.testcontainers:postgresql")
-    intTestImplementation("org.springframework.boot:spring-boot-testcontainers")
+    intTestImplementation("org.testcontainers:elasticsearch")
+    intTestImplementation("org.testcontainers:junit-jupiter")
+    intTestImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
 }
 
-val customSystemProps = mapOf(
+// mark intTest directories as Test Sources and Test Resources
+// in order for idea to detect which Spring beans can be @Autowire-d and which can not
+idea {
+    module {
+        testSources.from(sourceSets.intTest.get().allSource.srcDirs)
+    }
+}
+
+val CUSTOM_SYSTEM_PROPS = mapOf(
     "jdk.virtualThreadScheduler.maxPoolSize" to "8",
     "jdk.tracePinnedThreads" to "full"
 )
 
+val SPRING_PROFILES_ACTIVE = "spring.profiles.active"
+
 tasks.bootRun {
-    systemProperties(customSystemProps)
+
+    // setting workingDir as rootDir in order for 'configtree:' to work correctly
+    // (configtree does not read config files that have '..' in their path specified,
+    // see ConfigTreePropertySource#findAll(Path, Set<Options>), that uses Files.find(...)
+    // with a predicate PropertyFile::isPropertyFile, which returns false if a path has '..')
+    setWorkingDir("$rootDir")
+
+    systemProperties(CUSTOM_SYSTEM_PROPS)
+    systemProperty(SPRING_PROFILES_ACTIVE, "prod,default")
 }
 
 tasks.test {
-    systemProperties(customSystemProps)
+    systemProperties(CUSTOM_SYSTEM_PROPS)
+    systemProperty(SPRING_PROFILES_ACTIVE, "test")
 
     useJUnitPlatform()
 }
 
 tasks.intTest {
-    systemProperties(customSystemProps)
+    systemProperties(CUSTOM_SYSTEM_PROPS)
+    systemProperty(SPRING_PROFILES_ACTIVE, "intTest")
+
+    useJUnitPlatform()
 }

@@ -1,9 +1,10 @@
 package by.sakuuj.blogplatform.article.configs;
 
-import by.sakuuj.blogplatform.article.converters.CharArrayToStringConverter;
-import by.sakuuj.blogplatform.article.converters.StringToCharArrayConverter;
+import by.sakuuj.blogplatform.article.configs.converters.CharArrayToStringConverter;
+import by.sakuuj.blogplatform.article.configs.converters.StringToCharArrayConverter;
+import lombok.RequiredArgsConstructor;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.client.ClientConfiguration;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchClients;
@@ -11,22 +12,16 @@ import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfigurat
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchCustomConversions;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
-import java.time.Duration;
 import java.util.Arrays;
 
+@RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
 @EnableElasticsearchRepositories(basePackages = "by.sakuuj.blogplatform.article.repositories.elasticsearch")
 public class ElasticsearchConfig extends ElasticsearchConfiguration {
 
+    private final ElasticsearchProperties elasticsearchProperties;
+
     private static final int REACTOR_IO_THREAD_COUNT = 1;
-    private static final Duration SOCKET_TIMEOUT = Duration.ofSeconds(3);
-    private static final Duration CONNECT_TIMEOUT = Duration.ofSeconds(5);
-
-    @Value("${spring.elasticsearch.username}")
-    private String username;
-
-    @Value("${spring.elasticsearch.password}")
-    private String password;
 
     @Override
     public ElasticsearchCustomConversions elasticsearchCustomConversions() {
@@ -39,9 +34,8 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
     @Override
     @SuppressWarnings("NullableProblems")
     public ClientConfiguration clientConfiguration() {
-
         return ClientConfiguration.builder()
-                .connectedTo("localhost:9200")
+                .connectedTo(elasticsearchProperties.getUris().toArray(String[]::new))
                 .withClientConfigurer(ElasticsearchClients.ElasticsearchHttpClientConfigurationCallback.from(
                         httpAsyncClientBuilder -> {
                             httpAsyncClientBuilder.setDefaultIOReactorConfig(
@@ -52,9 +46,9 @@ public class ElasticsearchConfig extends ElasticsearchConfiguration {
                             return httpAsyncClientBuilder;
                         }
                 ))
-                .withBasicAuth(username, password)
-                .withSocketTimeout(SOCKET_TIMEOUT)
-                .withConnectTimeout(CONNECT_TIMEOUT)
+                .withBasicAuth(elasticsearchProperties.getUsername(), elasticsearchProperties.getPassword())
+                .withSocketTimeout(elasticsearchProperties.getSocketTimeout())
+                .withConnectTimeout(elasticsearchProperties.getConnectionTimeout())
                 .build();
     }
 }

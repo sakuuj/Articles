@@ -1,4 +1,4 @@
-package by.sakuuj.blogplatform.article.converters;
+package by.sakuuj.blogplatform.article.configs.converters;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.WritingConverter;
