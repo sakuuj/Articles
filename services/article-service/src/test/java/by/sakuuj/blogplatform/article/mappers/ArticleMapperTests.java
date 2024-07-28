@@ -14,7 +14,7 @@ import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ArticleMapperTests {
+class ArticleMapperTests {
 
     private final ArticleMapper articleMapper = Mappers.getMapper(ArticleMapper.class);
 
