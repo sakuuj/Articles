@@ -8,6 +8,7 @@ sourceSets {
         compileClasspath += sourceSets.test.get().output
 
         runtimeClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.test.get().output
     }
 }
 
