@@ -1,0 +1,2 @@
+by.sakuuj.elasticsearch.index-to-json-file-mappings:
+  "[articles]": repositories/elasticsearch/createArticlesIndex.json

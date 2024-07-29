@@ -52,7 +52,7 @@ class ElasticsearchIndexCreatorIntegrationTests {
     private static final String ELASTICSEARCH_HOST = "localhost";
 
     private static final String INDEX_TO_CREATE = "itemsitems";
-    private static final String CREATE_INDEX_QUERY_FILE = "database-schema/createIndex.json";
+    private static final String CREATE_INDEX_QUERY_FILE = "database.schema/createIndex.json";
 
     @DynamicPropertySource
     static void setDynamicProps(DynamicPropertyRegistry registry) {

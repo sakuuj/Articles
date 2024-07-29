@@ -6,21 +6,15 @@ import by.sakuuj.blogplatform.article.dtos.ArticleResponse;
 import by.sakuuj.blogplatform.article.dtos.ArticleSearchResponse;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
 import by.sakuuj.blogplatform.article.entities.ArticleEntity;
-import org.assertj.core.api.recursive.comparison.RecursiveComparisonConfiguration;
+import by.sakuuj.blogplatform.article.utils.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
-
-import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ArticleMapperTests {
 
     private final ArticleMapper articleMapper = Mappers.getMapper(ArticleMapper.class);
-
-    private static final RecursiveComparisonConfiguration CONFIG_FOR_CHAR_ARRAY = RecursiveComparisonConfiguration.builder()
-            .withComparatorForType(Arrays::compare, char[].class)
-            .build();
 
     @Test
     void shouldMapRequestToEntity() {
@@ -56,7 +50,7 @@ class ArticleMapperTests {
 
         // then
         assertThat(actualResponse)
-                .usingRecursiveComparison(CONFIG_FOR_CHAR_ARRAY)
+                .usingRecursiveComparison(TestUtils.COMPARISON_FOR_CHAR_ARRAY)
                 .isEqualTo(expectedResponse);
     }
 
@@ -74,7 +68,7 @@ class ArticleMapperTests {
 
         // then
         assertThat(actualSearchResponse)
-                .usingRecursiveComparison(CONFIG_FOR_CHAR_ARRAY)
+                .usingRecursiveComparison(TestUtils.COMPARISON_FOR_CHAR_ARRAY)
                 .isEqualTo(expectedSearchResponse);
     }
 }
