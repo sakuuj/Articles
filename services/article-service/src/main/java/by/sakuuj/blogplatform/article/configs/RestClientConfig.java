@@ -18,6 +18,7 @@ public class RestClientConfig {
     public RestClient restClient(ClientHttpRequestFactory requestFactory) {
         return RestClient.builder()
                 .requestFactory(requestFactory)
+                .defaultStatusHandler(s -> true, (request, response) -> {})
                 .build();
     }
 
