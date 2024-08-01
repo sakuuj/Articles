@@ -1,0 +1,26 @@
+{
+  "properties": [
+    {
+      "name": "by.sakuuj.elasticsearch.index-creator.uri",
+      "description": "URI of a pattern: http://(host):(port)"
+    },
+    {
+      "name": "by.sakuuj.elasticsearch.index-creator.password"
+    },
+    {
+      "name": "by.sakuuj.elasticsearch.index-creator.username"
+    },
+    {
+      "name": "by.sakuuj.elasticsearch.index-creator.authentication",
+      "defaultValue": "basic"
+    },
+    {
+      "name": "by.sakuuj.elasticsearch.index-creator.run-on-startup",
+      "defaultValue": "true"
+    },
+    {
+      "name": "by.sakuuj.elasticsearch.index-creator.enable",
+      "defaultValue": "true"
+    }
+  ]
+}

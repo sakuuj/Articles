@@ -1,5 +1,6 @@
 plugins {
     id("java-platform")
+    id("maven-publish")
 }
 
 javaPlatform {
@@ -13,12 +14,21 @@ repositories {
     mavenCentral()
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["javaPlatform"])
+        }
+    }
+}
+
 dependencies {
     api(platform("org.springframework.boot:spring-boot-dependencies:3.3.1"))
     api(platform("org.springframework.cloud:spring-cloud-dependencies:2023.0.3"))
 
     constraints {
         api(project(":concurrency-utils"))
+        api(project(":index-creator-elasticsearch-spring-boot-starter"))
 
         api("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 
