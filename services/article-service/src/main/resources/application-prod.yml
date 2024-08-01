@@ -3,5 +3,10 @@ spring.config:
 
 spring.elasticsearch.uris: ["localhost:9200"]
 
-#by.sakuuj.elasticsearch.index-to-json-file-mappings:
-#  "[articles]": elasticsearchQueries/createArticlesIndex.json
+by.sakuuj.elasticsearch:.index-creator.uri: http://${spring.elasticsearch.uris[0]}
+by.sakuuj.elasticsearch:.index-creator.username: ${spring.elasticsearch.username}
+by.sakuuj.elasticsearch:.index-creator.password: ${spring.elasticsearch.password}
+by.sakuuj.elasticsearch.index-creator.index-to-json-file-pairs:
+  - "articles<->elasticsearchQueries/createArticlesIndex.json"
+  - "articles2<->elasticsearchQueries/createArticlesIndex.json"
+

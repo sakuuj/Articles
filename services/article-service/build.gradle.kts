@@ -9,6 +9,7 @@ group = "by.sakuuj.blogplatform"
 version = "0.1"
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 
@@ -22,6 +23,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok-mapstruct-binding")
     compileOnly("org.projectlombok:lombok")
     implementation("org.mapstruct:mapstruct")
+    implementation("by.sakuuj.elasticsearch:index-creator-elasticsearch-spring-boot-starter")
     implementation(project(":concurrency-utils"))
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-aop")
@@ -37,7 +39,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     intTestImplementation("org.testcontainers:postgresql")
-    intTestImplementation("org.testcontainers:elasticsearch")
     intTestImplementation("org.testcontainers:junit-jupiter")
     intTestImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
 }

@@ -25,11 +25,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers
 @SpringBootTest
-@ActiveProfiles("index-creator")
+@ActiveProfiles
 public class ArticleElasticsearchRepositoryIntegrationTests {
 
     private static final String ELASTICSEARCH_USERNAME = "elastic";
     private static final String ELASTICSEARCH_PASSWORD = "elastic1dfkdfjePASS";
+    private static final String ELASTICSEARCH_INDEX_NAME = "articles";
 
     @Container
     private static final GenericContainer<?> ELASTICSEARCH_CONTAINER =
@@ -42,9 +43,17 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
 
     @DynamicPropertySource
     static void setDynamicProps(DynamicPropertyRegistry registry) {
-        registry.add("spring.elasticsearch.password", () -> ELASTICSEARCH_PASSWORD);
-        registry.add("spring.elasticsearch.username", () -> ELASTICSEARCH_USERNAME);
         registry.add("spring.elasticsearch.uris", () -> List.of(getFullContainerUri()));
+        registry.add("by.sakuuj.elasticsearch:.index-creator.uri", () -> getFullContainerUri());
+
+        registry.add("by.sakuuj.elasticsearch:.index-creator.username", () -> ELASTICSEARCH_USERNAME);
+        registry.add("spring.elasticsearch.username", () -> ELASTICSEARCH_USERNAME);
+
+        registry.add("by.sakuuj.elasticsearch:.index-creator.password", () -> ELASTICSEARCH_PASSWORD);
+        registry.add("spring.elasticsearch.password", () -> ELASTICSEARCH_PASSWORD);
+
+        registry.add("by.sakuuj.elasticsearch.index-to-json-file-mappings." + ELASTICSEARCH_INDEX_NAME,
+                () -> "repositories/elasticsearch/createArticlesIndex.json");
     }
 
     private static String getFullContainerUri() {
