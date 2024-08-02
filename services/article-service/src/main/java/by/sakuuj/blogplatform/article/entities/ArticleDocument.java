@@ -31,7 +31,7 @@ public class ArticleDocument {
     private String title;
 
     @Field(name = "content", type = FieldType.Text)
-    private char[] content;
+    private String content;
 
     @Field(name = "date_published", type = FieldType.Date, format = DateFormat.strict_date_hour_minute_second)
     private LocalDateTime datePublishedOn;

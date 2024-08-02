@@ -6,7 +6,7 @@ import java.util.List;
 
 @Builder
 public record ArticleRequest(String title,
-                             char[] content,
+                             String content,
                              List<String> topics
 ) {
 }

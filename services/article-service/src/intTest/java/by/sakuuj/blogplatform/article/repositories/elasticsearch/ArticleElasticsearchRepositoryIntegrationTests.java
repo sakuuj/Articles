@@ -3,7 +3,6 @@ package by.sakuuj.blogplatform.article.repositories.elasticsearch;
 
 import by.sakuuj.blogplatform.article.ArticleTestDataBuilder;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
-import by.sakuuj.blogplatform.article.utils.TestUtils;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,7 +79,7 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
 
         ArticleDocument expectedDocument = testDataBuilder
                 .withTitle("TITLE_1 " + searchTerm)
-                .withContent(("CONTENT_1 " + searchTerm).toCharArray())
+                .withContent("CONTENT_1 " + searchTerm)
                 .withId(UUID.fromString("920e3446-ce92-4216-85d5-c7b9e76423d4"))
                 .buildDocument();
 
@@ -94,7 +93,6 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
         assertThat(actualContent.size()).isEqualTo(1);
 
         assertThat(actualContent.getFirst())
-                .usingRecursiveComparison(TestUtils.COMPARISON_FOR_CHAR_ARRAY)
                 .isEqualTo(expectedDocument);
     }
 
@@ -124,7 +122,7 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
 
         ArticleDocument expectedDocument = testDataBuilder
                 .withTitle("TITLE_1 " + searchTerm)
-                .withContent("CONTENT_1 ".toCharArray())
+                .withContent("CONTENT_1 ")
                 .withId(UUID.fromString("920e3446-ce92-4216-85d5-c7b9e76423d4"))
                 .buildDocument();
 
@@ -137,7 +135,6 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
         assertThat(actualContent.size()).isEqualTo(1);
 
         assertThat(actualContent.getFirst())
-                .usingRecursiveComparison(TestUtils.COMPARISON_FOR_CHAR_ARRAY)
                 .isEqualTo(expectedDocument);
     }
 
@@ -153,7 +150,7 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
 
         ArticleDocument expectedDocument = testDataBuilder
                 .withTitle("TITLE_1")
-                .withContent(("CONTENT_1 " + searchTerm).toCharArray())
+                .withContent("CONTENT_1 " + searchTerm)
                 .withId(UUID.fromString("920e3446-ce92-4216-85d5-c7b9e76423d4"))
                 .buildDocument();
 
@@ -166,7 +163,6 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
         assertThat(actualContent.size()).isEqualTo(1);
 
         assertThat(actualContent.getFirst())
-                .usingRecursiveComparison(TestUtils.COMPARISON_FOR_CHAR_ARRAY)
                 .isEqualTo(expectedDocument);
     }
 
@@ -180,14 +176,14 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
         String firstSearchTerm = "qwerty";
         ArticleDocument expectedDocumentWithLowerScore = testDataBuilder
                 .withTitle("TITLE_1 " + firstSearchTerm)
-                .withContent(("CONTENT_1 " + firstSearchTerm).toCharArray())
+                .withContent("CONTENT_1 " + firstSearchTerm)
                 .withId(UUID.fromString("920e3446-ce92-4216-85d5-c7b9e76423d4"))
                 .buildDocument();
 
         String secondSearchTerm = "smth";
         ArticleDocument expectedDocumentWithHigherScore = testDataBuilder
                 .withTitle("TITLE_2 " + firstSearchTerm + " " + secondSearchTerm)
-                .withContent(("CONTENT_2 " + firstSearchTerm + " " + secondSearchTerm).toCharArray())
+                .withContent("CONTENT_2 " + firstSearchTerm + " " + secondSearchTerm)
                 .withId(UUID.fromString("e1d3cf77-8d0d-4f26-bf4d-a11c5dfc3b06"))
                 .buildDocument();
 
@@ -203,11 +199,9 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
         assertThat(actualContent.size()).isEqualTo(2);
 
         assertThat(actualContent.getFirst())
-                .usingRecursiveComparison(TestUtils.COMPARISON_FOR_CHAR_ARRAY)
                 .isEqualTo(expectedDocumentWithHigherScore);
 
         assertThat(actualContent.getLast())
-                .usingRecursiveComparison(TestUtils.COMPARISON_FOR_CHAR_ARRAY)
                 .isEqualTo(expectedDocumentWithLowerScore);
     }
 }

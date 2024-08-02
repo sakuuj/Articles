@@ -9,7 +9,7 @@ import java.util.UUID;
 @Builder
 public record ArticleResponse(UUID id,
                               String title,
-                              char[] content,
+                              String content,
                               List<String> topics,
                               LocalDateTime datePublishedOn,
                               LocalDateTime dateUpdatedOn

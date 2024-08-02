@@ -26,7 +26,7 @@ public class ArticleTestDataBuilder {
 
     private String title = "Java JIT Compilation";
 
-    private char[] content = """
+    private String content = """
             Java HotSpot VM is a mixed-
             mode VM, which means that it
             starts off interpreting the byte-
@@ -42,7 +42,7 @@ public class ArticleTestDataBuilder {
             the log file that show
             each method as it is
             compiled.
-            """.toCharArray();
+            """;
 
     private List<String> topics = List.of("Java", "Programming", "JIT");
 

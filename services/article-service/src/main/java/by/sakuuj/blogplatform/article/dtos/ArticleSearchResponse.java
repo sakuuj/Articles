@@ -8,6 +8,6 @@ import java.util.UUID;
 @Builder
 public record ArticleSearchResponse(UUID id,
                                     String title,
-                                    char[] content,
+                                    String content,
                                     LocalDateTime datePublishedOn) {
 }

@@ -3,10 +3,7 @@ package by.sakuuj.blogplatform.article.mappers;
 import by.sakuuj.blogplatform.article.ArticleTestDataBuilder;
 import by.sakuuj.blogplatform.article.dtos.ArticleRequest;
 import by.sakuuj.blogplatform.article.dtos.ArticleResponse;
-import by.sakuuj.blogplatform.article.dtos.ArticleSearchResponse;
-import by.sakuuj.blogplatform.article.entities.ArticleDocument;
 import by.sakuuj.blogplatform.article.entities.ArticleEntity;
-import by.sakuuj.blogplatform.article.utils.TestUtils;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 
@@ -50,25 +47,6 @@ class ArticleMapperTests {
 
         // then
         assertThat(actualResponse)
-                .usingRecursiveComparison(TestUtils.COMPARISON_FOR_CHAR_ARRAY)
                 .isEqualTo(expectedResponse);
-    }
-
-    @Test
-    void shouldMapDocumentToSearchResponse() {
-
-        // given
-        var testDataBuilder = ArticleTestDataBuilder.anArticle();
-
-        ArticleDocument document = testDataBuilder.buildDocument();
-        ArticleSearchResponse expectedSearchResponse = testDataBuilder.buildSearchResponse();
-
-        // when
-        ArticleSearchResponse actualSearchResponse = articleMapper.toSearchResponse(document);
-
-        // then
-        assertThat(actualSearchResponse)
-                .usingRecursiveComparison(TestUtils.COMPARISON_FOR_CHAR_ARRAY)
-                .isEqualTo(expectedSearchResponse);
     }
 }

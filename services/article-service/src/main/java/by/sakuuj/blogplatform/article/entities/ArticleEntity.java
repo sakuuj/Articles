@@ -17,7 +17,7 @@ public class ArticleEntity {
 
     private UUID id;
     private String title;
-    private char[] content;
+    private String content;
     private List<String> topics;
     private LocalDateTime datePublishedOn;
     private LocalDateTime dateUpdatedOn;
