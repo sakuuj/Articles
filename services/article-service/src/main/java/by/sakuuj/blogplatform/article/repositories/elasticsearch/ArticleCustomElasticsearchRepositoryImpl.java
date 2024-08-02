@@ -3,7 +3,9 @@ package by.sakuuj.blogplatform.article.repositories.elasticsearch;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
 import by.sakuuj.blogplatform.article.repositories.PageView;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ResourceUtil;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -28,13 +30,30 @@ public class ArticleCustomElasticsearchRepositoryImpl implements ArticleCustomEl
 
 
     @SuppressWarnings("unchecked")
-    public PageView<ArticleDocument> findMostRelevantDocuments(String searchTerms, Pageable pageable) {
+    public PageView<ArticleDocument> findMostRelevantDocuments(String searchTerms, Pageable initialPageable) {
 
         String actualQueryContent = FIND_MOST_RELEVANT_FOR_SEARCH_TERMS_QUERY
                 .replaceAll("\\?0", searchTerms);
 
+        final Sort initialSort = initialPageable.getSort();
+        Sort newSort = null;
+
+        Sort sortByScore = Sort.by("_score");
+        if (initialSort.isUnsorted()) {
+            newSort = sortByScore;
+        } else {
+            newSort = initialSort.and(sortByScore);
+        }
+
+
+        Pageable changedPageable = PageRequest.of(
+                initialPageable.getPageNumber(),
+                initialPageable.getPageSize(),
+                newSort
+        );
+
         StringQuery actualQuery =  StringQuery.builder(actualQueryContent)
-                .withPageable(pageable)
+                .withPageable(changedPageable)
                 .withTrackTotalHits(false)
                 .build();
 

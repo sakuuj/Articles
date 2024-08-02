@@ -8,7 +8,7 @@ import java.util.function.Function;
 @Builder
 public record PageView<T> (
     List<T> content,
-    int requestedQuantity,
+    int requestedSize,
     int pageNumber) {
 
     public <R> PageView<R> map(Function<T, R> mapper) {
@@ -18,7 +18,7 @@ public record PageView<T> (
 
         return new PageView<>(
                 mappedContent,
-                requestedQuantity,
+                requestedSize,
                 pageNumber
         );
     }

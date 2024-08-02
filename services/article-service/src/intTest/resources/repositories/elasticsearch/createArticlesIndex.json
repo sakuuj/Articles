@@ -8,6 +8,9 @@
   "mappings": {
     "dynamic": "strict",
     "properties": {
+      "id": {
+        "type": "keyword"
+      },
       "_class": {
         "type": "constant_keyword",
         "value": "article"

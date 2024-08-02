@@ -46,7 +46,7 @@ public class IndexCreatorElasticsearchClientImpl implements IndexCreatorElastics
 
         if (!existsStatusCode.isSameCodeAs(HttpStatus.NOT_FOUND)) {
 
-            String errorMsg = String.format("HEAD %s ERROR: received %s status code when checking existence " +
+            String errorMsg = String.format("HEAD %s ERROR received %s status code when checking existence " +
                             "of an index '%s' (allowed codes are: 200, 404)",
                     uri, existsStatusCode, indexName);
 
@@ -88,8 +88,8 @@ public class IndexCreatorElasticsearchClientImpl implements IndexCreatorElastics
         }
 
         String errorMsg = String.format(
-                "PUT %s ERROR: when creating elasticsearch index %s",
-                destinationUri, indexName);
+                "PUT %s ERROR when creating elasticsearch index %s : %s",
+                destinationUri, indexName, createIndexResponse.getBody());
 
         log.error(errorMsg);
         throw new RuntimeException(errorMsg);
