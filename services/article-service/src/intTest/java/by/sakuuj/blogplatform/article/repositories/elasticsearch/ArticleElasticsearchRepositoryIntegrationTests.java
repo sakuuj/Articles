@@ -4,14 +4,14 @@ package by.sakuuj.blogplatform.article.repositories.elasticsearch;
 import by.sakuuj.blogplatform.article.ArticleTestDataBuilder;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
 import by.sakuuj.blogplatform.article.repositories.PageView;
-import by.sakuuj.elasticsearch.IndexCreator;
-import by.sakuuj.elasticsearch.IndexCreatorProperties;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.RefreshPolicy;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -20,6 +20,9 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,11 +46,6 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
                     .withEnv("ES_SETTING_XPACK_SECURITY_HTTP_SSL_ENABLED", "false")
                     .withExposedPorts(9200);
 
-    @Autowired
-    private IndexCreator indexCreator;
-    @Autowired
-    private IndexCreatorProperties indexCreatorProperties;
-
     @DynamicPropertySource
     static void setDynamicProps(DynamicPropertyRegistry registry) {
         registry.add("spring.elasticsearch.uris", () -> List.of(getFullContainerUri()));
@@ -70,11 +68,6 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
 
     @Autowired
     private ArticleElasticsearchRepository elasticsearchRepository;
-
-    @BeforeEach
-    void ss() {
-        indexCreator.createIndexes(indexCreatorProperties.getIndexToJsonFilePairs());
-    }
 
     @AfterEach
     void removeAllDocumentsFromIndex() {
@@ -101,7 +94,7 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
 
         // when
         elasticsearchRepository.save(expectedDocument, RefreshPolicy.IMMEDIATE);
-        PageView<ArticleDocument> actualPage = elasticsearchRepository.findMostRelevantDocuments(searchTerm, pageable);
+        PageView<ArticleDocument> actualPage = elasticsearchRepository.findSortedByRelevance(searchTerm, pageable);
 
 
         // then
@@ -122,7 +115,7 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
         PageRequest pageable = PageRequest.of(expectedPageNumber, expectedRequestedPageSize);
 
         // when
-        PageView<ArticleDocument> actualPage = elasticsearchRepository.findMostRelevantDocuments(searchTerm, pageable);
+        PageView<ArticleDocument> actualPage = elasticsearchRepository.findSortedByRelevance(searchTerm, pageable);
 
         // then
         assertThat(actualPage.content()).isEmpty();
@@ -150,7 +143,7 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
 
         // when
         elasticsearchRepository.save(expectedDocument, RefreshPolicy.IMMEDIATE);
-        PageView<ArticleDocument> actualPage = elasticsearchRepository.findMostRelevantDocuments(messedUpTerm, pageable);
+        PageView<ArticleDocument> actualPage = elasticsearchRepository.findSortedByRelevance(messedUpTerm, pageable);
 
         // then
         assertThat(actualPage.content().size()).isEqualTo(1);
@@ -180,7 +173,7 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
 
         // when
         elasticsearchRepository.save(expectedDocument, RefreshPolicy.IMMEDIATE);
-        PageView<ArticleDocument> actualPage = elasticsearchRepository.findMostRelevantDocuments(messedUpTerm, pageable);
+        PageView<ArticleDocument> actualPage = elasticsearchRepository.findSortedByRelevance(messedUpTerm, pageable);
 
         // then
         assertThat(actualPage.content().size()).isEqualTo(1);
@@ -190,8 +183,9 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
         assertThat(actualPage.requestedSize()).isEqualTo(expectedRequestedPageSize);
     }
 
-    @Test
-    void shouldReturnDocsSortedByScore() {
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void shouldReturnDocsSortedByScore(boolean lowerScoreDocComesFirst) {
         // given
         ArticleTestDataBuilder testDataBuilder = ArticleTestDataBuilder.anArticle();
 
@@ -203,30 +197,39 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
         );
 
         String firstSearchTerm = "qwerty";
-        ArticleDocument expectedDocumentWithLowerScore = testDataBuilder
+        ArticleDocument lowerScoreDoc = testDataBuilder
                 .withTitle("TITLE_1 " + firstSearchTerm)
                 .withContent("CONTENT_1 " + firstSearchTerm)
                 .withId(UUID.fromString("920e3446-ce92-4216-85d5-c7b9e76423d4"))
                 .buildDocument();
 
         String secondSearchTerm = "smth";
-        ArticleDocument expectedDocumentWithHigherScore = testDataBuilder
+        ArticleDocument higherScoreDoc = testDataBuilder
                 .withTitle("TITLE_2 " + firstSearchTerm + " " + secondSearchTerm)
                 .withContent("CONTENT_2 " + firstSearchTerm + " " + secondSearchTerm)
                 .withId(UUID.fromString("e1d3cf77-8d0d-4f26-bf4d-a11c5dfc3b06"))
                 .buildDocument();
 
+        List<ArticleDocument> docsToSave = new ArrayList<>(List.of(
+                higherScoreDoc, lowerScoreDoc
+        ));
+        if (lowerScoreDocComesFirst) {
+            Collections.reverse(docsToSave);
+        }
+
         // when
         elasticsearchRepository.saveAll(
-                List.of(expectedDocumentWithHigherScore, expectedDocumentWithLowerScore),
+                docsToSave,
                 RefreshPolicy.IMMEDIATE
         );
-        PageView<ArticleDocument> actualPage = elasticsearchRepository.findMostRelevantDocuments(firstSearchTerm, pageable);
+
+        String searchTerms = firstSearchTerm + " " + secondSearchTerm;
+        PageView<ArticleDocument> actualPage = elasticsearchRepository.findSortedByRelevance(searchTerms, pageable);
 
         // then
         assertThat(actualPage.content().size()).isEqualTo(2);
-        assertThat(actualPage.content().getFirst()).isEqualTo(expectedDocumentWithHigherScore);
-        assertThat(actualPage.content().getLast()).isEqualTo(expectedDocumentWithLowerScore);
+        assertThat(actualPage.content().getFirst()).isEqualTo(higherScoreDoc);
+        assertThat(actualPage.content().getLast()).isEqualTo(lowerScoreDoc);
 
         assertThat(actualPage.pageNumber()).isEqualTo(expectedPageNumber);
         assertThat(actualPage.requestedSize()).isEqualTo(expectedRequestedPageSize);
@@ -240,7 +243,6 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
         int expectedPageNumber = 1;
         int expectedRequestedPageSize = 2;
         PageRequest pageable = PageRequest.of(expectedPageNumber, expectedRequestedPageSize);
-
 
         String searchTerm = "qwerty";
 
@@ -267,12 +269,188 @@ public class ArticleElasticsearchRepositoryIntegrationTests {
                 List.of(firstDocument, secondDocument, thirdDocument),
                 RefreshPolicy.IMMEDIATE
         );
-        PageView<ArticleDocument> actualPage = elasticsearchRepository.findMostRelevantDocuments(searchTerm, pageable);
+        PageView<ArticleDocument> actualPage = elasticsearchRepository.findSortedByRelevance(searchTerm, pageable);
 
         // then
         assertThat(actualPage.content().size()).isEqualTo(1);
         assertThat(actualPage.content().getFirst())
                 .isIn(firstDocument, secondDocument, thirdDocument);
+
+        assertThat(actualPage.pageNumber()).isEqualTo(expectedPageNumber);
+        assertThat(actualPage.requestedSize()).isEqualTo(expectedRequestedPageSize);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void shouldReturnDocsSortedByDatePublishedOnIfSuchSortProvided_IfDocsHaveSameRelevancy(
+            boolean earlierDocSecondInList
+    ) {
+        // given
+        ArticleTestDataBuilder testDataBuilder = ArticleTestDataBuilder.anArticle();
+
+        Sort sortByDate = Sort
+                .by(ArticleDocument.ElasticsearchFieldNames.DATE_PUBLISHED)
+                .descending();
+
+        int expectedPageNumber = 0;
+        int expectedRequestedPageSize = 10;
+        PageRequest pageable = PageRequest.of(
+                expectedPageNumber,
+                expectedRequestedPageSize,
+                sortByDate
+        );
+
+        LocalDateTime earlierDate = ArticleTestDataBuilder.anArticle().getDatePublishedOn();
+        LocalDateTime laterDate = earlierDate.plusDays(1);
+
+        String searchTerm = "qwerty";
+        ArticleDocument laterDoc = testDataBuilder
+                .withTitle("TITLE " + searchTerm)
+                .withContent("CONTENT " + searchTerm)
+                .withId(UUID.fromString("920e3446-ce92-4216-85d5-c7b9e76423d4"))
+                .withDatePublishedOn(laterDate)
+                .buildDocument();
+
+        ArticleDocument earlierDoc = testDataBuilder
+                .withTitle("TITLE " + searchTerm )
+                .withContent("CONTENT " + searchTerm )
+                .withId(UUID.fromString("e1d3cf77-8d0d-4f26-bf4d-a11c5dfc3b06"))
+                .withDatePublishedOn(earlierDate)
+                .buildDocument();
+
+        List<ArticleDocument> docsToSave = new ArrayList<>(List.of(earlierDoc, laterDoc));
+        if (earlierDocSecondInList) {
+            Collections.reverse(docsToSave);
+        }
+
+        // when
+        elasticsearchRepository.saveAll(
+                docsToSave,
+                RefreshPolicy.IMMEDIATE
+        );
+        PageView<ArticleDocument> actualPage = elasticsearchRepository.findSortedByRelevance(searchTerm, pageable);
+
+        // then
+        assertThat(actualPage.content().size()).isEqualTo(2);
+        assertThat(actualPage.content().getFirst()).isEqualTo(laterDoc);
+        assertThat(actualPage.content().getLast()).isEqualTo(earlierDoc);
+
+        assertThat(actualPage.pageNumber()).isEqualTo(expectedPageNumber);
+        assertThat(actualPage.requestedSize()).isEqualTo(expectedRequestedPageSize);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void shouldReturnDocsSortedByDatePublishedOnIfSuchSortProvided_EvenIfEarlierOneIsMoreRelevant(
+            boolean earlierDocSecondInList
+    ) {
+        // given
+        ArticleTestDataBuilder testDataBuilder = ArticleTestDataBuilder.anArticle();
+
+        Sort sortByDate = Sort
+                .by(ArticleDocument.ElasticsearchFieldNames.DATE_PUBLISHED)
+                .descending();
+
+        int expectedPageNumber = 0;
+        int expectedRequestedPageSize = 10;
+        PageRequest pageable = PageRequest.of(
+                expectedPageNumber,
+                expectedRequestedPageSize,
+                sortByDate
+        );
+
+        LocalDateTime earlierDate = ArticleTestDataBuilder.anArticle().getDatePublishedOn();
+        LocalDateTime laterDate = earlierDate.plusDays(1);
+
+        String searchTerm = "qwerty";
+        ArticleDocument laterDoc = testDataBuilder
+                .withTitle("TITLE " + searchTerm)
+                .withContent("CONTENT " + searchTerm)
+                .withId(UUID.fromString("920e3446-ce92-4216-85d5-c7b9e76423d4"))
+                .withDatePublishedOn(laterDate)
+                .buildDocument();
+
+        ArticleDocument earlierDoc = testDataBuilder
+                .withTitle("TITLE " + searchTerm + " " + searchTerm )
+                .withContent("CONTENT " + searchTerm + " " + searchTerm)
+                .withId(UUID.fromString("e1d3cf77-8d0d-4f26-bf4d-a11c5dfc3b06"))
+                .withDatePublishedOn(earlierDate)
+                .buildDocument();
+
+        List<ArticleDocument> docsToSave = new ArrayList<>(List.of(earlierDoc, laterDoc));
+        if (earlierDocSecondInList) {
+            Collections.reverse(docsToSave);
+        }
+
+        // when
+        elasticsearchRepository.saveAll(
+                docsToSave,
+                RefreshPolicy.IMMEDIATE
+        );
+        PageView<ArticleDocument> actualPage = elasticsearchRepository.findSortedByRelevance(searchTerm, pageable);
+
+        // then
+        assertThat(actualPage.content().size()).isEqualTo(2);
+        assertThat(actualPage.content().getFirst()).isEqualTo(laterDoc);
+        assertThat(actualPage.content().getLast()).isEqualTo(earlierDoc);
+
+        assertThat(actualPage.pageNumber()).isEqualTo(expectedPageNumber);
+        assertThat(actualPage.requestedSize()).isEqualTo(expectedRequestedPageSize);
+    }
+
+    @ParameterizedTest
+    @ValueSource(booleans = {false, true})
+    void shouldReturnDocsSortedBySortedByRelevancy_IfSortByDatePublishedOnIsProvided_ButDatesAreTheSame(
+            boolean moreRelevantDocSecondInList
+    ) {
+        // given
+        ArticleTestDataBuilder testDataBuilder = ArticleTestDataBuilder.anArticle();
+
+        Sort sortByDate = Sort
+                .by(ArticleDocument.ElasticsearchFieldNames.DATE_PUBLISHED)
+                .descending();
+
+        int expectedPageNumber = 0;
+        int expectedRequestedPageSize = 10;
+        PageRequest pageable = PageRequest.of(
+                expectedPageNumber,
+                expectedRequestedPageSize,
+                sortByDate
+        );
+
+        LocalDateTime commonDate = ArticleTestDataBuilder.anArticle().getDatePublishedOn();
+
+        String searchTerm = "qwerty";
+        ArticleDocument lessRelevantDoc = testDataBuilder
+                .withTitle("TITLE " + searchTerm)
+                .withContent("CONTENT " + searchTerm)
+                .withId(UUID.fromString("920e3446-ce92-4216-85d5-c7b9e76423d4"))
+                .withDatePublishedOn(commonDate)
+                .buildDocument();
+
+        ArticleDocument moreRelevantDoc = testDataBuilder
+                .withTitle("TITLE " + searchTerm + " " + searchTerm )
+                .withContent("CONTENT " + searchTerm + " " + searchTerm)
+                .withId(UUID.fromString("e1d3cf77-8d0d-4f26-bf4d-a11c5dfc3b06"))
+                .withDatePublishedOn(commonDate)
+                .buildDocument();
+
+        List<ArticleDocument> docsToSave = new ArrayList<>(List.of(moreRelevantDoc, lessRelevantDoc));
+        if (moreRelevantDocSecondInList) {
+            Collections.reverse(docsToSave);
+        }
+
+        // when
+        elasticsearchRepository.saveAll(
+                docsToSave,
+                RefreshPolicy.IMMEDIATE
+        );
+        PageView<ArticleDocument> actualPage = elasticsearchRepository.findSortedByRelevance(searchTerm, pageable);
+
+        // then
+        assertThat(actualPage.content().size()).isEqualTo(2);
+        assertThat(actualPage.content().getFirst()).isEqualTo(moreRelevantDoc);
+        assertThat(actualPage.content().getLast()).isEqualTo(lessRelevantDoc);
 
         assertThat(actualPage.pageNumber()).isEqualTo(expectedPageNumber);
         assertThat(actualPage.requestedSize()).isEqualTo(expectedRequestedPageSize);

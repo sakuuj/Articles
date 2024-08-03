@@ -24,15 +24,21 @@ import java.util.UUID;
 @Document(indexName = "articles", createIndex = false)
 public class ArticleDocument {
 
+    public static class ElasticsearchFieldNames {
+        public static final String TITLE = "title";
+        public static final String CONTENT = "content";
+        public static final String DATE_PUBLISHED = "date_published";
+    }
+
     @Id
     private UUID id;
 
-    @Field(name = "title", type = FieldType.Text)
+    @Field(name = ElasticsearchFieldNames.TITLE, type = FieldType.Text)
     private String title;
 
-    @Field(name = "content", type = FieldType.Text)
+    @Field(name = ElasticsearchFieldNames.CONTENT, type = FieldType.Text)
     private String content;
 
-    @Field(name = "date_published", type = FieldType.Date, format = DateFormat.strict_date_hour_minute_second)
+    @Field(name = ElasticsearchFieldNames.DATE_PUBLISHED, type = FieldType.Date, format = DateFormat.strict_date_hour_minute_second)
     private LocalDateTime datePublishedOn;
 }

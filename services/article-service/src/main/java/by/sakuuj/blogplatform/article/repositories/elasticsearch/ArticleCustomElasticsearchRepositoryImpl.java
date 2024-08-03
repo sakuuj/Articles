@@ -28,9 +28,17 @@ public class ArticleCustomElasticsearchRepositoryImpl implements ArticleCustomEl
     private static final String FIND_MOST_RELEVANT_FOR_SEARCH_TERMS_QUERY = ResourceUtil
             .readFileFromClasspath("elasticsearchQueries/findMostRelevantForSearchTermsQuery.json");
 
-
+    /**
+     * <p>Find articles sorted by relevance using special query. </p>
+     * <p>You may optionally provide an additional sort, if the {@link ArticleDocument} index supports such.
+     * In that case, your additional sort will be applied before the sort, that orders by relevance.</p>
+     *
+     * @param searchTerms string of searching terms separated by spaces
+     * @param initialPageable pageable containing searched page and optionally your custom sort
+     * @return requested page sorted, initially, by your custom sort (if provided) and then by relevance.
+     */
     @SuppressWarnings("unchecked")
-    public PageView<ArticleDocument> findMostRelevantDocuments(String searchTerms, Pageable initialPageable) {
+    public PageView<ArticleDocument> findSortedByRelevance(String searchTerms, Pageable initialPageable) {
 
         String actualQueryContent = FIND_MOST_RELEVANT_FOR_SEARCH_TERMS_QUERY
                 .replaceAll("\\?0", searchTerms);
@@ -38,7 +46,7 @@ public class ArticleCustomElasticsearchRepositoryImpl implements ArticleCustomEl
         final Sort initialSort = initialPageable.getSort();
         Sort newSort = null;
 
-        Sort sortByScore = Sort.by("_score");
+        Sort sortByScore = Sort.by("_score").descending();
         if (initialSort.isUnsorted()) {
             newSort = sortByScore;
         } else {
