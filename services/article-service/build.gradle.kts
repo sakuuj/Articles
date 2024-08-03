@@ -67,7 +67,7 @@ tasks.bootRun {
     setWorkingDir("$rootDir")
 
     systemProperties(CUSTOM_SYSTEM_PROPS)
-    systemProperty(SPRING_PROFILES_ACTIVE, "prod,default")
+    systemProperty(SPRING_PROFILES_ACTIVE, "prod")
 }
 
 tasks.test {

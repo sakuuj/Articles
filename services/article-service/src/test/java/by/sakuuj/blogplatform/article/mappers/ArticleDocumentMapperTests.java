@@ -1,7 +1,7 @@
 package by.sakuuj.blogplatform.article.mappers;
 
 import by.sakuuj.blogplatform.article.ArticleTestDataBuilder;
-import by.sakuuj.blogplatform.article.dtos.ArticleSearchResponse;
+import by.sakuuj.blogplatform.article.dtos.ArticleDocumentResponse;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
@@ -13,16 +13,16 @@ public class ArticleDocumentMapperTests {
     private final ArticleDocumentMapper articleDocumentMapper = Mappers.getMapper(ArticleDocumentMapper.class);
 
     @Test
-    void shouldMapDocumentToSearchResponse() {
+    void shouldMapDocumentToResponse() {
 
         // given
         var testDataBuilder = ArticleTestDataBuilder.anArticle();
 
         ArticleDocument document = testDataBuilder.buildDocument();
-        ArticleSearchResponse expectedSearchResponse = testDataBuilder.buildSearchResponse();
+        ArticleDocumentResponse expectedSearchResponse = testDataBuilder.buildDocumentResponse();
 
         // when
-        ArticleSearchResponse actualSearchResponse = articleDocumentMapper.toSearchResponse(document);
+        ArticleDocumentResponse actualSearchResponse = articleDocumentMapper.toResponse(document);
 
         // then
         assertThat(actualSearchResponse)

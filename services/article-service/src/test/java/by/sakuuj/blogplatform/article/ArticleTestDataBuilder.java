@@ -2,7 +2,7 @@ package by.sakuuj.blogplatform.article;
 
 import by.sakuuj.blogplatform.article.dtos.ArticleRequest;
 import by.sakuuj.blogplatform.article.dtos.ArticleResponse;
-import by.sakuuj.blogplatform.article.dtos.ArticleSearchResponse;
+import by.sakuuj.blogplatform.article.dtos.ArticleDocumentResponse;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
 import by.sakuuj.blogplatform.article.entities.ArticleEntity;
 import lombok.AllArgsConstructor;
@@ -72,7 +72,7 @@ public class ArticleTestDataBuilder {
         return new ArticleDocument(id, title, content, datePublishedOn);
     }
 
-    public ArticleSearchResponse buildSearchResponse() {
-        return new ArticleSearchResponse(id, title, content, datePublishedOn);
+    public ArticleDocumentResponse buildDocumentResponse() {
+        return new ArticleDocumentResponse(id, title, content, datePublishedOn);
     }
 }

@@ -3,6 +3,9 @@ server.tomcat.threads.max: 8
 
 springdoc.swagger-ui.path: /swagger
 
+spring.elasticsearch.password: ignored
+spring.elasticsearch.username: ignored
+
 spring.aop.proxy-target-class: true
 
 spring.elasticsearch.connection-timeout: 5s
