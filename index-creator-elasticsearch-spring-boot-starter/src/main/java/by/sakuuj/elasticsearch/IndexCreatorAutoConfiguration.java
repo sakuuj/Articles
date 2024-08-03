@@ -68,7 +68,7 @@ public class IndexCreatorAutoConfiguration {
                 uri);
     }
 
-    @Bean(name = "index-creator-rest-client")
+    @Bean
     @ConditionalOnMissingBean(value = RestClient.class)
     public RestClient restClient() {
         return RestClient.builder().build();
