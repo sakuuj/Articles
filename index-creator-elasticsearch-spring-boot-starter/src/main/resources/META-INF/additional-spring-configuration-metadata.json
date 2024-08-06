@@ -1,26 +1,52 @@
 {
+  "groups": [
+    {
+      "name": "by.sakuuj.elasticsearch",
+      "description": "Elastic search utilities."
+    }
+  ],
   "properties": [
     {
+      "name": "by.sakuuj.elasticsearch.index-creator.index-to-json-file-pairs",
+      "sourceType": "by.sakuuj.elasticsearch.IndexCreatorProperties"
+    },
+    {
       "name": "by.sakuuj.elasticsearch.index-creator.uri",
-      "description": "URI of a pattern: http://(host):(port)"
+      "description": "URI to send index creation queries on. Should be of a pattern: http://(host):(port)."
     },
     {
-      "name": "by.sakuuj.elasticsearch.index-creator.password"
+      "name": "by.sakuuj.elasticsearch.index-creator.password",
+      "description": "Elasticsearch password to use when trying to create indexes."
     },
     {
-      "name": "by.sakuuj.elasticsearch.index-creator.username"
+      "name": "by.sakuuj.elasticsearch.index-creator.username",
+      "description": "Elasticsearch username to use when trying to create indexes."
     },
     {
       "name": "by.sakuuj.elasticsearch.index-creator.authentication",
+      "description": "Type of authentication to use when sending REST queries to Elasticsearch.",
       "defaultValue": "basic"
     },
     {
       "name": "by.sakuuj.elasticsearch.index-creator.run-on-startup",
+      "description": "Whether to enable CommandLineRunner that automatically performs index creation.",
       "defaultValue": "true"
     },
     {
       "name": "by.sakuuj.elasticsearch.index-creator.enable",
+      "description": "Whether to enable index creator, that is used to create indexes from json files provided.",
       "defaultValue": "true"
+    }
+  ],
+  "hints": [
+    {
+      "name": "by.sakuuj.elasticsearch.index-creator.authentication",
+      "values": [
+        {
+          "value": "basic",
+          "description": "Basic HTTP authentication."
+        }
+      ]
     }
   ]
 }
