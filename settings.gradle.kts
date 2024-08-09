@@ -1,4 +1,4 @@
-rootProject.name = "blogplatform"
+rootProject.name = "blogsite"
 include("platform")
 include("services:article-service")
 include("concurrency-utils")
