@@ -1,10 +1,8 @@
 package by.sakuuj.blogplatform.article.services;
 
-import by.sakuuj.blogplatform.article.dtos.ArticleDocumentResponse;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
-import by.sakuuj.blogplatform.article.mappers.ArticleDocumentMapper;
-import by.sakuuj.blogplatform.article.repositories.PageView;
-import by.sakuuj.blogplatform.article.repositories.elasticsearch.ArticleElasticsearchRepository;
+import by.sakuuj.blogplatform.article.repository.PageView;
+import by.sakuuj.blogplatform.article.repository.elasticsearch.ArticleDocumentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,22 +15,19 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ArticleDocumentServiceImpl implements ArticleDocumentService {
 
-    private final ArticleDocumentMapper articleDocumentMapper;
-    private final ArticleElasticsearchRepository articleElasticsearchRepository;
-
+    private final ArticleDocumentRepository articleDocumentRepository;
 
     @Override
-    public PageView<ArticleDocumentResponse> findSortedByRelevance(String searchTerms, int pageNumber, int pageSize) {
+    public PageView<UUID> findSortedByRelevance(String searchTerms, int pageNumber, int pageSize) {
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
 
-        return articleElasticsearchRepository
-                .findSortedByRelevance(searchTerms, pageable)
-                .map(articleDocumentMapper::toResponse);
+        return articleDocumentRepository
+                .findIdsOfDocsSortedByRelevance(searchTerms, pageable);
     }
 
     @Override
-    public PageView<ArticleDocumentResponse> findSortedByDatePublishedOnAndThenByRelevance(
+    public PageView<UUID> findSortedByDatePublishedOnAndThenByRelevance(
             String searchTerms, int pageNumber, int pageSize
     ) {
         Sort sortByDatePublished = Sort
@@ -40,23 +35,21 @@ public class ArticleDocumentServiceImpl implements ArticleDocumentService {
                 .descending();
         Pageable pageable = PageRequest.of(pageNumber, pageSize, sortByDatePublished);
 
-        return articleElasticsearchRepository
-                .findSortedByRelevance(searchTerms, pageable)
-                .map(articleDocumentMapper::toResponse);
+        return articleDocumentRepository
+                .findIdsOfDocsSortedByRelevance(searchTerms, pageable);
     }
 
     @Override
-    public ArticleDocumentResponse save(ArticleDocument articleDocument) {
+    public UUID save(ArticleDocument articleDocument) {
         if (articleDocument.getId() == null) {
             throw new IllegalArgumentException("Can not save ArticleDocument with id set to null");
         }
 
-        ArticleDocument saved = articleElasticsearchRepository.save(articleDocument);
-        return articleDocumentMapper.toResponse(saved);
+        return articleDocumentRepository.save(articleDocument).getId();
     }
 
     @Override
     public void deleteById(UUID id) {
-        articleElasticsearchRepository.deleteById(id);
+        articleDocumentRepository.deleteById(id);
     }
 }

@@ -1,4 +1,4 @@
-package by.sakuuj.blogplatform.article.repositories;
+package by.sakuuj.blogplatform.article.repository;
 
 import lombok.Builder;
 
@@ -8,8 +8,9 @@ import java.util.function.Function;
 @Builder
 public record PageView<T> (
     List<T> content,
-    int requestedSize,
-    int pageNumber) {
+    int number,
+    int size
+    ) {
 
     public <R> PageView<R> map(Function<T, R> mapper) {
         List<R> mappedContent = content.stream()
@@ -18,8 +19,8 @@ public record PageView<T> (
 
         return new PageView<>(
                 mappedContent,
-                requestedSize,
-                pageNumber
+                number,
+                size
         );
     }
 }

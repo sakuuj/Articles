@@ -2,7 +2,6 @@ package by.sakuuj.blogplatform.article;
 
 import by.sakuuj.blogplatform.article.dtos.ArticleRequest;
 import by.sakuuj.blogplatform.article.dtos.ArticleResponse;
-import by.sakuuj.blogplatform.article.dtos.ArticleDocumentResponse;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
 import by.sakuuj.blogplatform.article.entities.ArticleEntity;
 import lombok.AllArgsConstructor;
@@ -65,14 +64,10 @@ public class ArticleTestDataBuilder {
     }
 
     public ArticleEntity build() {
-        return new ArticleEntity(id, title, content, topics, datePublishedOn, dateUpdatedOn);
+        return new ArticleEntity(id, title, content, datePublishedOn, dateUpdatedOn);
     }
 
     public ArticleDocument buildDocument() {
         return new ArticleDocument(id, title, content, datePublishedOn);
-    }
-
-    public ArticleDocumentResponse buildDocumentResponse() {
-        return new ArticleDocumentResponse(id, title, content, datePublishedOn);
     }
 }

@@ -1,15 +1,17 @@
 package by.sakuuj.blogplatform.article.services;
 
+import by.sakuuj.blogplatform.article.ArticleServiceApplication;
 import by.sakuuj.blogplatform.article.ArticleTestDataBuilder;
-import by.sakuuj.blogplatform.article.dtos.ArticleDocumentResponse;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
-import by.sakuuj.blogplatform.article.mappers.ArticleDocumentMapper;
-import by.sakuuj.blogplatform.article.repositories.PageView;
-import by.sakuuj.blogplatform.article.repositories.elasticsearch.ArticleElasticsearchRepository;
+import by.sakuuj.blogplatform.article.repository.PageView;
+import by.sakuuj.blogplatform.article.repository.elasticsearch.ArticleDocumentRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Pageable;
@@ -28,14 +30,16 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@EnableAutoConfiguration(exclude = {
+        JpaRepositoriesAutoConfiguration.class,
+        DataSourceAutoConfiguration.class
+})
+@SpringBootTest(classes = ArticleServiceApplication.class)
 public class ArticleDocumentServiceTests {
 
-    @MockBean
-    private ArticleDocumentMapper articleDocumentMapper;
 
     @MockBean
-    private ArticleElasticsearchRepository articleElasticsearchRepository;
+    private ArticleDocumentRepository articleDocumentRepository;
 
     @Autowired
     private ArticleDocumentService articleDocumentService;
@@ -47,13 +51,13 @@ public class ArticleDocumentServiceTests {
     void shouldDeleteByIdUsingRepository() {
         // given
         UUID idToDeleteBy = UUID.fromString("f73be0a0-f00b-4fa5-8364-fc7e7e302663");
-        doNothing().when(articleElasticsearchRepository).deleteById(idToDeleteBy);
+        doNothing().when(articleDocumentRepository).deleteById(idToDeleteBy);
 
         // when
         articleDocumentService.deleteById(idToDeleteBy);
 
         // then
-        verify(articleElasticsearchRepository).deleteById(idToDeleteBy);
+        verify(articleDocumentRepository).deleteById(idToDeleteBy);
     }
 
     @Test
@@ -61,13 +65,13 @@ public class ArticleDocumentServiceTests {
         // given
         UUID idToDeleteBy = UUID.fromString("f73be0a0-f00b-4fa5-8364-fc7e7e302663");
         String errorMsg = "error when delete";
-        doThrow(new RuntimeException(errorMsg)).when(articleElasticsearchRepository).deleteById(idToDeleteBy);
+        doThrow(new RuntimeException(errorMsg)).when(articleDocumentRepository).deleteById(idToDeleteBy);
 
         // when, then
         assertThatThrownBy(() -> articleDocumentService.deleteById(idToDeleteBy))
                 .hasMessage(errorMsg);
 
-        verify(articleElasticsearchRepository).deleteById(idToDeleteBy);
+        verify(articleDocumentRepository).deleteById(idToDeleteBy);
     }
 
     @Test
@@ -88,19 +92,17 @@ public class ArticleDocumentServiceTests {
 
         ArticleDocument articleDocumentToSave = testDataBuilder.buildDocument();
         ArticleDocument savedArticleDocument = testDataBuilder.buildDocument();
-        ArticleDocumentResponse expected = testDataBuilder.buildDocumentResponse();
+        UUID expected = savedArticleDocument.getId();
 
-        when(articleElasticsearchRepository.save(articleDocumentToSave)).thenReturn(savedArticleDocument);
-        when(articleDocumentMapper.toResponse(savedArticleDocument)).thenReturn(expected);
+        when(articleDocumentRepository.save(articleDocumentToSave)).thenReturn(savedArticleDocument);
 
         // when
-        ArticleDocumentResponse actual = articleDocumentService.save(articleDocumentToSave);
+        UUID actual = articleDocumentService.save(articleDocumentToSave);
 
         // then
         assertThat(actual).isEqualTo(expected);
 
-        verify(articleElasticsearchRepository).save(articleDocumentToSave);
-        verify(articleDocumentMapper).toResponse(savedArticleDocument);
+        verify(articleDocumentRepository).save(articleDocumentToSave);
     }
 
     @Test
@@ -111,13 +113,13 @@ public class ArticleDocumentServiceTests {
         ArticleDocument articleDocumentToSave = testDataBuilder.buildDocument();
 
         String errorMsg = "can not be saved msg";
-        when(articleElasticsearchRepository.save(articleDocumentToSave)).thenThrow(new RuntimeException(errorMsg));
+        when(articleDocumentRepository.save(articleDocumentToSave)).thenThrow(new RuntimeException(errorMsg));
 
         // when, then
         assertThatThrownBy(() -> articleDocumentService.save(articleDocumentToSave))
                 .hasMessage(errorMsg);
 
-        verify(articleElasticsearchRepository).save(articleDocumentToSave);
+        verify(articleDocumentRepository).save(articleDocumentToSave);
     }
 
     @Test
@@ -131,42 +133,32 @@ public class ArticleDocumentServiceTests {
                 .withDatePublishedOn(LocalDateTime.MIN)
                 .withDateUpdatedOn(LocalDateTime.MIN.plusDays(1));
 
-        ArticleDocument firstDocumentToFind = firstTestDataBuilder.buildDocument();
-        ArticleDocument secondDocumentToFind = secondTestDataBuilder.buildDocument();
-
-        ArticleDocumentResponse expectedFirstDocResponse = firstTestDataBuilder.buildDocumentResponse();
-        ArticleDocumentResponse expectedSecondDocResponse = secondTestDataBuilder.buildDocumentResponse();
+        UUID expectedFirstId = firstTestDataBuilder.getId();
+        UUID expectedSecondId = secondTestDataBuilder.getId();
 
         String searchTerms = "some search terms";
         int pageNumber = 0;
         int pageSize = 10;
 
-        when(articleElasticsearchRepository.findSortedByRelevance(eq(searchTerms), any(Pageable.class)))
-                .thenReturn(new PageView<>(
-                        List.of(firstDocumentToFind, secondDocumentToFind),
-                        pageSize,
-                        pageNumber
-                ));
-
-        when(articleDocumentMapper.toResponse(firstDocumentToFind))
-                .thenReturn(expectedFirstDocResponse);
-        when(articleDocumentMapper.toResponse(secondDocumentToFind))
-                .thenReturn(expectedSecondDocResponse);
+        when(articleDocumentRepository.findIdsOfDocsSortedByRelevance(eq(searchTerms), any(Pageable.class)))
+                .thenReturn(PageView.<UUID>builder()
+                        .content(List.of(expectedFirstId, expectedSecondId))
+                        .size(pageSize)
+                        .number(pageNumber)
+                        .build()
+                );
 
         // when
-        PageView<ArticleDocumentResponse> actual = articleDocumentService.findSortedByRelevance(
+        PageView<UUID> actual = articleDocumentService.findSortedByRelevance(
                 searchTerms, pageNumber, pageSize);
 
         // then
-        assertThat(actual.pageNumber()).isEqualTo(pageNumber);
-        assertThat(actual.requestedSize()).isEqualTo(pageSize);
+        assertThat(actual.number()).isEqualTo(pageNumber);
+        assertThat(actual.size()).isEqualTo(pageSize);
 
-        assertThat(actual.content()).containsExactly(expectedFirstDocResponse, expectedSecondDocResponse);
+        assertThat(actual.content()).containsExactly(expectedFirstId, expectedSecondId);
 
-        verify(articleDocumentMapper).toResponse(firstDocumentToFind);
-        verify(articleDocumentMapper).toResponse(secondDocumentToFind);
-
-        verify(articleElasticsearchRepository).findSortedByRelevance(eq(searchTerms), pageableCaptor.capture());
+        verify(articleDocumentRepository).findIdsOfDocsSortedByRelevance(eq(searchTerms), pageableCaptor.capture());
         Pageable captured = pageableCaptor.getValue();
 
         assertThat(captured.getPageNumber()).isEqualTo(pageNumber);
@@ -185,42 +177,31 @@ public class ArticleDocumentServiceTests {
                 .withDatePublishedOn(LocalDateTime.MIN)
                 .withDateUpdatedOn(LocalDateTime.MIN.plusDays(1));
 
-        ArticleDocument firstDocumentToFind = firstTestDataBuilder.buildDocument();
-        ArticleDocument secondDocumentToFind = secondTestDataBuilder.buildDocument();
-
-        ArticleDocumentResponse expectedFirstDocResponse = firstTestDataBuilder.buildDocumentResponse();
-        ArticleDocumentResponse expectedSecondDocResponse = secondTestDataBuilder.buildDocumentResponse();
+        UUID expectedFirstId = firstTestDataBuilder.getId();
+        UUID expectedSecondId = secondTestDataBuilder.getId();
 
         String searchTerms = "some search terms";
         int expectedPageNumber = 0;
         int expectedPageSize = 10;
 
-        when(articleElasticsearchRepository.findSortedByRelevance(eq(searchTerms), any(Pageable.class)))
-                .thenReturn(new PageView<>(
-                        List.of(firstDocumentToFind, secondDocumentToFind),
-                        expectedPageSize,
-                        expectedPageNumber
-                ));
-
-        when(articleDocumentMapper.toResponse(firstDocumentToFind))
-                .thenReturn(expectedFirstDocResponse);
-        when(articleDocumentMapper.toResponse(secondDocumentToFind))
-                .thenReturn(expectedSecondDocResponse);
+        when(articleDocumentRepository.findIdsOfDocsSortedByRelevance(eq(searchTerms), any(Pageable.class)))
+                .thenReturn(PageView.<UUID>builder()
+                        .content(List.of(expectedFirstId, expectedSecondId))
+                        .size(expectedPageSize)
+                        .number(expectedPageNumber)
+                        .build());
 
         // when
-        PageView<ArticleDocumentResponse> actual = articleDocumentService.findSortedByDatePublishedOnAndThenByRelevance(
+        PageView<UUID> actual = articleDocumentService.findSortedByDatePublishedOnAndThenByRelevance(
                 searchTerms, expectedPageNumber, expectedPageSize);
 
         // then
-        assertThat(actual.pageNumber()).isEqualTo(expectedPageNumber);
-        assertThat(actual.requestedSize()).isEqualTo(expectedPageSize);
+        assertThat(actual.number()).isEqualTo(expectedPageNumber);
+        assertThat(actual.size()).isEqualTo(expectedPageSize);
 
-        assertThat(actual.content()).containsExactly(expectedFirstDocResponse, expectedSecondDocResponse);
+        assertThat(actual.content()).containsExactly(expectedFirstId, expectedSecondId);
 
-        verify(articleDocumentMapper).toResponse(firstDocumentToFind);
-        verify(articleDocumentMapper).toResponse(secondDocumentToFind);
-
-        verify(articleElasticsearchRepository).findSortedByRelevance(eq(searchTerms), pageableCaptor.capture());
+        verify(articleDocumentRepository).findIdsOfDocsSortedByRelevance(eq(searchTerms), pageableCaptor.capture());
         Pageable capturedPageable = pageableCaptor.getValue();
 
         assertThat(capturedPageable.getPageNumber()).isEqualTo(expectedPageNumber);

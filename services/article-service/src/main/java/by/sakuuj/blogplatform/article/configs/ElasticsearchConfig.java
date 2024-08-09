@@ -11,7 +11,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 
 @RequiredArgsConstructor
 @Configuration(proxyBeanMethods = false)
-@EnableElasticsearchRepositories(basePackages = "by.sakuuj.blogplatform.article.repositories.elasticsearch")
+@EnableElasticsearchRepositories(basePackages = "by.sakuuj.blogplatform.article.repository.elasticsearch")
 public class ElasticsearchConfig extends ElasticsearchConfiguration {
 
     private final ElasticsearchProperties elasticsearchProperties;
