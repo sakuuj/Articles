@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Component;
 
 @Component
-public class QueryBuilderImpl implements QueryBuilder {
+public class QueryProviderImpl implements QueryProvider {
 
     public static final String FIND_MOST_RELEVANT_QUERY_JSON_PATH = "elasticsearchQueries/findMostRelevantForSearchTermsQuery.json";
     private static final String FIND_MOST_RELEVANT_QUERY = ResourceUtil.readFileFromClasspath(
@@ -23,7 +23,7 @@ public class QueryBuilderImpl implements QueryBuilder {
     );
 
     @Override
-    public StringQuery buildQueryToFindIdsOfDocsSortedByRelevance(String searchTerms, Pageable pageable) {
+    public StringQuery provideQueryToFindIdsOfDocsSortedByRelevance(String searchTerms, Pageable pageable) {
         String actualQueryContent = FIND_MOST_RELEVANT_QUERY.replaceAll("\\?0", searchTerms);
 
         Pageable finalPageable = PagingUtils.addDescSort(pageable, "_score");

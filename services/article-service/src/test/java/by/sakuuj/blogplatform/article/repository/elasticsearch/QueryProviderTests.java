@@ -27,17 +27,17 @@ import static org.assertj.core.api.Assertions.assertThat;
         DataSourceAutoConfiguration.class
 })
 @SpringBootTest(classes = ArticleServiceApplication.class)
-public class QueryBuilderTests {
+public class QueryProviderTests {
 
     @Autowired
-    private QueryBuilder queryBuilder;
+    private QueryProvider queryProvider;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @MethodSource
     @ParameterizedTest
-    void shouldHaveCorrectQueryPropertiesAfterCallingBuildQueryToFindIdsOfDocsSortedByRelevance(Sort providedSort) {
+    void shouldHaveCorrectQueryPropertiesAfterCallingProvideQueryToFindIdsOfDocsSortedByRelevance(Sort providedSort) {
         // given
         int pageNumber = 4;
         int pageSize = 44;
@@ -56,7 +56,7 @@ public class QueryBuilderTests {
         String searchTerms = "first second";
 
         // when
-        StringQuery actual = queryBuilder.buildQueryToFindIdsOfDocsSortedByRelevance(searchTerms, pageable);
+        StringQuery actual = queryProvider.provideQueryToFindIdsOfDocsSortedByRelevance(searchTerms, pageable);
 
         // then
         assertThat(actual.getTrackTotalHits()).isEqualTo(expectedTrackTotalHits);
@@ -70,7 +70,7 @@ public class QueryBuilderTests {
         assertThat(sourceFilter.getIncludes()).isEqualTo(expectedIncludesOnSourceFilter);
     }
 
-    static List<Sort> shouldHaveCorrectQueryPropertiesAfterCallingBuildQueryToFindIdsOfDocsSortedByRelevance() {
+    static List<Sort> shouldHaveCorrectQueryPropertiesAfterCallingProvideQueryToFindIdsOfDocsSortedByRelevance() {
         return List.of(
                 Sort.unsorted(),
                 Sort.by(ArticleDocument.ElasticsearchFieldNames.DATE_PUBLISHED).descending()
@@ -78,7 +78,7 @@ public class QueryBuilderTests {
     }
 
     @Test
-    void shouldHaveCorrectQueryContentAfterCallingBuildQueryToFindIdsOfDocsSortedByRelevance() throws Exception {
+    void shouldHaveCorrectQueryContentAfterCallingProvideQueryToFindIdsOfDocsSortedByRelevance() throws Exception {
         // given
         int pageNumber = 4;
         int pageSize = 44;
@@ -89,7 +89,7 @@ public class QueryBuilderTests {
         String searchTerms = "first second";
 
         // when
-        StringQuery actualQuery = queryBuilder.buildQueryToFindIdsOfDocsSortedByRelevance(searchTerms, pageable);
+        StringQuery actualQuery = queryProvider.provideQueryToFindIdsOfDocsSortedByRelevance(searchTerms, pageable);
         String actualQueryContent = actualQuery.getSource();
 
         // then

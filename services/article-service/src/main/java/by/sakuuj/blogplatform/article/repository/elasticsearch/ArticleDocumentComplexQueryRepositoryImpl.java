@@ -16,9 +16,8 @@ import java.util.UUID;
 public class ArticleDocumentComplexQueryRepositoryImpl implements ArticleDocumentComplexQueryRepository {
 
     private final ElasticsearchOperations elasticsearchOperations;
-    private final QueryBuilder queryBuilder;
+    private final QueryProvider queryProvider;
     private final SearchHitsToPageViewMapper searchHitsToPageViewMapper;
-
 
     /**
      * <p>Find articles sorted by relevance using special query. </p>
@@ -31,11 +30,10 @@ public class ArticleDocumentComplexQueryRepositoryImpl implements ArticleDocumen
      */
     public PageView<UUID> findIdsOfDocsSortedByRelevance(String searchTerms, Pageable pageable) {
 
-        StringQuery query = queryBuilder.buildQueryToFindIdsOfDocsSortedByRelevance(searchTerms, pageable);
+        StringQuery query = queryProvider.provideQueryToFindIdsOfDocsSortedByRelevance(searchTerms, pageable);
 
         SearchHits<ArticleDocument> searchHits = elasticsearchOperations.search(query, ArticleDocument.class);
 
         return searchHitsToPageViewMapper.map(searchHits, query.getPageable(), ArticleDocument::getId);
     }
-
 }
