@@ -1,9 +1,8 @@
 package by.sakuuj.blogplatform.article.repository.elasticsearch;
 
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
-import org.springframework.data.domain.PageRequest;
+import by.sakuuj.blogplatform.article.utils.PagingUtils;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ResourceUtil;
 import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;
 import org.springframework.data.elasticsearch.core.query.SourceFilter;
@@ -27,7 +26,7 @@ public class QueryBuilderImpl implements QueryBuilder {
     public StringQuery buildQueryToFindIdsOfDocsSortedByRelevance(String searchTerms, Pageable pageable) {
         String actualQueryContent = FIND_MOST_RELEVANT_QUERY.replaceAll("\\?0", searchTerms);
 
-        Pageable finalPageable = addSortByScore(pageable);
+        Pageable finalPageable = PagingUtils.addDescSort(pageable, "_score");
 
         return StringQuery.builder(actualQueryContent)
                 .withPageable(finalPageable)
@@ -35,24 +34,5 @@ public class QueryBuilderImpl implements QueryBuilder {
                 .withSourceFilter(excludeAllSourceFilter)
                 .withTrackTotalHits(false)
                 .build();
-    }
-
-    private static Pageable addSortByScore(Pageable initialPageable) {
-
-        final Sort initialSort = initialPageable.getSort();
-        Sort newSort = null;
-
-        final Sort sortByScore = Sort.by("_score").descending();
-        if (initialSort.isUnsorted()) {
-            newSort = sortByScore;
-        } else {
-            newSort = initialSort.and(sortByScore);
-        }
-
-        return PageRequest.of(
-                initialPageable.getPageNumber(),
-                initialPageable.getPageSize(),
-                newSort
-        );
     }
 }

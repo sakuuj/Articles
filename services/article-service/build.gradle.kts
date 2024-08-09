@@ -29,7 +29,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
-//    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     runtimeOnly("org.postgresql:postgresql")
 
@@ -52,6 +52,7 @@ idea {
 }
 
 val CUSTOM_SYSTEM_PROPS = mapOf(
+    "user.timezone" to "UTC",
     "jdk.virtualThreadScheduler.maxPoolSize" to "8",
     "jdk.tracePinnedThreads" to "full"
 )
