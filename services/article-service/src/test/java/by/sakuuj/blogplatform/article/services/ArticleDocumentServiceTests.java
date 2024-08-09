@@ -2,6 +2,7 @@ package by.sakuuj.blogplatform.article.services;
 
 import by.sakuuj.blogplatform.article.ArticleServiceApplication;
 import by.sakuuj.blogplatform.article.ArticleTestDataBuilder;
+import by.sakuuj.blogplatform.article.controller.RequestedPage;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
 import by.sakuuj.blogplatform.article.repository.PageView;
 import by.sakuuj.blogplatform.article.repository.elasticsearch.ArticleDocumentRepository;
@@ -150,7 +151,7 @@ public class ArticleDocumentServiceTests {
 
         // when
         PageView<UUID> actual = articleDocumentService.findSortedByRelevance(
-                searchTerms, pageNumber, pageSize);
+                searchTerms, new RequestedPage(pageNumber, pageSize));
 
         // then
         assertThat(actual.number()).isEqualTo(pageNumber);
@@ -193,7 +194,7 @@ public class ArticleDocumentServiceTests {
 
         // when
         PageView<UUID> actual = articleDocumentService.findSortedByDatePublishedOnAndThenByRelevance(
-                searchTerms, expectedPageNumber, expectedPageSize);
+                searchTerms, new RequestedPage(expectedPageNumber, expectedPageSize));
 
         // then
         assertThat(actual.number()).isEqualTo(expectedPageNumber);
