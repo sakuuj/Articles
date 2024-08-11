@@ -1,17 +1,11 @@
 package by.sakuuj.blogplatform.article.repository.elasticsearch;
 
-import by.sakuuj.blogplatform.article.ArticleServiceApplication;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,18 +16,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@EnableAutoConfiguration(exclude = {
-        JpaRepositoriesAutoConfiguration.class,
-        DataSourceAutoConfiguration.class
-})
-@SpringBootTest(classes = ArticleServiceApplication.class)
-public class QueryProviderTests {
+public class QueryProviderImplTests {
 
-    @Autowired
-    private QueryProvider queryProvider;
+    private final QueryProvider queryProvider = new QueryProviderImpl();
 
-    @Autowired
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapperForTests = new ObjectMapper();
 
     @MethodSource
     @ParameterizedTest
@@ -93,7 +80,7 @@ public class QueryProviderTests {
         String actualQueryContent = actualQuery.getSource();
 
         // then
-        JsonNode actualQueryContentJackson = objectMapper.readTree(actualQueryContent);
+        JsonNode actualQueryContentJackson = objectMapperForTests.readTree(actualQueryContent);
 
         String expectedQueryContent = String.format("""
                 {
@@ -122,7 +109,7 @@ public class QueryProviderTests {
                 }
                 """, searchTerms, searchTerms);
 
-        JsonNode expectedQueryContentJackson = objectMapper.readTree(expectedQueryContent);
+        JsonNode expectedQueryContentJackson = objectMapperForTests.readTree(expectedQueryContent);
 
         assertThat(actualQueryContentJackson).isEqualTo(expectedQueryContentJackson);
     }

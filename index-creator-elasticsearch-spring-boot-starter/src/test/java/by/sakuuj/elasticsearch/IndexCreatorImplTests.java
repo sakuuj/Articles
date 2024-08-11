@@ -6,10 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,34 +25,33 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {IndexCreatorAutoConfiguration.class})
-class IndexCreatorTests {
+@ExtendWith(MockitoExtension.class)
+class IndexCreatorImplTests {
 
-    @MockBean
+    @Mock
     private IndexCreatorElasticsearchClient elasticsearchClient;
 
-    @MockBean
+    @Mock
     private JsonContentExtractor jsonContentExtractor;
 
-    @Autowired
-    private IndexCreator indexCreator;
+    @InjectMocks
+    private IndexCreatorImpl indexCreatorImpl;
 
     @Test
     void shouldNotDoAnythingIfAllIndexesAlreadyExist() {
         String firstIndexName = "first index";
-        String firstIndexQueryFilePath = "first index json file path";
+        String firstIndexJsonFilePath = "first index json file path";
 
         String secondIndexName = "second index";
-        String secondIndexQueryFilePath = "second index json file path";
+        String secondIndexJsonFilePath = "second index json file path";
 
         when(elasticsearchClient.indexExists(or(eq(firstIndexName), eq(secondIndexName))))
                 .thenReturn(true);
 
 
-        indexCreator.createIndexes(List.of(
-                Map.entry(firstIndexName, firstIndexQueryFilePath),
-                Map.entry(secondIndexName, secondIndexQueryFilePath)
+        indexCreatorImpl.createIndexes(List.of(
+                Map.entry(firstIndexName, firstIndexJsonFilePath),
+                Map.entry(secondIndexName, secondIndexJsonFilePath)
         ));
 
         verify(elasticsearchClient).indexExists(firstIndexName);
@@ -68,16 +66,16 @@ class IndexCreatorTests {
     void shouldCreateOneIndex_WhenQueryIsExtractableAndOtherAlreadyExists(boolean secondIndexComesFirst) {
         // given
         String firstIndexName = "first index";
-        String firstIndexQueryFilePath = "first index json file path";
+        String firstIndexJsonFilePath = "first index json file path";
 
         String secondIndexName = "second index";
-        String secondIndexQueryFilePath = "second index json file path";
+        String secondIndexJsonFilePath = "second index json file path";
         String secondIndexFromFileQuery = "second index file content";
 
         List<Map.Entry<String, String>> indexToCreateQueryFileMappings =
                 new ArrayList<>(List.of(
-                        Map.entry(firstIndexName, firstIndexQueryFilePath),
-                        Map.entry(secondIndexName, secondIndexQueryFilePath)
+                        Map.entry(firstIndexName, firstIndexJsonFilePath),
+                        Map.entry(secondIndexName, secondIndexJsonFilePath)
                 ));
 
         if (secondIndexComesFirst) {
@@ -90,12 +88,12 @@ class IndexCreatorTests {
 
         when(elasticsearchClient.indexExists(secondIndexName))
                 .thenReturn(false);
-        when(jsonContentExtractor.extractJsonContent(secondIndexQueryFilePath))
+        when(jsonContentExtractor.extractJsonContent(secondIndexJsonFilePath))
                 .thenReturn(secondIndexFromFileQuery);
         doNothing().when(elasticsearchClient).createIndex(secondIndexName, secondIndexFromFileQuery);
 
         // when
-        indexCreator.createIndexes(indexToCreateQueryFileMappings);
+        indexCreatorImpl.createIndexes(indexToCreateQueryFileMappings);
 
         // then
         verify(elasticsearchClient).indexExists(firstIndexName);
@@ -104,7 +102,7 @@ class IndexCreatorTests {
         verify(elasticsearchClient).createIndex(secondIndexName, secondIndexFromFileQuery);
         verifyNoMoreInteractions(elasticsearchClient);
 
-        verify(jsonContentExtractor).extractJsonContent(secondIndexQueryFilePath);
+        verify(jsonContentExtractor).extractJsonContent(secondIndexJsonFilePath);
         verifyNoMoreInteractions(jsonContentExtractor);
     }
 
@@ -113,65 +111,67 @@ class IndexCreatorTests {
     void shouldThrowException_OnIterationWhereQueryNotExtractable(boolean secondIndexComesFirst) {
         // given
         String firstIndexName = "first index";
-        String firstIndexQueryFilePath = "first index json file path";
+        String firstIndexJsonFilePath = "first index json file path";
 
         String secondIndexName = "second index";
-        String secondIndexQueryFilePath = "second index json file path";
+        String secondIndexJsonFilePath = "second index json file path";
         String secondIndexFromFileQuery = "second index file content";
 
         List<Map.Entry<String, String>> indexToCreateQueryFileMappings =
                 new ArrayList<>(List.of(
-                        Map.entry(firstIndexName, firstIndexQueryFilePath),
-                        Map.entry(secondIndexName, secondIndexQueryFilePath)
+                        Map.entry(firstIndexName, firstIndexJsonFilePath),
+                        Map.entry(secondIndexName, secondIndexJsonFilePath)
                 ));
         if (secondIndexComesFirst) {
             Collections.reverse(indexToCreateQueryFileMappings);
 
-            when(jsonContentExtractor.extractJsonContent(secondIndexQueryFilePath))
+            when(jsonContentExtractor.extractJsonContent(secondIndexJsonFilePath))
                     .thenReturn(secondIndexFromFileQuery);
             doNothing().when(elasticsearchClient).createIndex(secondIndexName, secondIndexFromFileQuery);
         }
-        
+
         when(elasticsearchClient.indexExists(firstIndexName))
                 .thenReturn(false);
-        when(elasticsearchClient.indexExists(secondIndexName))
-                .thenReturn(false);
+        if (secondIndexComesFirst) {
+            when(elasticsearchClient.indexExists(secondIndexName))
+                    .thenReturn(false);
+        }
 
-        when(jsonContentExtractor.extractJsonContent(firstIndexQueryFilePath))
+        when(jsonContentExtractor.extractJsonContent(firstIndexJsonFilePath))
                 .thenThrow(new RuntimeException());
-        
+
         // when, then
-        assertThatThrownBy(() -> indexCreator.createIndexes(indexToCreateQueryFileMappings));
+        assertThatThrownBy(() -> indexCreatorImpl.createIndexes(indexToCreateQueryFileMappings));
     }
 
     @Test
     void shouldCreateBothIndexes_IfBothQueriesExtractable_AndNeitherExists() {
         // given
         String firstIndexName = "first index";
-        String firstIndexQueryFilePath = "first index json file path";
+        String firstIndexJsonFilePath = "first index json file path";
         String firstIndexFromFileQuery = "first index file content";
 
         String secondIndexName = "second index";
-        String secondIndexQueryFilePath = "second index json file path";
+        String secondIndexJsonFilePath = "second index json file path";
         String secondIndexFromFileQuery = "second index file content";
 
         when(elasticsearchClient.indexExists(firstIndexName))
                 .thenReturn(false);
         when(elasticsearchClient.indexExists(secondIndexName))
                 .thenReturn(false);
-        
-        when(jsonContentExtractor.extractJsonContent(firstIndexQueryFilePath))
+
+        when(jsonContentExtractor.extractJsonContent(firstIndexJsonFilePath))
                 .thenReturn(firstIndexFromFileQuery);
-        when(jsonContentExtractor.extractJsonContent(secondIndexQueryFilePath))
+        when(jsonContentExtractor.extractJsonContent(secondIndexJsonFilePath))
                 .thenReturn(secondIndexFromFileQuery);
-        
+
         doNothing().when(elasticsearchClient).createIndex(firstIndexName, firstIndexFromFileQuery);
         doNothing().when(elasticsearchClient).createIndex(secondIndexName, secondIndexFromFileQuery);
 
         // when
-        indexCreator.createIndexes(List.of(
-                Map.entry(firstIndexName, firstIndexQueryFilePath),
-                Map.entry(secondIndexName, secondIndexQueryFilePath)
+        indexCreatorImpl.createIndexes(List.of(
+                Map.entry(firstIndexName, firstIndexJsonFilePath),
+                Map.entry(secondIndexName, secondIndexJsonFilePath)
         ));
 
         // then
@@ -181,8 +181,8 @@ class IndexCreatorTests {
         verify(elasticsearchClient).createIndex(secondIndexName, secondIndexFromFileQuery);
         verifyNoMoreInteractions(elasticsearchClient);
 
-        verify(jsonContentExtractor).extractJsonContent(firstIndexQueryFilePath);
-        verify(jsonContentExtractor).extractJsonContent(secondIndexQueryFilePath);
+        verify(jsonContentExtractor).extractJsonContent(firstIndexJsonFilePath);
+        verify(jsonContentExtractor).extractJsonContent(secondIndexJsonFilePath);
         verifyNoMoreInteractions(jsonContentExtractor);
     }
 
@@ -191,38 +191,45 @@ class IndexCreatorTests {
     void shouldThrowException_IfCreateIndexThrowsException(boolean secondIndexComesFirst) {
         // given
         String firstIndexName = "first index";
-        String firstIndexQueryFilePath = "first index json file path";
+        String firstIndexJsonFilePath = "first index json file path";
         String firstIndexFromFileQuery = "first index file content";
 
         String secondIndexName = "second index";
-        String secondIndexQueryFilePath = "second index json file path";
+        String secondIndexJsonFilePath = "second index json file path";
         String secondIndexFromFileQuery = "second index file content";
 
 
         List<Map.Entry<String, String>> indexToCreateQueryFileMappings =
                 new ArrayList<>(List.of(
-                        Map.entry(firstIndexName, firstIndexQueryFilePath),
-                        Map.entry(secondIndexName, secondIndexQueryFilePath)
+                        Map.entry(firstIndexName, firstIndexJsonFilePath),
+                        Map.entry(secondIndexName, secondIndexJsonFilePath)
                 ));
 
         if (secondIndexComesFirst) {
             Collections.reverse(indexToCreateQueryFileMappings);
         }
-        
-        when(elasticsearchClient.indexExists(firstIndexName))
-                .thenReturn(false);
+
+        if (!secondIndexComesFirst) {
+            when(elasticsearchClient.indexExists(firstIndexName))
+                    .thenReturn(false);
+        }
         when(elasticsearchClient.indexExists(secondIndexName))
                 .thenReturn(false);
 
-        when(jsonContentExtractor.extractJsonContent(firstIndexQueryFilePath))
-                .thenReturn(firstIndexFromFileQuery);
-        when(jsonContentExtractor.extractJsonContent(secondIndexQueryFilePath))
+
+        if (!secondIndexComesFirst) {
+            when(jsonContentExtractor.extractJsonContent(firstIndexJsonFilePath))
+                    .thenReturn(firstIndexFromFileQuery);
+        }
+        when(jsonContentExtractor.extractJsonContent(secondIndexJsonFilePath))
                 .thenReturn(secondIndexFromFileQuery);
 
-        doNothing().when(elasticsearchClient).createIndex(firstIndexName, firstIndexFromFileQuery);
+        if (!secondIndexComesFirst) {
+            doNothing().when(elasticsearchClient).createIndex(firstIndexName, firstIndexFromFileQuery);
+        }
         doThrow(new RuntimeException()).when(elasticsearchClient).createIndex(secondIndexName, secondIndexFromFileQuery);
 
         // when, then
-        assertThatThrownBy(() -> indexCreator.createIndexes(indexToCreateQueryFileMappings));
+        assertThatThrownBy(() -> indexCreatorImpl.createIndexes(indexToCreateQueryFileMappings));
     }
 }

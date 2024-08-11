@@ -16,7 +16,7 @@ import java.util.List;
 import static java.util.Map.entry;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AutoConfigurationIntTests {
+public class AutoConfigurationIntegrationTests {
 
     private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
             .withConfiguration(

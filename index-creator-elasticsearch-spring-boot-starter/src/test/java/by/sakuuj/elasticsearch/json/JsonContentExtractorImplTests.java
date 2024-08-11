@@ -1,13 +1,11 @@
 package by.sakuuj.elasticsearch.json;
 
-import by.sakuuj.elasticsearch.IndexCreatorAutoConfiguration;
 import by.sakuuj.elasticsearch.file.ToStringFileReader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -17,18 +15,17 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {IndexCreatorAutoConfiguration.class})
-class JsonContentExtractorTests {
+@ExtendWith(MockitoExtension.class)
+class JsonContentExtractorImplTests {
 
-    @MockBean
+    @Mock
     private ToStringFileReader toStringFileReader;
 
-    @MockBean
+    @Mock
     private JsonValidator jsonValidator;
 
-    @Autowired
-    private JsonContentExtractor jsonContentExtractor;
+    @InjectMocks
+    private JsonContentExtractorImpl jsonContentExtractorImpl;
 
     @Test
     void shouldThrowExceptionIfFileIsNotReadable() {
@@ -39,7 +36,7 @@ class JsonContentExtractorTests {
         when(toStringFileReader.read(eq(fileName), any()))
                 .thenThrow(new RuntimeException(expectedExceptionMsg));
 
-        assertThatThrownBy(() -> jsonContentExtractor.extractJsonContent(fileName))
+        assertThatThrownBy(() -> jsonContentExtractorImpl.extractJsonContent(fileName))
                 .hasMessage(expectedExceptionMsg);
     }
 
@@ -54,7 +51,7 @@ class JsonContentExtractorTests {
         String expectedExceptionMsg = "INVALID";
         doThrow(new RuntimeException(expectedExceptionMsg)).when(jsonValidator).validate(fileContent);
 
-        assertThatThrownBy(() -> jsonContentExtractor.extractJsonContent(fileName))
+        assertThatThrownBy(() -> jsonContentExtractorImpl.extractJsonContent(fileName))
                 .hasMessage(expectedExceptionMsg);
     }
 
@@ -68,6 +65,6 @@ class JsonContentExtractorTests {
                 .thenReturn(fileContent);
         doNothing().when(jsonValidator).validate(fileContent);
 
-        assertThatNoException().isThrownBy(() -> jsonContentExtractor.extractJsonContent(fileName));
+        assertThatNoException().isThrownBy(() -> jsonContentExtractorImpl.extractJsonContent(fileName));
     }
 }

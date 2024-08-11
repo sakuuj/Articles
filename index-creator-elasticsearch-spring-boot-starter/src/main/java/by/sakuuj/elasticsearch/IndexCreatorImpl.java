@@ -14,18 +14,18 @@ public class IndexCreatorImpl implements IndexCreator{
     private final IndexCreatorElasticsearchClient elasticsearchClient;
 
     @Override
-    public void createIndexes(List<Map.Entry<String, String>> indexToCreateQueryFilePairs) {
-        indexToCreateQueryFilePairs.forEach(pair ->
+    public void createIndexes(List<Map.Entry<String, String>> indexToJsonFilePairs) {
+        indexToJsonFilePairs.forEach(pair ->
         {
             String indexName = pair.getKey();
             if (elasticsearchClient.indexExists(indexName)) {
                 return;
             }
 
-            String createQueryFile = pair.getValue();
-            String createIndexQuery = jsonContentExtractor.extractJsonContent(createQueryFile);
+            String jsonFile = pair.getValue();
+            String jsonQuery = jsonContentExtractor.extractJsonContent(jsonFile);
 
-            elasticsearchClient.createIndex(indexName, createIndexQuery);
+            elasticsearchClient.createIndex(indexName, jsonQuery);
         });
     }
 }

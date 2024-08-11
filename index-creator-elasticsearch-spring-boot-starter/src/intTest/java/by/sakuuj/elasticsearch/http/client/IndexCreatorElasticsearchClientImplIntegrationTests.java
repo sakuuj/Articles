@@ -10,6 +10,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -32,7 +33,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {IndexCreatorAutoConfiguration.class})
-class IndexCreatorElasticsearchClientIntTests {
+class IndexCreatorElasticsearchClientImplIntegrationTests {
 
     private static final String ELASTICSEARCH_USERNAME = "elasticxxcz";
     private static final String ELASTICSEARCH_PASSWORD = "elastic1czz";
@@ -58,6 +59,13 @@ class IndexCreatorElasticsearchClientIntTests {
     @BeforeAll
     static void configureWireMockClient() {
         WireMock.configureFor(ELASTICSEARCH_HOST, wireMock.getPort());
+    }
+
+    @Test
+    void shouldAutowireIndexCreatorElasticsearchClientImpl() {
+
+        assertThat(AopUtils.getTargetClass(elasticsearchClient))
+                .isSameAs(IndexCreatorElasticsearchClientImpl.class);
     }
 
     @Test

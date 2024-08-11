@@ -16,7 +16,6 @@ import static org.junit.jupiter.params.provider.Arguments.arguments;
 
 public class IndexCreatorPropertiesTests {
 
-
     @Test
     void shouldReturnEmptyListIfNoPropertiesProvided() {
         // given

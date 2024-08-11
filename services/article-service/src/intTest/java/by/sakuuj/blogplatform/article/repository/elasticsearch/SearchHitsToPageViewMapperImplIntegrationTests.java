@@ -7,8 +7,10 @@ import by.sakuuj.blogplatform.article.repository.PageView;
 import by.sakuuj.testcontainers.ElasticsearchContainerLauncher;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
@@ -32,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
         DataSourceAutoConfiguration.class
 })
 @SpringBootTest(classes = ArticleServiceApplication.class)
-class SearchHitsToPageViewMapperIntegrationTests extends ElasticsearchContainerLauncher {
+class SearchHitsToPageViewMapperImplIntegrationTests extends ElasticsearchContainerLauncher {
 
     @Autowired
     private SearchHitsToPageViewMapper searchHitsToPageViewMapper;
@@ -48,6 +50,13 @@ class SearchHitsToPageViewMapperIntegrationTests extends ElasticsearchContainerL
         articleDocumentRepository.deleteAll(RefreshPolicy.IMMEDIATE);
         Iterable<ArticleDocument> allDocuments = articleDocumentRepository.findAll();
         assertThat(allDocuments.iterator().hasNext()).isFalse();
+    }
+
+    @Test
+    void shouldAutowireSearchHitsToPageViewMapperImpl() {
+
+        assertThat(AopUtils.getTargetClass(searchHitsToPageViewMapper))
+                .isSameAs(SearchHitsToPageViewMapperImpl.class);
     }
 
     @ParameterizedTest

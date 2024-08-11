@@ -1,20 +1,17 @@
 package by.sakuuj.blogplatform.article.services;
 
-import by.sakuuj.blogplatform.article.ArticleServiceApplication;
 import by.sakuuj.blogplatform.article.ArticleTestDataBuilder;
 import by.sakuuj.blogplatform.article.controller.RequestedPage;
 import by.sakuuj.blogplatform.article.entities.ArticleDocument;
 import by.sakuuj.blogplatform.article.repository.PageView;
 import by.sakuuj.blogplatform.article.repository.elasticsearch.ArticleDocumentRepository;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
@@ -31,19 +28,14 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@EnableAutoConfiguration(exclude = {
-        JpaRepositoriesAutoConfiguration.class,
-        DataSourceAutoConfiguration.class
-})
-@SpringBootTest(classes = ArticleServiceApplication.class)
-public class ArticleDocumentServiceTests {
+@ExtendWith(MockitoExtension.class)
+public class ArticleDocumentServiceImplTests {
 
-
-    @MockBean
+    @Mock
     private ArticleDocumentRepository articleDocumentRepository;
 
-    @Autowired
-    private ArticleDocumentService articleDocumentService;
+    @InjectMocks
+    private ArticleDocumentServiceImpl articleDocumentService;
 
     @Captor
     private ArgumentCaptor<Pageable> pageableCaptor;

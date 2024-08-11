@@ -1,12 +1,7 @@
 package by.sakuuj.elasticsearch.file;
 
-import by.sakuuj.elasticsearch.IndexCreatorAutoConfiguration;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -15,12 +10,9 @@ import java.nio.file.Path;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = IndexCreatorAutoConfiguration.class)
-class ToStringFileReaderIntTests {
+class ToStringFileReaderImplIntegrationTests {
 
-    @Autowired
-    private ToStringFileReader toStringFileReader;
+    private final ToStringFileReaderImpl toStringFileReader = new ToStringFileReaderImpl();
 
     private static final Charset CHARSET = StandardCharsets.UTF_8;
 
