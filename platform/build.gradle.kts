@@ -7,7 +7,7 @@ javaPlatform {
     allowDependencies()
 }
 
-group = "by.sakuuj.blogplatform"
+group = "by.sakuuj.blogsite"
 version = "0.1"
 
 repositories {

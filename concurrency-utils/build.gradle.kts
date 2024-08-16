@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.lombok)
 }
 
-group = "by.sakuuj.blogplatform"
+group = "by.sakuuj.blogsite"
 version = "0.1"
 
 repositories {
