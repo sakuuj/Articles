@@ -1,8 +1,8 @@
 package by.sakuuj.annotations;
 
-import by.sakuuj.blogplatform.article.ArticleServiceApplication;
-import by.sakuuj.blogplatform.article.configs.ElasticsearchConfig;
-import by.sakuuj.blogplatform.article.configs.aop.ElasticsearchFixDeadlockAspect;
+import by.sakuuj.blogsite.article.ArticleServiceApplication;
+import by.sakuuj.blogsite.article.configs.ElasticsearchConfig;
+import by.sakuuj.blogsite.article.configs.aop.ElasticsearchFixDeadlockAspect;
 import by.sakuuj.elasticsearch.IndexCreatorAutoConfiguration;
 import by.sakuuj.testconfigs.ElasticsearchTestConfig;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
