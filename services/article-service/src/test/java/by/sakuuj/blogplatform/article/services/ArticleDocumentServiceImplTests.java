@@ -2,7 +2,7 @@ package by.sakuuj.blogplatform.article.services;
 
 import by.sakuuj.blogplatform.article.ArticleTestDataBuilder;
 import by.sakuuj.blogplatform.article.controller.RequestedPage;
-import by.sakuuj.blogplatform.article.entities.ArticleDocument;
+import by.sakuuj.blogplatform.article.entities.elasticsearch.ArticleDocument;
 import by.sakuuj.blogplatform.article.repository.PageView;
 import by.sakuuj.blogplatform.article.repository.elasticsearch.ArticleDocumentRepository;
 import org.junit.jupiter.api.Test;
@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -121,10 +120,7 @@ public class ArticleDocumentServiceImplTests {
         ArticleTestDataBuilder secondTestDataBuilder = ArticleTestDataBuilder.anArticle()
                 .withId(UUID.fromString("e1cfb957-f8a3-470e-b340-ca26563543c5"))
                 .withTitle("SOME TITLE")
-                .withContent("SOME CONTENT")
-                .withTopics(List.of("TOPIC 1", "TOPIC 2", "etc."))
-                .withDatePublishedOn(LocalDateTime.MIN)
-                .withDateUpdatedOn(LocalDateTime.MIN.plusDays(1));
+                .withContent("SOME CONTENT");
 
         UUID expectedFirstId = firstTestDataBuilder.getId();
         UUID expectedSecondId = secondTestDataBuilder.getId();
@@ -165,10 +161,7 @@ public class ArticleDocumentServiceImplTests {
         ArticleTestDataBuilder secondTestDataBuilder = ArticleTestDataBuilder.anArticle()
                 .withId(UUID.fromString("e1cfb957-f8a3-470e-b340-ca26563543c5"))
                 .withTitle("SOME TITLE")
-                .withContent("SOME CONTENT")
-                .withTopics(List.of("TOPIC 1", "TOPIC 2", "etc."))
-                .withDatePublishedOn(LocalDateTime.MIN)
-                .withDateUpdatedOn(LocalDateTime.MIN.plusDays(1));
+                .withContent("SOME CONTENT");
 
         UUID expectedFirstId = firstTestDataBuilder.getId();
         UUID expectedSecondId = secondTestDataBuilder.getId();

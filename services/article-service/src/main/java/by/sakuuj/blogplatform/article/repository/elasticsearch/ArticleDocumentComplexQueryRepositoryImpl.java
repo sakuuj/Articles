@@ -1,6 +1,6 @@
 package by.sakuuj.blogplatform.article.repository.elasticsearch;
 
-import by.sakuuj.blogplatform.article.entities.ArticleDocument;
+import by.sakuuj.blogplatform.article.entities.elasticsearch.ArticleDocument;
 import by.sakuuj.blogplatform.article.repository.PageView;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

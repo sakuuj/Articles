@@ -1,7 +1,7 @@
 package by.sakuuj.blogplatform.article.services;
 
 import by.sakuuj.blogplatform.article.controller.RequestedPage;
-import by.sakuuj.blogplatform.article.entities.ArticleDocument;
+import by.sakuuj.blogplatform.article.entities.elasticsearch.ArticleDocument;
 import by.sakuuj.blogplatform.article.repository.PageView;
 import by.sakuuj.blogplatform.article.repository.elasticsearch.ArticleDocumentRepository;
 import by.sakuuj.blogplatform.article.utils.PagingUtils;

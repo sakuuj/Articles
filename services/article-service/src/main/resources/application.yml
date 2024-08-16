@@ -3,14 +3,31 @@ server.tomcat.threads.max: 8
 
 springdoc.swagger-ui.path: /swagger
 
+spring.aop.proxy-target-class: true
 spring.elasticsearch.password: ignored
 spring.elasticsearch.username: ignored
-
-spring.aop.proxy-target-class: true
-
 spring.elasticsearch.connection-timeout: 5s
 spring.elasticsearch.socket-timeout: 3s
+
+spring.jpa.hibernate.ddl-auto: validate
+
+spring.liquibase.change-log: liquibase/changelog_root.yml
+
+spring.datasource.url: jdbc:postgresql://127.0.0.1:5432/postgres
+spring.datasource.username: postgres
+spring.datasource.password: postgres
 
 spring.threads.virtual.enabled: true
 
 logging.level.tracer: trace
+
+logging.level.org.hibernate.SQL: DEBUG
+#logging.level.org.hibernate.type.descriptor.sql.BasicBinder: DEBUG
+logging.level.org.springframework.orm.jpa.JpaTransactionManager: DEBUG
+
+#spring.datasource.hikari.auto-commit: false
+
+spring.jpa.properties.hibernate.format_sql: true
+#spring.jpa.properties.hibernate.show_sql: true
+
+#hibernate.connection

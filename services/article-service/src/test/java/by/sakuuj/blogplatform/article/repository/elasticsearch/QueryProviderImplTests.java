@@ -1,6 +1,6 @@
 package by.sakuuj.blogplatform.article.repository.elasticsearch;
 
-import by.sakuuj.blogplatform.article.entities.ArticleDocument;
+import by.sakuuj.blogplatform.article.entities.elasticsearch.ArticleDocument;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

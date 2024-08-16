@@ -5,7 +5,7 @@ plugins {
     alias(libs.plugins.springBoot)
 }
 
-group = "by.sakuuj.blogplatform"
+group = "by.sakuuj.blogsite"
 version = "0.1"
 
 repositories {
@@ -18,26 +18,31 @@ dependencies {
     implementation(platform(project(":platform")))
     testAnnotationProcessor(platform(project(":platform")))
 
+    compileOnly("org.projectlombok:lombok")
+    compileOnly("org.mapstruct:mapstruct")
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.mapstruct:mapstruct-processor")
     annotationProcessor("org.projectlombok:lombok-mapstruct-binding")
-    compileOnly("org.projectlombok:lombok")
-    implementation("org.mapstruct:mapstruct")
-    implementation("by.sakuuj.elasticsearch:index-creator-elasticsearch-spring-boot-starter")
-    implementation(project(":concurrency-utils"))
+
+//    implementation(project(":concurrency-utils"))
+    implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+    implementation("by.sakuuj.elasticsearch:index-creator-elasticsearch-spring-boot-starter")
     runtimeOnly("org.postgresql:postgresql")
 
     testAnnotationProcessor("org.projectlombok:lombok")
+    testCompileOnly("org.mapstruct:mapstruct")
     testCompileOnly("org.projectlombok:lombok")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+
+    intTestImplementation("com.h2database:h2")
     intTestImplementation("org.testcontainers:postgresql")
     intTestImplementation("org.testcontainers:junit-jupiter")
     intTestImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
@@ -52,7 +57,6 @@ idea {
 }
 
 val CUSTOM_SYSTEM_PROPS = mapOf(
-    "user.timezone" to "UTC",
     "jdk.virtualThreadScheduler.maxPoolSize" to "8",
     "jdk.tracePinnedThreads" to "full"
 )

@@ -1,8 +1,8 @@
 package by.sakuuj.blogplatform.article.repository.elasticsearch;
 
-import by.sakuuj.blogplatform.article.ArticleServiceApplication;
+import by.sakuuj.annotations.ElasticsearchTest;
 import by.sakuuj.blogplatform.article.ArticleTestDataBuilder;
-import by.sakuuj.blogplatform.article.entities.ArticleDocument;
+import by.sakuuj.blogplatform.article.entities.elasticsearch.ArticleDocument;
 import by.sakuuj.blogplatform.article.repository.PageView;
 import by.sakuuj.testcontainers.ElasticsearchContainerLauncher;
 import org.assertj.core.api.Assertions;
@@ -12,15 +12,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.RefreshPolicy;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -29,11 +27,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@EnableAutoConfiguration(exclude = {
-        JpaRepositoriesAutoConfiguration.class,
-        DataSourceAutoConfiguration.class
-})
-@SpringBootTest(classes = ArticleServiceApplication.class)
+@ElasticsearchTest
 class SearchHitsToPageViewMapperImplIntegrationTests extends ElasticsearchContainerLauncher {
 
     @Autowired
@@ -44,6 +38,17 @@ class SearchHitsToPageViewMapperImplIntegrationTests extends ElasticsearchContai
 
     @Autowired
     private ElasticsearchOperations elasticsearchOperations;
+
+    @DynamicPropertySource
+    static void setDynamicProps(DynamicPropertyRegistry registry) {
+        registry.add("by.sakuuj.elasticsearch.index-creator.enable", () -> "true");
+        registry.add("by.sakuuj.elasticsearch.index-creator.uri", () -> "http://" + getFullContainerUri());
+        registry.add("by.sakuuj.elasticsearch.index-creator.username", () -> ELASTICSEARCH_USERNAME);
+        registry.add("by.sakuuj.elasticsearch.index-creator.password", () -> ELASTICSEARCH_PASSWORD);
+        registry.add("by.sakuuj.elasticsearch.index-creator.index-to-json-file-pairs", () -> List.of(
+                ELASTICSEARCH_INDEX_NAME + "<->repositories/elasticsearch/createArticlesIndex.json"
+        ));
+    }
 
     @AfterEach
     void removeAllDocumentsFromIndex() {

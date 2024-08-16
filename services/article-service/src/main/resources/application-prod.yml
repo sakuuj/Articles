@@ -10,3 +10,4 @@ by.sakuuj.elasticsearch.index-creator.index-to-json-file-pairs:
   - "articles<->elasticsearchQueries/createArticlesIndex.json"
   - "articles2<->elasticsearchQueries/createArticlesIndex.json"
 
+by.sakuuj.elasticsearch.index-creator.enable: false

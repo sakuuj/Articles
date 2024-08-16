@@ -2,8 +2,14 @@ package by.sakuuj.blogplatform.article;
 
 import by.sakuuj.blogplatform.article.dtos.ArticleRequest;
 import by.sakuuj.blogplatform.article.dtos.ArticleResponse;
-import by.sakuuj.blogplatform.article.entities.ArticleDocument;
-import by.sakuuj.blogplatform.article.entities.ArticleEntity;
+import by.sakuuj.blogplatform.article.dtos.PersonResponse;
+import by.sakuuj.blogplatform.article.dtos.TopicRequest;
+import by.sakuuj.blogplatform.article.dtos.TopicResponse;
+import by.sakuuj.blogplatform.article.entities.elasticsearch.ArticleDocument;
+import by.sakuuj.blogplatform.article.entities.jpa.ArticleEntity;
+import by.sakuuj.blogplatform.article.entities.jpa.PersonEntity;
+import by.sakuuj.blogplatform.article.entities.jpa.TopicEntity;
+import by.sakuuj.blogplatform.article.entities.jpa.embeddable.ModificationAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,8 +18,10 @@ import lombok.With;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @With
 @Getter
@@ -43,28 +51,69 @@ public class ArticleTestDataBuilder {
             compiled.
             """;
 
-    private List<String> topics = List.of("Java", "Programming", "JIT");
-
-    private LocalDateTime datePublishedOn = LocalDateTime.of(
-            LocalDate.of(2012, 5, 10),
-            LocalTime.of(12, 59, 10)
+    private List<TopicTestDataBuilder> topicBuilders = List.of(
+            TopicTestDataBuilder.aTopic(),
+            TopicTestDataBuilder.aTopic()
+                    .withId(UUID.fromString("222c56a6-b52c-4b9a-aad7-a5f7baa07a98"))
+                    .withName("Java")
     );
 
-    private LocalDateTime dateUpdatedOn = LocalDateTime.of(
-            LocalDate.of(2012, 5, 10),
-            LocalTime.of(12, 59, 10)
-    );
+    private List<TopicEntity> topics = topicBuilders.stream()
+            .map(TopicTestDataBuilder::build)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    private List<TopicRequest> topicRequests = topicBuilders.stream()
+            .map(TopicTestDataBuilder::buildRequest)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    private List<TopicResponse> topicResponses = topicBuilders.stream()
+            .map(TopicTestDataBuilder::buildResponse)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    private ModificationAudit modificationAudit = ModificationAudit.builder()
+            .createdAt(LocalDateTime.of(
+                    LocalDate.of(2012, 5, 10),
+                    LocalTime.of(12, 59, 10)
+            ))
+            .updatedAt(LocalDateTime.of(
+                    LocalDate.of(2013, 6, 11),
+                    LocalTime.of(9, 39, 11)
+            ))
+            .build();
+
+    private LocalDateTime datePublishedOn = modificationAudit.getCreatedAt();
+
+    private PersonTestDataBuilder authorBuilder = PersonTestDataBuilder.aPerson();
+
+    private PersonEntity author = authorBuilder.build();
+    private PersonResponse authorResponseDto = authorBuilder.buildResponse();
 
     public ArticleResponse buildResponse() {
-        return new ArticleResponse(id, title, content, topics, datePublishedOn, dateUpdatedOn);
+
+        return ArticleResponse.builder()
+                .id(id)
+                .title(title)
+                .content(content)
+                .topics(topicResponses)
+                .createdAt(modificationAudit.getCreatedAt())
+                .updatedAt(modificationAudit.getUpdatedAt())
+                .author(authorResponseDto)
+                .build();
     }
 
     public ArticleRequest buildRequest() {
-        return new ArticleRequest(title, content, topics);
+        return new ArticleRequest(title, content, topicRequests);
     }
 
     public ArticleEntity build() {
-        return new ArticleEntity(id, title, content, datePublishedOn, dateUpdatedOn);
+
+        return ArticleEntity.builder()
+                .id(id)
+                .title(title)
+                .content(content)
+                .modificationAudit(modificationAudit)
+                .author(author)
+                .build();
     }
 
     public ArticleDocument buildDocument() {

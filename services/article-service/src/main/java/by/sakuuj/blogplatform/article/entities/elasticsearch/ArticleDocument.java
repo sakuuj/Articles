@@ -1,4 +1,4 @@
-package by.sakuuj.blogplatform.article.entities;
+package by.sakuuj.blogplatform.article.entities.elasticsearch;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,13 +24,6 @@ import java.util.UUID;
 @Document(indexName = "articles", createIndex = false)
 public class ArticleDocument {
 
-    public static class ElasticsearchFieldNames {
-        public static final String ID = "id";
-        public static final String TITLE = "title";
-        public static final String CONTENT = "content";
-        public static final String DATE_PUBLISHED = "date_published";
-    }
-
     @Id
     private UUID id;
 
@@ -40,6 +33,17 @@ public class ArticleDocument {
     @Field(name = ElasticsearchFieldNames.CONTENT, type = FieldType.Text)
     private String content;
 
-    @Field(name = ElasticsearchFieldNames.DATE_PUBLISHED, type = FieldType.Date, format = DateFormat.strict_date_hour_minute_second)
+    @Field(
+            name = ElasticsearchFieldNames.DATE_PUBLISHED,
+            type = FieldType.Date,
+            format = DateFormat.strict_date_hour_minute_second
+    )
     private LocalDateTime datePublishedOn;
+
+    public static class ElasticsearchFieldNames {
+        public static final String ID = "id";
+        public static final String TITLE = "title";
+        public static final String CONTENT = "content";
+        public static final String DATE_PUBLISHED = "date_published";
+    }
 }
