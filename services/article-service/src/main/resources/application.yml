@@ -21,7 +21,7 @@ spring.threads.virtual.enabled: true
 
 logging.level.tracer: trace
 
-logging.level.org.hibernate.SQL: DEBUG
+#logging.level.org.hibernate.SQL: DEBUG
 #logging.level.org.hibernate.type.descriptor.sql.BasicBinder: DEBUG
 logging.level.org.springframework.orm.jpa.JpaTransactionManager: DEBUG
 

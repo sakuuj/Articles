@@ -4,8 +4,9 @@ import by.sakuuj.annotations.MapperTest;
 import by.sakuuj.blogsite.article.TopicTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
-import by.sakuuj.blogsite.article.entities.jpa.TopicEntity;
-import by.sakuuj.blogsite.article.entities.jpa.embeddable.ModificationAudit;
+import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleTopicEntity;
+import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,13 +22,14 @@ class TopicMapperTests {
     void shouldMapToEntity() {
 
         // given
-        TopicTestDataBuilder topicTestDataBuilder = TopicTestDataBuilder
+        var testBuilder = TopicTestDataBuilder
                 .aTopic()
                 .withId(null)
+                .withVersion((short) 0)
                 .withModificationAudit(new ModificationAudit());
 
-        TopicRequest topicRequest = topicTestDataBuilder.buildRequest();
-        TopicEntity expectedEntity = topicTestDataBuilder.build();
+        TopicRequest topicRequest = testBuilder.buildRequest();
+        TopicEntity expectedEntity = testBuilder.build();
 
         // when
         TopicEntity actualEntity = topicMapper.toEntity(topicRequest);
@@ -38,14 +40,33 @@ class TopicMapperTests {
     }
 
     @Test
+    void shouldMapArticleTopicToEntity() {
+
+        // given
+        var testBuilder = TopicTestDataBuilder.aTopic();
+
+        TopicEntity expectedEntity = testBuilder.build();
+
+        ArticleTopicEntity articleTopicEntity = ArticleTopicEntity.builder()
+                .topic(expectedEntity)
+                .build();
+
+        // when
+        TopicEntity actualEntity = topicMapper.toEntity(articleTopicEntity);
+
+        // then
+        assertThat(actualEntity).usingRecursiveComparison()
+                .isEqualTo(expectedEntity);
+    }
+
+    @Test
     void shouldMapToResponse() {
 
         // given
-        TopicTestDataBuilder topicTestDataBuilder = TopicTestDataBuilder
-                .aTopic();
+        var testBuilder = TopicTestDataBuilder.aTopic();
 
-        TopicEntity entity = topicTestDataBuilder.build();
-        TopicResponse expectedResponse = topicTestDataBuilder.buildResponse();
+        TopicEntity entity = testBuilder.build();
+        TopicResponse expectedResponse = testBuilder.buildResponse();
 
         // when
         TopicResponse actual = topicMapper.toResponse(entity);
@@ -54,5 +75,29 @@ class TopicMapperTests {
         assertThat(actual).usingRecursiveComparison()
                 .isEqualTo(expectedResponse);
 
+    }
+
+    @Test
+    void shouldUpdateEntity() {
+
+        // given
+        var testBuilder = TopicTestDataBuilder.aTopic();
+
+        TopicEntity oldTopic = testBuilder
+                .withName("old name")
+                .build();
+
+        TopicTestDataBuilder testBuilderUpdated = testBuilder
+                .withName("new name");
+
+        TopicRequest updateData = testBuilderUpdated.buildRequest();
+        TopicEntity expected = testBuilderUpdated.build();
+
+        // when
+        topicMapper.updateEntity(oldTopic, updateData);
+
+        // then
+        assertThat(oldTopic).usingRecursiveComparison()
+                .isEqualTo(expected);
     }
 }

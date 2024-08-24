@@ -2,9 +2,9 @@ package by.sakuuj.blogsite.article.repository.elasticsearch;
 
 import by.sakuuj.annotations.ElasticsearchTest;
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
-import by.sakuuj.blogsite.article.entities.elasticsearch.ArticleDocument;
-import by.sakuuj.blogsite.article.repository.PageView;
-import by.sakuuj.testcontainers.ElasticsearchContainerLauncher;
+import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
+import by.sakuuj.blogsite.article.paging.PageView;
+import by.sakuuj.testcontainers.ElasticsearchSingletonContainerLauncher;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ElasticsearchTest
-class SearchHitsToPageViewMapperImplIntegrationTests extends ElasticsearchContainerLauncher {
+class SearchHitsToPageViewMapperImplIntegrationTests extends ElasticsearchSingletonContainerLauncher {
 
     @Autowired
     private SearchHitsToPageViewMapper searchHitsToPageViewMapper;

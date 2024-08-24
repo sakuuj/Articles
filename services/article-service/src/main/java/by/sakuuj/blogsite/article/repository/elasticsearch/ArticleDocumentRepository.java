@@ -1,6 +1,6 @@
 package by.sakuuj.blogsite.article.repository.elasticsearch;
 
-import by.sakuuj.blogsite.article.entities.elasticsearch.ArticleDocument;
+import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 

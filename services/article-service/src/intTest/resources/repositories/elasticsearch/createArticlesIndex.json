@@ -1,10 +1,4 @@
 {
-  "settings": {
-    "index": {
-      "sort.field": "date_published",
-      "sort.order": "desc"
-    }
-  },
   "mappings": {
     "dynamic": "strict",
     "properties": {

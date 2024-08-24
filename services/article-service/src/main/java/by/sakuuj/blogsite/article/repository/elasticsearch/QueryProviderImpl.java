@@ -1,6 +1,6 @@
 package by.sakuuj.blogsite.article.repository.elasticsearch;
 
-import by.sakuuj.blogsite.article.entities.elasticsearch.ArticleDocument;
+import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.utils.PagingUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ResourceUtil;

@@ -4,8 +4,8 @@ import by.sakuuj.annotations.MapperTest;
 import by.sakuuj.blogsite.article.PersonTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.PersonRequest;
 import by.sakuuj.blogsite.article.dtos.PersonResponse;
-import by.sakuuj.blogsite.article.entities.jpa.PersonEntity;
-import by.sakuuj.blogsite.article.entities.jpa.embeddable.ModificationAudit;
+import by.sakuuj.blogsite.article.entity.jpa.entities.PersonEntity;
+import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,13 +21,14 @@ public class PersonMapperTests {
     void shouldMapToEntity() {
 
         // given
-        PersonTestDataBuilder personTestDataBuilder = PersonTestDataBuilder
+        var testBuilder = PersonTestDataBuilder
                 .aPerson()
                 .withId(null)
+                .withVersion((short) 0)
                 .withModificationAudit(new ModificationAudit());
 
-        PersonRequest personRequest = personTestDataBuilder.buildRequest();
-        PersonEntity expectedEntity = personTestDataBuilder.build();
+        PersonRequest personRequest = testBuilder.buildRequest();
+        PersonEntity expectedEntity = testBuilder.build();
 
         // when
         PersonEntity actualEntity = personMapper.toEntity(personRequest);
@@ -41,11 +42,11 @@ public class PersonMapperTests {
     void shouldMapToResponse() {
 
         // given
-        PersonTestDataBuilder personTestDataBuilder = PersonTestDataBuilder
+        var testBuilder = PersonTestDataBuilder
                 .aPerson();
 
-        PersonEntity entity = personTestDataBuilder.build();
-        PersonResponse expectedResponse = personTestDataBuilder.buildResponse();
+        PersonEntity entity = testBuilder.build();
+        PersonResponse expectedResponse = testBuilder.buildResponse();
 
         // when
         PersonResponse actual = personMapper.toResponse(entity);

@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.article.mappers;
 
-import by.sakuuj.blogsite.article.entities.jpa.ArticleEntity;
-import by.sakuuj.blogsite.article.entities.jpa.PersonEntity;
+import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.blogsite.article.entity.jpa.entities.PersonEntity;
 
 import java.util.UUID;
 

@@ -1,10 +1,14 @@
 package by.sakuuj.blogsite.article.utils;
 
-import by.sakuuj.blogsite.article.controller.RequestedPage;
+import by.sakuuj.blogsite.article.paging.RequestedPage;
+import by.sakuuj.blogsite.article.paging.PageView;
+import lombok.experimental.UtilityClass;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 
+@UtilityClass
 public class PagingUtils {
 
     public static Pageable addDescSort(Pageable pageable, String propertyToSortBy){
@@ -31,5 +35,16 @@ public class PagingUtils {
 
     public static Pageable toPageable(RequestedPage requestedPage) {
         return PageRequest.of(requestedPage.number(), requestedPage.size());
+    }
+
+    public static Pageable toPageable(RequestedPage requestedPage, Sort sort) {
+        return PageRequest.of(requestedPage.number(), requestedPage.size(), sort);
+    }
+
+    public static <T> PageView<T> toPageView(Slice<T> page) {
+
+        return PageView.ofContent(page.getContent())
+                .withSize(page.getSize())
+                .withNumber(page.getNumber());
     }
 }

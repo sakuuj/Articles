@@ -5,6 +5,21 @@ secrets:
     file: secrets/spring.elasticsearch.password
 
 services:
+  postgres_master:
+    container_name: postgres_master_bp
+    image: postgres:16.4
+    environment:
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - 127.0.0.1:5432:5432
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1gb
+
   elastic_search:
     secrets:
       - elastic_search_password

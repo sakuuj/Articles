@@ -2,8 +2,8 @@ package by.sakuuj.blogsite.article;
 
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
-import by.sakuuj.blogsite.article.entities.jpa.TopicEntity;
-import by.sakuuj.blogsite.article.entities.jpa.embeddable.ModificationAudit;
+import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -35,11 +35,14 @@ public class TopicTestDataBuilder {
             ))
             .build();
 
+    private short version = 4322;
+
     public TopicEntity build() {
 
         return TopicEntity.builder()
                 .id(id)
                 .name(name)
+                .version(version)
                 .modificationAudit(modificationAudit)
                 .build();
     }

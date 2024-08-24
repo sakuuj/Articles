@@ -5,11 +5,12 @@ import by.sakuuj.blogsite.article.dtos.ArticleResponse;
 import by.sakuuj.blogsite.article.dtos.PersonResponse;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
-import by.sakuuj.blogsite.article.entities.elasticsearch.ArticleDocument;
-import by.sakuuj.blogsite.article.entities.jpa.ArticleEntity;
-import by.sakuuj.blogsite.article.entities.jpa.PersonEntity;
-import by.sakuuj.blogsite.article.entities.jpa.TopicEntity;
-import by.sakuuj.blogsite.article.entities.jpa.embeddable.ModificationAudit;
+import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
+import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleTopicEntity;
+import by.sakuuj.blogsite.article.entity.jpa.entities.PersonEntity;
+import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -51,6 +52,8 @@ public class ArticleTestDataBuilder {
             compiled.
             """;
 
+    private short version = 4324;
+
     private List<TopicTestDataBuilder> topicBuilders = List.of(
             TopicTestDataBuilder.aTopic(),
             TopicTestDataBuilder.aTopic()
@@ -58,9 +61,20 @@ public class ArticleTestDataBuilder {
                     .withName("Java")
     );
 
+    private List<String> topicNames = topicBuilders.stream()
+            .map(TopicTestDataBuilder::getName)
+            .collect(Collectors.toCollection(ArrayList::new));
+
     private List<TopicEntity> topics = topicBuilders.stream()
             .map(TopicTestDataBuilder::build)
             .collect(Collectors.toCollection(ArrayList::new));
+
+    private List<ArticleTopicEntity> articleTopics = topicBuilders.stream()
+            .map(TopicTestDataBuilder::build)
+            .map(t -> ArticleTopicEntity.builder()
+                    .topic(t)
+                    .build()
+            ).collect(Collectors.toCollection(ArrayList::new));
 
     private List<TopicRequest> topicRequests = topicBuilders.stream()
             .map(TopicTestDataBuilder::buildRequest)
@@ -95,25 +109,33 @@ public class ArticleTestDataBuilder {
                 .title(title)
                 .content(content)
                 .topics(topicResponses)
+                .author(authorResponseDto)
                 .createdAt(modificationAudit.getCreatedAt())
                 .updatedAt(modificationAudit.getUpdatedAt())
-                .author(authorResponseDto)
                 .build();
     }
 
     public ArticleRequest buildRequest() {
-        return new ArticleRequest(title, content, topicRequests);
+        return new ArticleRequest(title, content);
     }
 
     public ArticleEntity build() {
 
-        return ArticleEntity.builder()
+        ArticleEntity built = ArticleEntity.builder()
                 .id(id)
                 .title(title)
-                .content(content)
-                .modificationAudit(modificationAudit)
                 .author(author)
+                .content(content)
+                .version(version)
+                .articleTopics(articleTopics)
+                .modificationAudit(modificationAudit)
                 .build();
+
+        if (built.getArticleTopics() != null) {
+            built.getArticleTopics().forEach(t -> t.setArticle(built));
+        }
+
+        return built;
     }
 
     public ArticleDocument buildDocument() {

@@ -1,12 +1,15 @@
 package by.sakuuj.blogsite.article.utils;
 
-import by.sakuuj.blogsite.article.controller.RequestedPage;
+import by.sakuuj.blogsite.article.PagingTestDataBuilder;
+import by.sakuuj.blogsite.article.paging.PageView;
+import by.sakuuj.blogsite.article.paging.RequestedPage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 
@@ -19,29 +22,60 @@ import static org.springframework.data.domain.Sort.Direction.DESC;
 
 class PagingUtilsTests {
 
+
+    @Test
+    void shouldTransformSliceToPageView() {
+        // given
+        List<String> expectedContent = List.of("abc", "bbc", "ccc");
+
+        PagingTestDataBuilder pagingBuilder = PagingTestDataBuilder.aPaging();
+
+        PageView<String> expected = pagingBuilder.aPageView(expectedContent);
+        Slice<String> slice = pagingBuilder.aSlice(expectedContent);
+
+        // when
+        PageView<String> actual = PagingUtils.toPageView(slice);
+
+        // then
+        assertThat(actual).isEqualTo(expected);
+    }
+
     @Test
     void shouldTransformRequestedPageToPageable() {
         // given
-        int expectedNumber = 5;
-        int expectedSize = 25;
-        RequestedPage requestedPage = RequestedPage.builder()
-                .number(expectedNumber)
-                .size(expectedSize)
-                .build();
+        PagingTestDataBuilder pagingBuilder = PagingTestDataBuilder.aPaging();
+
+        RequestedPage requestedPage = pagingBuilder.aRequestedPage();
+        Pageable expected = pagingBuilder.aPageable();
 
         // when
         Pageable actual = PagingUtils.toPageable(requestedPage);
 
         // then
-        assertThat(actual.getPageSize()).isEqualTo(expectedSize);
-        assertThat(actual.getPageNumber()).isEqualTo(expectedNumber);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    void shouldTransformRequestedPageAndSortToPageable() {
+        // given
+
+        RequestedPage requestedPage = PagingTestDataBuilder.aPaging().aRequestedPage();
+        Sort sort = Sort.by("some_property");
+
+        // when
+        Pageable actual = PagingUtils.toPageable(requestedPage, sort);
+
+        // then
+        assertThat(actual.getPageSize()).isEqualTo(requestedPage.size());
+        assertThat(actual.getPageNumber()).isEqualTo(requestedPage.number());
+        assertThat(actual.getSort()).isEqualTo(sort);
     }
 
     @Test
     void shouldAddSort_whenUnsorted() {
         // given
         Sort sortToAdd = Sort.by("propertyToSortBy");
-        Pageable initialPageable = PageRequest.of(0, 10);
+        Pageable initialPageable = PagingTestDataBuilder.aPaging().aPageable();
 
         // when
         assertThat(initialPageable.getSort().isUnsorted()).isTrue();
@@ -95,9 +129,6 @@ class PagingUtilsTests {
         Pageable actualPageable = PagingUtils.addSort(initialPageable, sortToAdd);
 
         // then
-        assertThat(actualPageable.getPageSize()).isEqualTo(initialPageable.getPageSize());
-        assertThat(actualPageable.getPageNumber()).isEqualTo(initialPageable.getPageNumber());
-
         assertThat(isPageableSortedByPropertyWithDirection(actualPageable, nameOfPropertyAlreadySortedBy, directionOfPropertyAlreadySortedBy))
                 .isTrue();
         assertThat(isPageableSortedByPropertyWithDirection(actualPageable, nameOfPropertyToSortBy, directionOfPropertyToSortBy))
@@ -127,9 +158,6 @@ class PagingUtilsTests {
         Pageable actualPageable = PagingUtils.addSort(initialPageable, sortToAdd);
 
         // then
-        assertThat(actualPageable.getPageSize()).isEqualTo(initialPageable.getPageSize());
-        assertThat(actualPageable.getPageNumber()).isEqualTo(initialPageable.getPageNumber());
-
         assertThat(isPageableSortedByPropertyWithDirection(actualPageable, nameOfPropertyToSortBy, directionOfPropertyToSortBy))
                 .isTrue();
     }

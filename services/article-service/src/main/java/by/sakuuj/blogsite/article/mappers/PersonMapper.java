@@ -2,7 +2,7 @@ package by.sakuuj.blogsite.article.mappers;
 
 import by.sakuuj.blogsite.article.dtos.PersonRequest;
 import by.sakuuj.blogsite.article.dtos.PersonResponse;
-import by.sakuuj.blogsite.article.entities.jpa.PersonEntity;
+import by.sakuuj.blogsite.article.entity.jpa.entities.PersonEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

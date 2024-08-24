@@ -1,8 +1,8 @@
 package by.sakuuj.blogsite.article.mappers;
 
-import by.sakuuj.blogsite.article.entities.jpa.ArticleEntity;
-import by.sakuuj.blogsite.article.entities.jpa.PersonEntity;
-import by.sakuuj.blogsite.article.repository.jpa.ArticleJpaRepository;
+import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.blogsite.article.entity.jpa.entities.PersonEntity;
+import by.sakuuj.blogsite.article.repository.jpa.ArticleRepository;
 import by.sakuuj.blogsite.article.repository.jpa.PersonJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -17,13 +17,13 @@ import java.util.UUID;
 public class JpaReferenceMapperImpl implements JpaReferenceMapper {
 
     private final PersonJpaRepository personJpaRepository;
-    private final ArticleJpaRepository articleJpaRepository;
+    private final ArticleRepository articleRepository;
 
     public PersonEntity getPersonReferenceById(UUID personId) {
         return personJpaRepository.getReferenceById(personId);
     }
 
     public ArticleEntity getArticleReferenceById(UUID articleId) {
-        return articleJpaRepository.getReferenceById(articleId);
+        return articleRepository.getReferenceById(articleId);
     }
 }

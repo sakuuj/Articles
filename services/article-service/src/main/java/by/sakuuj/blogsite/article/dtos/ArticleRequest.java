@@ -1,12 +1,13 @@
 package by.sakuuj.blogsite.article.dtos;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
-import java.util.List;
-
 @Builder
-public record ArticleRequest(String title,
-                             String content,
-                             List<TopicRequest> topics
+public record ArticleRequest(@NotBlank @Size(max = 100)
+                             String title,
+                             @NotBlank @Size(max = 1_000_000)
+                             String content
 ) {
 }
