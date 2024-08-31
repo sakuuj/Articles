@@ -10,6 +10,14 @@ import lombok.Getter;
 import java.util.Map;
 import java.util.UUID;
 
+/**
+ * <pre>
+ * Represents a custom id of the format:
+ *      &lt;prefix>:&lt;uuid-value>
+ * Prefixes depend on classes that CreationId works with and are defined
+ * in the filed {@link CreationId#entityClassToCreationIdPrefix}.
+ * </pre>
+ */
 @Getter
 @EqualsAndHashCode
 public class CreationId {
@@ -19,10 +27,10 @@ public class CreationId {
             TopicEntity.class, "topic:"
     );
 
-    private final String creationId;
+    private final String creationIdValue;
 
-    private CreationId(String creationId) {
-        this.creationId = creationId;
+    private CreationId(String creationIdValue) {
+        this.creationIdValue = creationIdValue;
     }
 
     public static CreationId of(Class<?> createdEntityClass, UUID createdEntityId) {
@@ -32,7 +40,7 @@ public class CreationId {
         String creationIdPrefix = entityClassToCreationIdPrefix.get(createdEntityClass);
 
         if (creationIdPrefix == null) {
-            throw new RuntimeException(
+            throw new IllegalArgumentException(
                     String.format("CreationId is not supported for a class '%s'", createdEntityClass.toString())
             );
         }
@@ -44,14 +52,14 @@ public class CreationId {
 
     @Override
     public String toString() {
-        return creationId;
+        return creationIdValue;
     }
 
     public static class Converter implements AttributeConverter<CreationId, String> {
 
         @Override
         public String convertToDatabaseColumn(CreationId attribute) {
-            return attribute.getCreationId();
+            return attribute.getCreationIdValue();
         }
 
         @Override

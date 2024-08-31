@@ -13,9 +13,7 @@ import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.entity.jpa.CreationId;
 import by.sakuuj.blogsite.article.entity.jpa.embeddable.ArticleTopicId;
 import by.sakuuj.blogsite.article.entity.jpa.embeddable.IdempotencyTokenId;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit_;
 import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity_;
 import by.sakuuj.blogsite.article.entity.jpa.entities.IdempotencyTokenEntity;
 import by.sakuuj.blogsite.article.exception.ExceptionMessage;
 import by.sakuuj.blogsite.article.exception.ServiceLayerException;
@@ -147,6 +145,14 @@ class ArticleServiceImplTests {
 
             verify(articleMapper).toResponse(expectedEntityFromRepo);
             verifyNoMoreInteractions(articleMapper);
+
+            verifyNoInteractions(
+                    articleServiceAuthorizer,
+                    dtoValidator,
+                    idempotencyTokenService,
+                    articleDocumentMapper,
+                    articleDocumentRepository
+            );
         }
 
         @Test
@@ -170,6 +176,14 @@ class ArticleServiceImplTests {
             verifyNoMoreInteractions(articleRepository);
 
             verifyNoMoreInteractions(articleMapper);
+
+            verifyNoInteractions(
+                    articleServiceAuthorizer,
+                    dtoValidator,
+                    idempotencyTokenService,
+                    articleDocumentMapper,
+                    articleDocumentRepository
+            );
         }
     }
 
@@ -181,33 +195,7 @@ class ArticleServiceImplTests {
         private ArgumentCaptor<Pageable> pageableArgumentCaptor;
 
         @Test
-        void shouldSetSortByCreatedAtDesc() {
-
-            // given
-            PagingTestDataBuilder pagingBuilder = PagingTestDataBuilder.aPaging();
-
-            when(articleRepository.findAll(any(Pageable.class)))
-                    .thenReturn(pagingBuilder.emptySlice());
-
-            RequestedPage requestedPage = pagingBuilder.aRequestedPage();
-
-            // when
-            articleServiceImpl.findAllSortedByCreatedAtDesc(requestedPage);
-
-            // then
-            verify(articleRepository).findAll(pageableArgumentCaptor.capture());
-            Pageable capturedValue = pageableArgumentCaptor.getValue();
-            Sort sort = capturedValue.getSort();
-
-            assertThat(sort.isSorted()).isTrue();
-
-            Sort.Order createdAtOrder = sort.getOrderFor(ArticleEntity_.MODIFICATION_AUDIT + "." + ModificationAudit_.CREATED_AT);
-            assertThat(createdAtOrder).isNotNull();
-            assertThat(createdAtOrder.isDescending()).isTrue();
-        }
-
-        @Test
-        void shouldRequestSpecifiedPageNumberAndPageSize() {
+        void shouldSetPageAndSortByCreatedAtDesc() {
 
             // given
             PagingTestDataBuilder pagingBuilder = PagingTestDataBuilder.aPaging();
@@ -226,6 +214,13 @@ class ArticleServiceImplTests {
 
             assertThat(pageable.getPageNumber()).isEqualTo(requestedPage.number());
             assertThat(pageable.getPageSize()).isEqualTo(requestedPage.size());
+            Sort sort = pageable.getSort();
+
+            assertThat(sort.isSorted()).isTrue();
+
+            Sort.Order createdAtOrder = sort.getOrderFor("modificationAudit.createdAt");
+            assertThat(createdAtOrder).isNotNull();
+            assertThat(createdAtOrder.isDescending()).isTrue();
         }
 
         @Test
@@ -244,8 +239,9 @@ class ArticleServiceImplTests {
 
             PagingTestDataBuilder pagingBuilder = PagingTestDataBuilder.aPaging();
 
-            Slice<ArticleEntity> expectedSlice = pagingBuilder
-                    .aSlice(List.of(firstExpectedFromRepo, secondExpectedFromRepo));
+            Slice<ArticleEntity> expectedSlice = pagingBuilder.aSlice(
+                    List.of(firstExpectedFromRepo, secondExpectedFromRepo)
+            );
 
             when(articleRepository.findAll(any(Pageable.class)))
                     .thenReturn(expectedSlice);
@@ -268,31 +264,14 @@ class ArticleServiceImplTests {
 
             verify(articleRepository).findAll(any());
             verify(articleMapper, times(2)).toResponse(any());
-        }
 
-        @Test
-        void shouldNotMap_whenNotFoundInRepo() {
-
-            // given
-            PagingTestDataBuilder pagingBuilder = PagingTestDataBuilder.aPaging();
-
-            Slice<ArticleEntity> expectedSlice = pagingBuilder.emptySlice();
-
-            when(articleRepository.findAll(any(Pageable.class)))
-                    .thenReturn(expectedSlice);
-
-            RequestedPage requestedPage = pagingBuilder.aRequestedPage();
-
-            // when
-            PageView<ArticleResponse> actual = articleServiceImpl.findAllSortedByCreatedAtDesc(requestedPage);
-
-            // then
-            assertThat(actual.content()).isEmpty();
-            assertThat(actual.number()).isEqualTo(expectedSlice.getNumber());
-            assertThat(actual.size()).isEqualTo(expectedSlice.getSize());
-
-            verify(articleRepository).findAll(any());
-            verifyNoInteractions(articleMapper);
+            verifyNoInteractions(
+                    articleServiceAuthorizer,
+                    dtoValidator,
+                    idempotencyTokenService,
+                    articleDocumentMapper,
+                    articleDocumentRepository
+            );
         }
     }
 
@@ -348,6 +327,14 @@ class ArticleServiceImplTests {
 
             verify(articleMapper, times(2)).toResponse(any());
             verifyNoMoreInteractions(articleMapper);
+
+            verifyNoInteractions(
+                    articleServiceAuthorizer,
+                    dtoValidator,
+                    idempotencyTokenService,
+                    articleDocumentMapper,
+                    articleDocumentRepository
+            );
         }
 
         @Test
@@ -377,6 +364,14 @@ class ArticleServiceImplTests {
             verify(articleRepository).findAllByTopicsAndSortByCreatedAtDesc(topicNames, requestedPage);
 
             verifyNoInteractions(articleMapper);
+
+            verifyNoInteractions(
+                    articleServiceAuthorizer,
+                    dtoValidator,
+                    idempotencyTokenService,
+                    articleDocumentMapper,
+                    articleDocumentRepository
+            );
         }
     }
 
@@ -448,6 +443,12 @@ class ArticleServiceImplTests {
             verify(articleMapper, times(2)).toResponse(any());
             verifyNoMoreInteractions(articleMapper);
 
+            verifyNoInteractions(
+                    articleServiceAuthorizer,
+                    dtoValidator,
+                    idempotencyTokenService,
+                    articleDocumentMapper
+            );
         }
 
         @Test
@@ -481,6 +482,13 @@ class ArticleServiceImplTests {
             verifyNoInteractions(txTemplate);
             verifyNoInteractions(articleRepository);
             verifyNoInteractions(articleMapper);
+
+            verifyNoInteractions(
+                    articleServiceAuthorizer,
+                    dtoValidator,
+                    idempotencyTokenService,
+                    articleDocumentMapper
+            );
         }
     }
 
@@ -535,6 +543,11 @@ class ArticleServiceImplTests {
 
             inOrder.verify(articleDocumentRepository).deleteById(idToDeleteBy);
             verifyNoMoreInteractions(articleDocumentRepository);
+
+            verifyNoInteractions(
+                    dtoValidator,
+                    articleDocumentMapper
+            );
         }
 
         @Test
@@ -569,6 +582,11 @@ class ArticleServiceImplTests {
             verifyNoInteractions(idempotencyTokenService);
 
             verifyNoInteractions(articleDocumentRepository);
+
+            verifyNoInteractions(
+                    dtoValidator,
+                    articleDocumentMapper
+            );
         }
     }
 
@@ -598,7 +616,7 @@ class ArticleServiceImplTests {
 
             doNothing().when(articleServiceAuthorizer).authorizeUpdateById(any(), any());
 
-            doNothing().when(dtoValidator).validateAndThrowIfInvalid(any());
+            doNothing().when(dtoValidator).validate(any());
 
             when(articleRepository.findById(any())).thenReturn(Optional.of(oldArticleEntity));
 
@@ -623,7 +641,7 @@ class ArticleServiceImplTests {
             inOrder.verify(articleServiceAuthorizer).authorizeUpdateById(eq(articleId), same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
 
-            inOrder.verify(dtoValidator).validateAndThrowIfInvalid(articleRequest);
+            inOrder.verify(dtoValidator).validate(articleRequest);
             verifyNoMoreInteractions(dtoValidator);
 
             inOrder.verify(articleRepository).findById(articleId);
@@ -639,10 +657,14 @@ class ArticleServiceImplTests {
             verifyNoMoreInteractions(articleDocumentRepository);
 
             inOrder.verifyNoMoreInteractions();
+
+            verifyNoInteractions(
+                    idempotencyTokenService
+            );
         }
 
         @Test
-        void shouldThrowExceptionAndNotMap_OnIncorrectVersion() {
+        void shouldThrowExceptionAndNotMap_WhenIncorrectVersionDetectedComparingToFoundFromRepo() {
 
             // given
             ArticleTestDataBuilder testDataBuilder = ArticleTestDataBuilder.anArticle();
@@ -663,7 +685,7 @@ class ArticleServiceImplTests {
 
             doNothing().when(articleServiceAuthorizer).authorizeUpdateById(any(), any());
 
-            doNothing().when(dtoValidator).validateAndThrowIfInvalid(articleRequest);
+            doNothing().when(dtoValidator).validate(articleRequest);
 
             when(articleRepository.findById(any()))
                     .thenReturn(Optional.of(oldArticleEntity));
@@ -682,7 +704,7 @@ class ArticleServiceImplTests {
             inOrder.verify(articleServiceAuthorizer).authorizeUpdateById(eq(articleId), same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
 
-            inOrder.verify(dtoValidator).validateAndThrowIfInvalid(articleRequest);
+            inOrder.verify(dtoValidator).validate(articleRequest);
             verifyNoMoreInteractions(dtoValidator);
 
             inOrder.verify(articleRepository).findById(articleId);
@@ -692,6 +714,10 @@ class ArticleServiceImplTests {
 
             verifyNoInteractions(articleDocumentMapper);
             verifyNoInteractions(articleDocumentRepository);
+
+            verifyNoInteractions(
+                    idempotencyTokenService
+            );
         }
 
         @Test
@@ -709,7 +735,7 @@ class ArticleServiceImplTests {
 
             doNothing().when(articleServiceAuthorizer).authorizeUpdateById(any(), any());
 
-            doNothing().when(dtoValidator).validateAndThrowIfInvalid(any());
+            doNothing().when(dtoValidator).validate(any());
 
             when(articleRepository.findById(any()))
                     .thenReturn(Optional.empty());
@@ -728,7 +754,7 @@ class ArticleServiceImplTests {
             inOrder.verify(articleServiceAuthorizer).authorizeUpdateById(eq(articleId), same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
 
-            inOrder.verify(dtoValidator).validateAndThrowIfInvalid(articleRequest);
+            inOrder.verify(dtoValidator).validate(articleRequest);
             verifyNoMoreInteractions(dtoValidator);
 
             inOrder.verify(articleRepository).findById(articleId);
@@ -738,6 +764,10 @@ class ArticleServiceImplTests {
 
             verifyNoInteractions(articleDocumentMapper);
             verifyNoInteractions(articleDocumentRepository);
+
+            verifyNoInteractions(
+                    idempotencyTokenService
+            );
         }
 
     }
@@ -763,8 +793,8 @@ class ArticleServiceImplTests {
                     .idempotencyTokenValue(idempotencyTokenValue)
                     .build();
 
-            doNothing().when(articleServiceAuthorizer).authorizeCreate(any(), any());
-            doNothing().when(dtoValidator).validateAndThrowIfInvalid(any());
+            doNothing().when(articleServiceAuthorizer).authorizeCreate(any());
+            doNothing().when(dtoValidator).validate(any());
 
             IdempotencyTokenEntity existingToken = IdempotencyTokenEntity.builder().build();
             when(idempotencyTokenService.findById(any())).thenReturn(Optional.of(existingToken));
@@ -787,10 +817,10 @@ class ArticleServiceImplTests {
                     idempotencyTokenService
             );
 
-            inOrder.verify(articleServiceAuthorizer).authorizeCreate(eq(authorId), same(authenticatedUser));
+            inOrder.verify(articleServiceAuthorizer).authorizeCreate(same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
 
-            inOrder.verify(dtoValidator).validateAndThrowIfInvalid(articleToCreate);
+            inOrder.verify(dtoValidator).validate(articleToCreate);
             verifyNoMoreInteractions(dtoValidator);
 
             inOrder.verify(idempotencyTokenService).findById(idempotencyTokenId);
@@ -823,8 +853,8 @@ class ArticleServiceImplTests {
                     .build();
             var creationId = CreationId.of(ArticleEntity.class, articleToCreate.getId());
 
-            doNothing().when(articleServiceAuthorizer).authorizeCreate(any(), any());
-            doNothing().when(dtoValidator).validateAndThrowIfInvalid(any());
+            doNothing().when(articleServiceAuthorizer).authorizeCreate(any());
+            doNothing().when(dtoValidator).validate(any());
 
             when(idempotencyTokenService.findById(any()))
                     .thenReturn(Optional.empty());
@@ -856,10 +886,10 @@ class ArticleServiceImplTests {
                     articleDocumentRepository
             );
 
-            inOrder.verify(articleServiceAuthorizer).authorizeCreate(eq(authorId), same(authenticatedUser));
+            inOrder.verify(articleServiceAuthorizer).authorizeCreate(same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
 
-            inOrder.verify(dtoValidator).validateAndThrowIfInvalid(articleToCreateRequest);
+            inOrder.verify(dtoValidator).validate(articleToCreateRequest);
             verifyNoMoreInteractions(dtoValidator);
 
             inOrder.verify(idempotencyTokenService).findById(idempotencyTokenId);
@@ -923,9 +953,14 @@ class ArticleServiceImplTests {
             inOrder.verify(articleTopicRepository).save(articleTopicId);
             verifyNoMoreInteractions(articleTopicRepository);
 
-            verifyNoInteractions(dtoValidator);
-            verifyNoInteractions(articleMapper);
-            verifyNoInteractions(articleRepository);
+            verifyNoInteractions(
+                    articleMapper,
+                    articleRepository,
+                    dtoValidator,
+                    idempotencyTokenService,
+                    articleDocumentMapper,
+                    articleDocumentRepository
+            );
         }
     }
 
@@ -968,9 +1003,14 @@ class ArticleServiceImplTests {
             inOrder.verify(articleTopicRepository).removeById(articleTopicId);
             verifyNoMoreInteractions(articleTopicRepository);
 
-            verifyNoInteractions(dtoValidator);
-            verifyNoInteractions(articleMapper);
-            verifyNoInteractions(articleRepository);
+            verifyNoInteractions(
+                    articleMapper,
+                    articleRepository,
+                    dtoValidator,
+                    idempotencyTokenService,
+                    articleDocumentMapper,
+                    articleDocumentRepository
+            );
         }
     }
 }

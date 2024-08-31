@@ -15,7 +15,7 @@ public class DtoValidatorImpl implements DtoValidator {
     private final Validator validator;
 
     @Override
-    public <T> void validateAndThrowIfInvalid(T dto) {
+    public <T> void validate(T dto) {
         Set<ConstraintViolation<T>> violations = validator.validate(dto);
         if (!violations.isEmpty()) {
             throw new ConstraintViolationException(violations);

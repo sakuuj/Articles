@@ -4,7 +4,7 @@ import java.util.UUID;
 
 public interface ArticleServiceAuthorizer {
 
-    void authorizeCreate(UUID authorId, AuthenticatedUser authenticatedUser);
+    void authorizeCreate(AuthenticatedUser authenticatedUser);
 
     void authorizeDeleteById(UUID articleId, AuthenticatedUser authenticatedUser);
     void authorizeUpdateById(UUID articleId, AuthenticatedUser authenticatedUser);

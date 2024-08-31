@@ -68,5 +68,5 @@ CREATE TABLE idempotency_tokens
     creation_id VARCHAR(50) UNIQUE NOT NULL,
 
     PRIMARY KEY (idempotency_token, client_id),
-    FOREIGN KEY (client_id) REFERENCES persons(person_id) ON DELETE CASCADE
+    FOREIGN KEY (client_id) REFERENCES persons(person_id)
 );

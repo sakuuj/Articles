@@ -122,9 +122,9 @@ public class ArticleServiceImpl implements ArticleService {
             UUID idempotencyTokenValue,
             AuthenticatedUser authenticatedUser
     ) {
-        articleServiceAuthorizer.authorizeCreate(authorId, authenticatedUser);
+        articleServiceAuthorizer.authorizeCreate(authenticatedUser);
 
-        dtoValidator.validateAndThrowIfInvalid(request);
+        dtoValidator.validate(request);
 
         IdempotencyTokenId idempotencyTokenId = IdempotencyTokenId.builder()
                 .clientId(authorId)
@@ -173,7 +173,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         articleServiceAuthorizer.authorizeUpdateById(id, authenticatedUser);
 
-        dtoValidator.validateAndThrowIfInvalid(newContent);
+        dtoValidator.validate(newContent);
 
         ArticleEntity entityToUpdate = articleRepository.findById(id)
                 .orElseThrow(() -> new ServiceLayerException(ExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND));
