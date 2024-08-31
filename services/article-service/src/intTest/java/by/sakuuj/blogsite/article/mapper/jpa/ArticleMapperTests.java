@@ -1,6 +1,6 @@
-package by.sakuuj.blogsite.article.mappers;
+package by.sakuuj.blogsite.article.mapper.jpa;
 
-import by.sakuuj.annotations.MapperTest;
+import by.sakuuj.annotations.JpaMapperTest;
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.ArticleRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleResponse;
@@ -18,7 +18,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@MapperTest
+@JpaMapperTest
 class ArticleMapperTests {
 
     @Autowired

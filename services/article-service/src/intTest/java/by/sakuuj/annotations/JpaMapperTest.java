@@ -10,6 +10,6 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 @JpaTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-@ComponentScan(basePackages = "by.sakuuj.blogsite.article.mapper")
-public @interface MapperTest {
+@ComponentScan(basePackages = "by.sakuuj.blogsite.article.mapper.jpa")
+public @interface JpaMapperTest {
 }

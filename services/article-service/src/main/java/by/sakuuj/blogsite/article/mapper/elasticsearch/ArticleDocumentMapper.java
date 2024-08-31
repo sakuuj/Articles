@@ -6,7 +6,6 @@ import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
-import org.mapstruct.Mappings;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
@@ -14,8 +13,6 @@ import org.mapstruct.Mappings;
 )
 public interface ArticleDocumentMapper {
 
-    @Mappings({
-            @Mapping(target = "datePublishedOn", source = "entity.modificationAudit.createdAt"),
-    })
+    @Mapping(target = "datePublishedOn", source = "entity.modificationAudit.createdAt")
     ArticleDocument toDocument(ArticleEntity entity);
 }

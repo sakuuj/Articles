@@ -1,6 +1,6 @@
-package by.sakuuj.blogsite.article.mappers;
+package by.sakuuj.blogsite.article.mapper.jpa;
 
-import by.sakuuj.annotations.MapperTest;
+import by.sakuuj.annotations.JpaMapperTest;
 import by.sakuuj.blogsite.article.PersonTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.PersonRequest;
 import by.sakuuj.blogsite.article.dtos.PersonResponse;
@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@MapperTest
-public class PersonMapperTests {
+@JpaMapperTest
+class PersonMapperTests {
 
     @Autowired
     private PersonMapper personMapper;

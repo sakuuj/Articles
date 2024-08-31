@@ -1,6 +1,6 @@
-package by.sakuuj.blogsite.article.mappers;
+package by.sakuuj.blogsite.article.mapper.jpa;
 
-import by.sakuuj.annotations.MapperTest;
+import by.sakuuj.annotations.JpaMapperTest;
 import by.sakuuj.blogsite.article.TopicTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@MapperTest
+@JpaMapperTest
 class TopicMapperTests {
 
     @Autowired
