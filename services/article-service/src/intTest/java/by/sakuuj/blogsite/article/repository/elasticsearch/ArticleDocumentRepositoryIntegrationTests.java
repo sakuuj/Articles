@@ -5,6 +5,7 @@ import by.sakuuj.annotations.ElasticsearchTest;
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.paging.PageView;
+import by.sakuuj.blogsite.article.repository.elasticsearch.cutsom.SearchHitsToPageViewMapper;
 import by.sakuuj.testcontainers.ElasticsearchSingletonContainerLauncher;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Nested;

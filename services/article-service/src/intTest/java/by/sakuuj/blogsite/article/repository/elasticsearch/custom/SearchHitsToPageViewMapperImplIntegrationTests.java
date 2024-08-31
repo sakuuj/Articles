@@ -1,9 +1,12 @@
-package by.sakuuj.blogsite.article.repository.elasticsearch;
+package by.sakuuj.blogsite.article.repository.elasticsearch.custom;
 
 import by.sakuuj.annotations.ElasticsearchTest;
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.paging.PageView;
+import by.sakuuj.blogsite.article.repository.elasticsearch.ArticleDocumentRepository;
+import by.sakuuj.blogsite.article.repository.elasticsearch.cutsom.SearchHitsToPageViewMapper;
+import by.sakuuj.blogsite.article.repository.elasticsearch.cutsom.SearchHitsToPageViewMapperImpl;
 import by.sakuuj.testcontainers.ElasticsearchSingletonContainerLauncher;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;

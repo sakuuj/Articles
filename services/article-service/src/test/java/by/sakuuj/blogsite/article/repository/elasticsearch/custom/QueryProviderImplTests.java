@@ -1,6 +1,8 @@
-package by.sakuuj.blogsite.article.repository.elasticsearch;
+package by.sakuuj.blogsite.article.repository.elasticsearch.custom;
 
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
+import by.sakuuj.blogsite.article.repository.elasticsearch.cutsom.QueryProvider;
+import by.sakuuj.blogsite.article.repository.elasticsearch.cutsom.QueryProviderImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

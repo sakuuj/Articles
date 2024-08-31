@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.repository.elasticsearch;
+package by.sakuuj.blogsite.article.repository.elasticsearch.cutsom;
 
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.paging.PageView;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class ArticleDocumentComplexQueryRepositoryImpl implements ArticleDocumentComplexQueryRepository {
+public class ArticleDocumentCustomRepositoryImpl implements ArticleDocumentCustomRepository {
 
     private final ElasticsearchOperations elasticsearchOperations;
     private final QueryProvider queryProvider;

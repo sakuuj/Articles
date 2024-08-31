@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.repository.elasticsearch;
+package by.sakuuj.blogsite.article.repository.elasticsearch.cutsom;
 
 import by.sakuuj.blogsite.article.paging.PageView;
 import org.springframework.data.domain.Pageable;
