@@ -393,7 +393,7 @@ public class ArticleRepositoryTests extends PostgresSingletonContainerLauncher {
 
 
             // then
-            assertThat(foundArticles.size()).isEqualTo(2);
+            assertThat(foundArticles).hasSize(2);
 
             ArticleEntity foundFirstArticle = foundArticles.get(requestListReversed ? 1 : 0);
             assertThat(Hibernate.isInitialized(foundFirstArticle.getAuthor())).isTrue();
@@ -571,7 +571,7 @@ public class ArticleRepositoryTests extends PostgresSingletonContainerLauncher {
             );
 
             // then
-            assertThat(foundArticles.content().size()).isEqualTo(numberOfArticlesWithBothTopics);
+            assertThat(foundArticles.content()).hasSize(numberOfArticlesWithBothTopics);
 
             for (int i = 0; i < numberOfArticlesWithBothTopics; i++) {
                 ArticleEntity foundArticle = foundArticles.content().get(i);
@@ -691,16 +691,16 @@ public class ArticleRepositoryTests extends PostgresSingletonContainerLauncher {
 
 
             // then
-            assertThat(zeroPage.content().size()).isEqualTo(1);
+            assertThat(zeroPage.content()).hasSize(1);
             assertThat(zeroPage.content().getFirst()).isEqualTo(firstArticle);
 
-            assertThat(firstPage.content().size()).isEqualTo(1);
+            assertThat(firstPage.content()).hasSize(1);
             assertThat(firstPage.content().getFirst()).isEqualTo(secondArticle);
 
-            assertThat(secondPage.content().size()).isEqualTo(1);
+            assertThat(secondPage.content()).hasSize(1);
             assertThat(secondPage.content().getFirst()).isEqualTo(thirdArticle);
 
-            assertThat(thirdPage.content().size()).isZero();
+            assertThat(thirdPage.content()).isEmpty();
         }
     }
 

@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.mappers;
+package by.sakuuj.blogsite.article.mapper.jpa;
 
 import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
 import by.sakuuj.blogsite.article.entity.jpa.entities.PersonEntity;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Component
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.MANDATORY)
-public class JpaReferenceMapperImpl implements JpaReferenceMapper {
+public class ToReferenceMapperImpl implements ToReferenceMapper {
 
     private final PersonJpaRepository personJpaRepository;
     private final ArticleRepository articleRepository;

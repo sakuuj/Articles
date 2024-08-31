@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.mappers;
+package by.sakuuj.blogsite.article.mapper.jpa;
 
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;

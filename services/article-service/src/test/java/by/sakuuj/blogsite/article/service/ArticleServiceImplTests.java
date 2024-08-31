@@ -9,6 +9,7 @@ import by.sakuuj.blogsite.article.dtos.ArticleRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleResponse;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.validator.DtoValidator;
+import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.entity.jpa.CreationId;
 import by.sakuuj.blogsite.article.entity.jpa.embeddable.ArticleTopicId;
 import by.sakuuj.blogsite.article.entity.jpa.embeddable.IdempotencyTokenId;
@@ -18,7 +19,8 @@ import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity_;
 import by.sakuuj.blogsite.article.entity.jpa.entities.IdempotencyTokenEntity;
 import by.sakuuj.blogsite.article.exception.ExceptionMessage;
 import by.sakuuj.blogsite.article.exception.ServiceLayerException;
-import by.sakuuj.blogsite.article.mappers.ArticleMapper;
+import by.sakuuj.blogsite.article.mapper.elasticsearch.ArticleDocumentMapper;
+import by.sakuuj.blogsite.article.mapper.jpa.ArticleMapper;
 import by.sakuuj.blogsite.article.paging.PageView;
 import by.sakuuj.blogsite.article.paging.RequestedPage;
 import by.sakuuj.blogsite.article.repository.elasticsearch.ArticleDocumentRepository;
@@ -91,6 +93,9 @@ class ArticleServiceImplTests {
 
     @Mock
     private ArticleDocumentRepository articleDocumentRepository;
+
+    @Mock
+    private ArticleDocumentMapper articleDocumentMapper;
 
     @Mock
     private ArticleTopicRepository articleTopicRepository;
@@ -435,9 +440,9 @@ class ArticleServiceImplTests {
             verifyNoMoreInteractions(articleRepository);
 
             InOrder inOrder = inOrder(txTemplate);
-            inOrder.verify(txTemplate).setReadOnly(eq(true));
+            inOrder.verify(txTemplate).setReadOnly(true);
             inOrder.verify(txTemplate).execute(any());
-            inOrder.verify(txTemplate).setReadOnly(eq(false));
+            inOrder.verify(txTemplate).setReadOnly(false);
             verifyNoMoreInteractions(txTemplate);
 
             verify(articleRepository).findAllByIdsInOrder(List.of(firstId, secondId));
@@ -484,7 +489,7 @@ class ArticleServiceImplTests {
 
 
     @Nested
-    class deleteById_UUID_short {
+    class deleteById_UUID_AuthenticatedUser {
 
         @Test
         void shouldDeleteFromRepoAndIdempotencyService_WhenPresent() {
@@ -501,17 +506,24 @@ class ArticleServiceImplTests {
 
             doNothing().when(articleServiceAuthorizer).authorizeDeleteById(any(), any());
 
-            when(articleRepository.findById(any()))
-                    .thenReturn(Optional.of(article));
+            when(articleRepository.findById(any())).thenReturn(Optional.of(article));
+
             doNothing().when(articleRepository).deleteById(any());
 
             doNothing().when(idempotencyTokenService).deleteByCreationId(any());
+
+            doNothing().when(articleDocumentRepository).deleteById(any());
 
             // when
             articleServiceImpl.deleteById(idToDeleteBy, authenticatedUser);
 
             // then
-            InOrder inOrder = inOrder(articleServiceAuthorizer, articleRepository, idempotencyTokenService);
+            InOrder inOrder = inOrder(
+                    articleServiceAuthorizer,
+                    articleRepository,
+                    idempotencyTokenService,
+                    articleDocumentRepository
+            );
 
             inOrder.verify(articleServiceAuthorizer).authorizeDeleteById(eq(idToDeleteBy), same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
@@ -523,6 +535,9 @@ class ArticleServiceImplTests {
             CreationId expectedCreationId = CreationId.of(ArticleEntity.class, idToDeleteBy);
             inOrder.verify(idempotencyTokenService).deleteByCreationId(expectedCreationId);
             verifyNoMoreInteractions(idempotencyTokenService);
+
+            inOrder.verify(articleDocumentRepository).deleteById(idToDeleteBy);
+            verifyNoMoreInteractions(articleDocumentRepository);
         }
 
         @Test
@@ -543,7 +558,10 @@ class ArticleServiceImplTests {
             articleServiceImpl.deleteById(idToDeleteBy, authenticatedUser);
 
             // then
-            InOrder inOrder = inOrder(articleServiceAuthorizer, articleRepository, idempotencyTokenService);
+            InOrder inOrder = inOrder(
+                    articleServiceAuthorizer,
+                    articleRepository
+            );
 
             inOrder.verify(articleServiceAuthorizer).authorizeDeleteById(eq(idToDeleteBy), same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
@@ -552,6 +570,8 @@ class ArticleServiceImplTests {
             verifyNoMoreInteractions(articleRepository);
 
             verifyNoInteractions(idempotencyTokenService);
+
+            verifyNoInteractions(articleDocumentRepository);
         }
     }
 
@@ -566,6 +586,7 @@ class ArticleServiceImplTests {
             ArticleTestDataBuilder testDataBuilder = ArticleTestDataBuilder.anArticle();
 
             ArticleRequest articleRequest = testDataBuilder.buildRequest();
+            ArticleDocument updatedArticleDocument = testDataBuilder.buildDocument();
 
             AuthenticatedUser authenticatedUser = AuthenticatedUser.builder()
                     .build();
@@ -582,16 +603,25 @@ class ArticleServiceImplTests {
 
             doNothing().when(dtoValidator).validateAndThrowIfInvalid(any());
 
-            when(articleRepository.findById(any()))
-                    .thenReturn(Optional.of(oldArticleEntity));
+            when(articleRepository.findById(any())).thenReturn(Optional.of(oldArticleEntity));
 
             doNothing().when(articleMapper).updateEntity(any(), any());
+
+            when(articleDocumentMapper.toDocument(any())).thenReturn(updatedArticleDocument);
+            when(articleDocumentRepository.save(any())).thenReturn(updatedArticleDocument);
 
             // when
             articleServiceImpl.updateById(articleId, articleRequest, version, authenticatedUser);
 
             // then
-            InOrder inOrder = inOrder(articleServiceAuthorizer, dtoValidator, articleRepository, articleMapper);
+            InOrder inOrder = inOrder(
+                    articleServiceAuthorizer,
+                    dtoValidator,
+                    articleRepository,
+                    articleMapper,
+                    articleDocumentMapper,
+                    articleDocumentRepository
+            );
 
             inOrder.verify(articleServiceAuthorizer).authorizeUpdateById(eq(articleId), same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
@@ -604,6 +634,14 @@ class ArticleServiceImplTests {
 
             inOrder.verify(articleMapper).updateEntity(oldArticleEntity, articleRequest);
             verifyNoMoreInteractions(articleMapper);
+
+            inOrder.verify(articleDocumentMapper).toDocument(oldArticleEntity);
+            verifyNoMoreInteractions(articleDocumentMapper);
+
+            inOrder.verify(articleDocumentRepository).save(updatedArticleDocument);
+            verifyNoMoreInteractions(articleDocumentRepository);
+
+            inOrder.verifyNoMoreInteractions();
         }
 
         @Test
@@ -642,7 +680,7 @@ class ArticleServiceImplTests {
 
                     });
 
-            InOrder inOrder = inOrder(articleServiceAuthorizer, dtoValidator, articleRepository, articleMapper);
+            InOrder inOrder = inOrder(articleServiceAuthorizer, dtoValidator, articleRepository);
 
             inOrder.verify(articleServiceAuthorizer).authorizeUpdateById(eq(articleId), same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
@@ -654,6 +692,9 @@ class ArticleServiceImplTests {
             verifyNoMoreInteractions(articleRepository);
 
             verifyNoInteractions(articleMapper);
+
+            verifyNoInteractions(articleDocumentMapper);
+            verifyNoInteractions(articleDocumentRepository);
         }
 
         @Test
@@ -685,7 +726,7 @@ class ArticleServiceImplTests {
 
                     });
 
-            InOrder inOrder = inOrder(articleServiceAuthorizer, dtoValidator, articleRepository, articleMapper);
+            InOrder inOrder = inOrder(articleServiceAuthorizer, dtoValidator, articleRepository);
 
             inOrder.verify(articleServiceAuthorizer).authorizeUpdateById(eq(articleId), same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
@@ -698,6 +739,8 @@ class ArticleServiceImplTests {
 
             verifyNoInteractions(articleMapper);
 
+            verifyNoInteractions(articleDocumentMapper);
+            verifyNoInteractions(articleDocumentRepository);
         }
 
     }
@@ -714,6 +757,7 @@ class ArticleServiceImplTests {
             var personTestDataBuilder = PersonTestDataBuilder.aPerson();
 
             ArticleRequest articleToCreate = articleTestDataBuilder.buildRequest();
+
             UUID authorId = personTestDataBuilder.getId();
             UUID idempotencyTokenValue = UUID.fromString("d95b3c07-91c0-4443-aaa0-beffb98f452a");
             var authenticatedUser = AuthenticatedUser.builder().build();
@@ -726,8 +770,7 @@ class ArticleServiceImplTests {
             doNothing().when(dtoValidator).validateAndThrowIfInvalid(any());
 
             IdempotencyTokenEntity existingToken = IdempotencyTokenEntity.builder().build();
-            when(idempotencyTokenService.findById(any()))
-                    .thenReturn(Optional.of(existingToken));
+            when(idempotencyTokenService.findById(any())).thenReturn(Optional.of(existingToken));
 
             // when, then
             assertThatThrownBy(() -> articleServiceImpl.create(
@@ -741,7 +784,11 @@ class ArticleServiceImplTests {
                         .isEqualTo(ExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
             });
 
-            InOrder inOrder = inOrder(articleServiceAuthorizer, dtoValidator, idempotencyTokenService);
+            InOrder inOrder = inOrder(
+                    articleServiceAuthorizer,
+                    dtoValidator,
+                    idempotencyTokenService
+            );
 
             inOrder.verify(articleServiceAuthorizer).authorizeCreate(eq(authorId), same(authenticatedUser));
             verifyNoMoreInteractions(articleServiceAuthorizer);
@@ -754,6 +801,9 @@ class ArticleServiceImplTests {
 
             verifyNoInteractions(articleRepository);
             verifyNoInteractions(articleMapper);
+
+            verifyNoInteractions(articleDocumentMapper);
+            verifyNoInteractions(articleDocumentRepository);
         }
 
         @Test
@@ -765,6 +815,7 @@ class ArticleServiceImplTests {
 
             ArticleRequest articleToCreateRequest = articleTestDataBuilder.buildRequest();
             ArticleEntity articleToCreate = articleTestDataBuilder.build();
+            ArticleDocument articleDocumentToCreate = articleTestDataBuilder.buildDocument();
 
             UUID authorId = personTestDataBuilder.getId();
             UUID idempotencyTokenValue = UUID.fromString("d95b3c07-91c0-4443-aaa0-beffb98f452a");
@@ -786,6 +837,8 @@ class ArticleServiceImplTests {
                     .thenReturn(articleToCreate);
             doNothing().when(idempotencyTokenService).create(any(), any());
 
+            when(articleDocumentMapper.toDocument(any())).thenReturn(articleDocumentToCreate);
+            when(articleDocumentRepository.save(any())).thenReturn(articleDocumentToCreate);
 
             // when
             articleServiceImpl.create(
@@ -801,7 +854,9 @@ class ArticleServiceImplTests {
                     dtoValidator,
                     idempotencyTokenService,
                     articleMapper,
-                    articleRepository
+                    articleRepository,
+                    articleDocumentMapper,
+                    articleDocumentRepository
             );
 
             inOrder.verify(articleServiceAuthorizer).authorizeCreate(eq(authorId), same(authenticatedUser));
@@ -820,6 +875,14 @@ class ArticleServiceImplTests {
 
             inOrder.verify(idempotencyTokenService).create(idempotencyTokenId, creationId);
             verifyNoMoreInteractions(idempotencyTokenService);
+
+            inOrder.verify(articleDocumentMapper).toDocument(articleToCreate);
+            verifyNoMoreInteractions(articleDocumentMapper);
+
+            inOrder.verify(articleDocumentRepository).save(articleDocumentToCreate);
+            verifyNoMoreInteractions(articleDocumentRepository);
+
+            inOrder.verifyNoMoreInteractions();
         }
     }
 

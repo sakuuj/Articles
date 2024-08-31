@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.mappers;
+package by.sakuuj.blogsite.article.mapper.jpa;
 
 import by.sakuuj.blogsite.article.dtos.ArticleRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleResponse;
@@ -18,7 +18,7 @@ import java.util.UUID;
         uses = {
                 TopicMapper.class,
                 PersonMapper.class,
-                JpaReferenceMapper.class
+                ToReferenceMapper.class
         }
 )
 public interface ArticleMapper {

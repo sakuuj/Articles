@@ -4,6 +4,7 @@ import by.sakuuj.blogsite.article.dtos.ArticleRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleResponse;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.validator.DtoValidator;
+import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.entity.jpa.CreationId;
 import by.sakuuj.blogsite.article.entity.jpa.embeddable.ArticleTopicId;
 import by.sakuuj.blogsite.article.entity.jpa.embeddable.IdempotencyTokenId;
@@ -12,7 +13,8 @@ import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
 import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity_;
 import by.sakuuj.blogsite.article.exception.ExceptionMessage;
 import by.sakuuj.blogsite.article.exception.ServiceLayerException;
-import by.sakuuj.blogsite.article.mappers.ArticleMapper;
+import by.sakuuj.blogsite.article.mapper.elasticsearch.ArticleDocumentMapper;
+import by.sakuuj.blogsite.article.mapper.jpa.ArticleMapper;
 import by.sakuuj.blogsite.article.paging.PageView;
 import by.sakuuj.blogsite.article.paging.RequestedPage;
 import by.sakuuj.blogsite.article.repository.elasticsearch.ArticleDocumentRepository;
@@ -27,7 +29,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -44,6 +45,7 @@ public class ArticleServiceImpl implements ArticleService {
     private final DtoValidator dtoValidator;
 
     private final ArticleMapper articleMapper;
+    private final ArticleDocumentMapper articleDocumentMapper;
 
     private final ArticleRepository articleRepository;
     private final ArticleTopicRepository articleTopicRepository;
@@ -115,7 +117,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    @Transactional
     public UUID create(
             ArticleRequest request,
             UUID authorId,
@@ -142,6 +144,10 @@ public class ArticleServiceImpl implements ArticleService {
         UUID createdArticleId = articleEntityToCreate.getId();
         idempotencyTokenService.create(idempotencyTokenId, CreationId.of(ArticleEntity.class, createdArticleId));
 
+        // TODO add transactionality
+        ArticleDocument documentToSave = articleDocumentMapper.toDocument(articleEntityToCreate);
+        articleDocumentRepository.save(documentToSave);
+
         return createdArticleId;
     }
 
@@ -158,6 +164,9 @@ public class ArticleServiceImpl implements ArticleService {
 
         articleRepository.deleteById(id);
         idempotencyTokenService.deleteByCreationId(CreationId.of(ArticleEntity.class, id));
+
+        // TODO add transactionality
+        articleDocumentRepository.deleteById(id);
     }
 
     @Override
@@ -176,6 +185,10 @@ public class ArticleServiceImpl implements ArticleService {
         }
 
         articleMapper.updateEntity(entityToUpdate, newContent);
+
+        // TODO add transactionality
+        ArticleDocument updatedDocument = articleDocumentMapper.toDocument(entityToUpdate);
+        articleDocumentRepository.save(updatedDocument);
     }
 
     @Override
