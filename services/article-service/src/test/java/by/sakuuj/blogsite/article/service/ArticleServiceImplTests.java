@@ -439,10 +439,7 @@ class ArticleServiceImplTests {
             verify(articleDocumentRepository).findIdsOfDocsSortedByRelevance(searchTerms, pageable);
             verifyNoMoreInteractions(articleRepository);
 
-            InOrder inOrder = inOrder(txTemplate);
-            inOrder.verify(txTemplate).setReadOnly(true);
-            inOrder.verify(txTemplate).execute(any());
-            inOrder.verify(txTemplate).setReadOnly(false);
+            verify(txTemplate).execute(any());
             verifyNoMoreInteractions(txTemplate);
 
             verify(articleRepository).findAllByIdsInOrder(List.of(firstId, secondId));

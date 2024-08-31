@@ -23,7 +23,6 @@ import by.sakuuj.blogsite.article.repository.jpa.ArticleTopicRepository;
 import by.sakuuj.blogsite.article.service.authorization.ArticleServiceAuthorizer;
 import by.sakuuj.blogsite.article.service.authorization.AuthenticatedUser;
 import by.sakuuj.blogsite.article.utils.PagingUtils;
-import by.sakuuj.blogsite.article.utils.TransactionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -76,8 +75,7 @@ public class ArticleServiceImpl implements ArticleService {
             return PageView.<ArticleResponse>empty().withNumberAndSize(requestedPage);
         }
 
-        List<ArticleEntity> foundArticles = TransactionUtils.executeReadOnly(
-                txTemplate,
+        List<ArticleEntity> foundArticles = txTemplate.execute(
                 txStatus -> articleRepository.findAllByIdsInOrder(foundIds.content())
         );
 
