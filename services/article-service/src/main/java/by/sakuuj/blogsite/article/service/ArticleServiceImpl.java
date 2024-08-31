@@ -212,6 +212,6 @@ public class ArticleServiceImpl implements ArticleService {
                 .topicId(topicId)
                 .build();
 
-        articleTopicRepository.deleteById(articleTopicId);
+        articleTopicRepository.removeById(articleTopicId);
     }
 }

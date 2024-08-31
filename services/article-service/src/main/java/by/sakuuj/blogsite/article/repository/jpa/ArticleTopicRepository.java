@@ -8,5 +8,5 @@ import org.springframework.data.repository.Repository;
 public interface ArticleTopicRepository extends Repository<ArticleTopicEntity, ArticleTopicId>,
         ArticleTopicCustomRepository {
 
-    void deleteById(ArticleTopicId id);
+    void removeById(ArticleTopicId id);
 }

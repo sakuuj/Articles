@@ -15,6 +15,8 @@ import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
 import by.sakuuj.blogsite.article.paging.PageView;
 import by.sakuuj.blogsite.article.paging.RequestedPage;
 import by.sakuuj.testcontainers.PostgresSingletonContainerLauncher;
+import by.sakuuj.utils.LocalDateTimeComparator;
+import by.sakuuj.utils.PostgresDBCleaner;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.AfterEach;
@@ -29,7 +31,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -42,14 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JpaTest
 public class ArticleRepositoryTests extends PostgresSingletonContainerLauncher {
 
-    private static final Comparator<LocalDateTime> localDateTimeComparator = (o1, o2) ->
-    {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH-mm-ss.SSS");
-
-        String o1Formatted = o1.format(dateTimeFormatter);
-        String o2Formatted = o2.format(dateTimeFormatter);
-        return CharSequence.compare(o1Formatted, o2Formatted);
-    };
+    private final Comparator<LocalDateTime> localDateTimeComparator = LocalDateTimeComparator.getInstance();
 
     @Autowired
     private TransactionTemplate txTemplate;
@@ -62,22 +56,7 @@ public class ArticleRepositoryTests extends PostgresSingletonContainerLauncher {
 
     @AfterEach
     void cleanDB() {
-        txTemplate.executeWithoutResult(txStatus -> {
-            entityManager.createNativeQuery(
-                    """
-                            DO
-                            $$BEGIN
-                            EXECUTE  'TRUNCATE TABLE ' ||
-                            (SELECT array_to_string(
-                                (
-                                SELECT ARRAY(SELECT table_name FROM information_schema.tables 
-                                    WHERE table_schema = 'public' 
-                                    AND table_name NOT LIKE 'databasechangelog%')
-                                ), ','
-                            ))::VARCHAR;
-                            END$$
-                            """).executeUpdate();
-        });
+        PostgresDBCleaner.truncateTables(txTemplate, entityManager);
     }
 
     @Nested
@@ -745,11 +724,10 @@ public class ArticleRepositoryTests extends PostgresSingletonContainerLauncher {
 
             txTemplate.executeWithoutResult(txStatus -> {
                 ArticleEntity articleEntity = entityManager.find(ArticleEntity.class, article.getId());
-
                 assertThat(articleEntity).isNotNull();
-            });
 
-            articleRepository.deleteById(article.getId());
+                articleRepository.deleteById(article.getId());
+            });
 
             txTemplate.executeWithoutResult(txStatus -> {
                 ArticleEntity articleEntity = entityManager.find(ArticleEntity.class, article.getId());

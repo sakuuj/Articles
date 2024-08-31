@@ -5,7 +5,11 @@ import by.sakuuj.blogsite.article.entity.jpa.embeddable.IdempotencyTokenId;
 import by.sakuuj.blogsite.article.entity.jpa.entities.IdempotencyTokenEntity;
 import org.springframework.data.repository.Repository;
 
+import java.util.Optional;
+
 public interface IdempotencyTokenRepository extends Repository<IdempotencyTokenEntity, IdempotencyTokenId> {
+
+    Optional<IdempotencyTokenEntity> findById(IdempotencyTokenId idempotencyTokenId);
 
     IdempotencyTokenEntity save(IdempotencyTokenEntity entity);
 

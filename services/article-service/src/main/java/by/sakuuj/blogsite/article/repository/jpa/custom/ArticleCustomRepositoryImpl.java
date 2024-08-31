@@ -49,24 +49,29 @@ public class ArticleCustomRepositoryImpl implements ArticleCustomRepository {
                 .multiLoad(ids);
     }
 
-    /*
-    { List<String> topicNames; } -> context
-
-    Expecting output (w/o entity graph):
-
-    SELECT a FROM articles a
-    WHERE a.article_id IN ((
-                SELECT at.article_id
-                FROM article_topics at
-                JOIN topics t
-                    ON at.topic_id = t.topic_id
-                WHERE t.name IN ( { topicNames } )
-                GROUP BY at.article_id
-                HAVING COUNT(*) = { topicNames.size() }
-                ))
-     ORDER BY a.created_at DESC
-     OFFSET ?
-     FETCH FIRST ? ROWS ONLY;
+    /**
+     * <pre>
+     *     { List&lt;String> topicNames; } -> context
+     *
+     *     Expecting output (w/o entity graph):
+     *
+     *     SELECT a FROM articles a
+     *     WHERE a.article_id IN ((
+     *                 SELECT at.article_id
+     *                 FROM article_topics at
+     *                 JOIN topics t
+     *                     ON at.topic_id = t.topic_id
+     *                 WHERE t.name IN ( { topicNames } )
+     *                 GROUP BY at.article_id
+     *                 HAVING COUNT(*) = { topicNames.size() }
+     *                 ))
+     *      ORDER BY a.created_at DESC
+     *      OFFSET ?
+     *      FETCH FIRST ? ROWS ONLY;
+     *  </pre>
+     * @param topicNames topics that should be present in found articles
+     * @param requestedPage page request
+     * @return found articles containing specified topics
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -92,10 +97,10 @@ public class ArticleCustomRepositoryImpl implements ArticleCustomRepository {
                                                                          HibernateCriteriaBuilder builder) {
         JpaRoot<ArticleEntity> root = query.from(ArticleEntity.class);
 
-        JpaSubQuery<UUID> sq = query.subquery(UUID.class);
+        JpaSubQuery<UUID> subquery = query.subquery(UUID.class);
 
-        initializeSubqueryToFindArticleIdsOfArticlesWithTopics(topicNames, builder, sq);
-        query.where(root.get(ArticleEntity_.id).in(sq));
+        initializeSubqueryToFindArticleIdsOfArticlesWithTopics(topicNames, builder, subquery);
+        query.where(root.get(ArticleEntity_.id).in(subquery));
 
         query.select(root);
 
@@ -109,8 +114,8 @@ public class ArticleCustomRepositoryImpl implements ArticleCustomRepository {
 
     private static void initializeSubqueryToFindArticleIdsOfArticlesWithTopics(List<String> topicNames,
                                                                                HibernateCriteriaBuilder builder,
-                                                                               JpaSubQuery<UUID> sq) {
-        JpaRoot<ArticleTopicEntity> sqRoot = sq.from(ArticleTopicEntity.class);
+                                                                               JpaSubQuery<UUID> subquery) {
+        JpaRoot<ArticleTopicEntity> sqRoot = subquery.from(ArticleTopicEntity.class);
 
         JpaEntityJoin<TopicEntity> sqJoin = sqRoot.join(TopicEntity.class);
         sqJoin.on(
@@ -120,16 +125,16 @@ public class ArticleCustomRepositoryImpl implements ArticleCustomRepository {
                 )
         );
 
-        sq.where(sqJoin.get(TopicEntity_.name).in(topicNames));
+        subquery.where(sqJoin.get(TopicEntity_.name).in(topicNames));
 
-        sq.groupBy(
+        subquery.groupBy(
                 sqRoot.get(ArticleTopicEntity_.id)
                         .get(ArticleTopicId_.articleId)
         );
 
-        sq.having(builder.equal(builder.count(), topicNames.size()));
+        subquery.having(builder.equal(builder.count(), topicNames.size()));
 
-        sq.select(sqRoot
+        subquery.select(sqRoot
                 .get(ArticleTopicEntity_.id)
                 .get(ArticleTopicId_.articleId)
         );

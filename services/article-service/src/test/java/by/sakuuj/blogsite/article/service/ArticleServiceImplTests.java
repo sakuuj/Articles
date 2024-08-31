@@ -951,7 +951,7 @@ class ArticleServiceImplTests {
 
             doNothing().when(articleServiceAuthorizer).authorizeAddTopic(any(), any());
 
-            doNothing().when(articleTopicRepository).deleteById(any());
+            doNothing().when(articleTopicRepository).removeById(any());
 
             // when
             articleServiceImpl.removeTopic(topicId, articleId, authenticatedUser);
@@ -965,7 +965,7 @@ class ArticleServiceImplTests {
             inOrder.verify(articleServiceAuthorizer).authorizeAddTopic(articleId, authenticatedUser);
             verifyNoMoreInteractions(articleServiceAuthorizer);
 
-            inOrder.verify(articleTopicRepository).deleteById(articleTopicId);
+            inOrder.verify(articleTopicRepository).removeById(articleTopicId);
             verifyNoMoreInteractions(articleTopicRepository);
 
             verifyNoInteractions(dtoValidator);
