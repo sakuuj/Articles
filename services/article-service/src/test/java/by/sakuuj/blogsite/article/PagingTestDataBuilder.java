@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.article;
 
-import by.sakuuj.blogsite.article.paging.RequestedPage;
-import by.sakuuj.blogsite.article.paging.PageView;
+import by.sakuuj.blogsite.paging.RequestedPage;
+import by.sakuuj.blogsite.paging.PageView;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

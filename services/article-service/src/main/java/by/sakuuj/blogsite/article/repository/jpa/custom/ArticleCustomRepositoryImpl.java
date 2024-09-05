@@ -1,16 +1,16 @@
 package by.sakuuj.blogsite.article.repository.jpa.custom;
 
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ArticleTopicId_;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit_;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity_;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleTopicEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleTopicEntity_;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity_;
-import by.sakuuj.blogsite.article.entity.jpa.utils.EntityGraphNames;
-import by.sakuuj.blogsite.article.paging.PageView;
-import by.sakuuj.blogsite.article.paging.RequestedPage;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ArticleTopicId_;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit_;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity_;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleTopicEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleTopicEntity_;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity_;
+import by.sakuuj.blogsite.entity.jpa.utils.EntityGraphNames;
+import by.sakuuj.blogsite.paging.PageView;
+import by.sakuuj.blogsite.paging.RequestedPage;
 import by.sakuuj.blogsite.article.repository.jpa.custom.utils.CriteriaUtils;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;

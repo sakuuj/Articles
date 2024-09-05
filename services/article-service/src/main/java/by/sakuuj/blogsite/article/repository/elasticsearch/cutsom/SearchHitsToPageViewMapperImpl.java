@@ -1,6 +1,6 @@
 package by.sakuuj.blogsite.article.repository.elasticsearch.cutsom;
 
-import by.sakuuj.blogsite.article.paging.PageView;
+import by.sakuuj.blogsite.paging.PageView;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHitSupport;

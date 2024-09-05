@@ -1,9 +1,9 @@
 package by.sakuuj.blogsite.article.repository.jpa.custom;
 
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ArticleTopicId;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleTopicEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ArticleTopicId;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleTopicEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

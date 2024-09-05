@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.article.repository.jpa.custom.utils;
 
-import by.sakuuj.blogsite.article.paging.PageView;
-import by.sakuuj.blogsite.article.paging.RequestedPage;
+import by.sakuuj.blogsite.paging.PageView;
+import by.sakuuj.blogsite.paging.RequestedPage;
 import lombok.experimental.UtilityClass;
 import org.hibernate.query.Query;
 

@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.article.repository.elasticsearch.cutsom;
 
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
-import by.sakuuj.blogsite.article.utils.PagingUtils;
+import by.sakuuj.blogsite.utils.PagingUtils;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.elasticsearch.core.ResourceUtil;
 import org.springframework.data.elasticsearch.core.query.FetchSourceFilter;

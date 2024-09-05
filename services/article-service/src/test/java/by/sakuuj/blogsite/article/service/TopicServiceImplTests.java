@@ -6,18 +6,19 @@ import by.sakuuj.blogsite.article.TopicTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
 import by.sakuuj.blogsite.article.dtos.validator.DtoValidator;
-import by.sakuuj.blogsite.article.entity.jpa.CreationId;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.IdempotencyTokenId;
-import by.sakuuj.blogsite.article.entity.jpa.entities.IdempotencyTokenEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
-import by.sakuuj.blogsite.article.exception.ExceptionMessage;
+import by.sakuuj.blogsite.entity.jpa.CreationId;
+import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
+import by.sakuuj.blogsite.entity.jpa.entities.IdempotencyTokenEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
 import by.sakuuj.blogsite.article.exception.ServiceLayerException;
+import by.sakuuj.blogsite.article.exception.ServiceLayerExceptionMessage;
 import by.sakuuj.blogsite.article.mapper.jpa.TopicMapper;
-import by.sakuuj.blogsite.article.paging.PageView;
-import by.sakuuj.blogsite.article.paging.RequestedPage;
+import by.sakuuj.blogsite.paging.PageView;
+import by.sakuuj.blogsite.paging.RequestedPage;
 import by.sakuuj.blogsite.article.repository.jpa.TopicRepository;
-import by.sakuuj.blogsite.article.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
 import by.sakuuj.blogsite.article.service.authorization.TopicServiceAuthorizer;
+import by.sakuuj.blogsite.service.IdempotencyTokenService;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -302,8 +303,8 @@ public class TopicServiceImplTests {
             assertThatThrownBy(() -> topicServiceImpl.create(topicRequest, clientId, idempotencyTokenValue, authenticatedUser))
                     .isInstanceOfSatisfying(ServiceLayerException.class, ex ->
 
-                            assertThat(ex.getExceptionMessage())
-                                    .isEqualTo(ExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS)
+                            assertThat(ex.getServiceLayerExceptionMessage())
+                                    .isEqualTo(ServiceLayerExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS)
                     );
 
             InOrder inOrder = Mockito.inOrder(
@@ -350,8 +351,8 @@ public class TopicServiceImplTests {
                     topicServiceImpl.updateById(topicId, topicRequest, topicVersion, authenticatedUser)
             ).isInstanceOfSatisfying(ServiceLayerException.class, ex ->
 
-                    assertThat(ex.getExceptionMessage())
-                            .isEqualTo(ExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND)
+                    assertThat(ex.getServiceLayerExceptionMessage())
+                            .isEqualTo(ServiceLayerExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND)
             );
 
             // then
@@ -399,8 +400,8 @@ public class TopicServiceImplTests {
                     topicServiceImpl.updateById(topicId, topicRequest, incorrectTopicVersion, authenticatedUser)
             ).isInstanceOfSatisfying(ServiceLayerException.class, ex ->
 
-                    assertThat(ex.getExceptionMessage())
-                            .isEqualTo(ExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH)
+                    assertThat(ex.getServiceLayerExceptionMessage())
+                            .isEqualTo(ServiceLayerExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH)
             );
 
             // then

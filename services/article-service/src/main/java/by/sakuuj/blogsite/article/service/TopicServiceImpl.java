@@ -3,21 +3,22 @@ package by.sakuuj.blogsite.article.service;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
 import by.sakuuj.blogsite.article.dtos.validator.DtoValidator;
-import by.sakuuj.blogsite.article.entity.jpa.CreationId;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.IdempotencyTokenId;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit_;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity_;
-import by.sakuuj.blogsite.article.entity.jpa.entities.IdempotencyTokenEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
-import by.sakuuj.blogsite.article.exception.ExceptionMessage;
 import by.sakuuj.blogsite.article.exception.ServiceLayerException;
+import by.sakuuj.blogsite.article.exception.ServiceLayerExceptionMessage;
 import by.sakuuj.blogsite.article.mapper.jpa.TopicMapper;
-import by.sakuuj.blogsite.article.paging.PageView;
-import by.sakuuj.blogsite.article.paging.RequestedPage;
 import by.sakuuj.blogsite.article.repository.jpa.TopicRepository;
-import by.sakuuj.blogsite.article.service.authorization.AuthenticatedUser;
 import by.sakuuj.blogsite.article.service.authorization.TopicServiceAuthorizer;
-import by.sakuuj.blogsite.article.utils.PagingUtils;
+import by.sakuuj.blogsite.entity.jpa.CreationId;
+import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit_;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity_;
+import by.sakuuj.blogsite.entity.jpa.entities.IdempotencyTokenEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.paging.PageView;
+import by.sakuuj.blogsite.paging.RequestedPage;
+import by.sakuuj.blogsite.service.IdempotencyTokenService;
+import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.utils.PagingUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -75,7 +76,7 @@ public class TopicServiceImpl implements TopicService {
 
         Optional<IdempotencyTokenEntity> foundToken = idempotencyTokenService.findById(idempotencyTokenId);
         if (foundToken.isPresent()) {
-            throw new ServiceLayerException(ExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
+            throw new ServiceLayerException(ServiceLayerExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
         }
 
         TopicEntity topicEntityToSave = topicMapper.toEntity(request);
@@ -106,11 +107,11 @@ public class TopicServiceImpl implements TopicService {
         dtoValidator.validate(newContent);
 
         TopicEntity topicToUpdate = topicRepository.findById(id).orElseThrow(() ->
-                new ServiceLayerException(ExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND)
+                new ServiceLayerException(ServiceLayerExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND)
         );
 
         if (topicToUpdate.getVersion() != version) {
-            throw new ServiceLayerException(ExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH);
+            throw new ServiceLayerException(ServiceLayerExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH);
         }
 
         topicMapper.updateEntity(topicToUpdate, newContent);

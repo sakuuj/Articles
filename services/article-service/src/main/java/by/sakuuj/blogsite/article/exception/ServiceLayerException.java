@@ -7,17 +7,17 @@ import lombok.ToString;
 @ToString
 public class ServiceLayerException extends RuntimeException {
 
-    private final ExceptionMessage exceptionMessage;
+    private final ServiceLayerExceptionMessage serviceLayerExceptionMessage;
 
-    public ServiceLayerException(ExceptionMessage exceptionMessage) {
-        super(exceptionMessage.name());
+    public ServiceLayerException(ServiceLayerExceptionMessage serviceLayerExceptionMessage) {
+        super(serviceLayerExceptionMessage.name());
 
-        this.exceptionMessage = exceptionMessage;
+        this.serviceLayerExceptionMessage = serviceLayerExceptionMessage;
     }
 
-    public ServiceLayerException(ExceptionMessage exceptionMessage, Throwable cause) {
-        super(exceptionMessage.name(), cause);
+    public ServiceLayerException(ServiceLayerExceptionMessage serviceLayerExceptionMessage, Throwable cause) {
+        super(serviceLayerExceptionMessage.name(), cause);
 
-        this.exceptionMessage = exceptionMessage;
+        this.serviceLayerExceptionMessage = serviceLayerExceptionMessage;
     }
 }

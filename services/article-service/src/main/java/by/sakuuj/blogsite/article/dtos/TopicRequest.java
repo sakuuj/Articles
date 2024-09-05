@@ -5,7 +5,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record TopicRequest(@NotBlank @Size(max = 50)
-                           String name
+public record TopicRequest(
+        @NotBlank @Size(max = 50)
+        String name
 ) {
 }

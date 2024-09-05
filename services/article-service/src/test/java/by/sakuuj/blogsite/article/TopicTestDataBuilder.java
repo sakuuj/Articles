@@ -2,8 +2,8 @@ package by.sakuuj.blogsite.article;
 
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

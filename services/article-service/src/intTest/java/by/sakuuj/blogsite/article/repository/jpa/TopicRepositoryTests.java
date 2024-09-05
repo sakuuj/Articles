@@ -2,10 +2,10 @@ package by.sakuuj.blogsite.article.repository.jpa;
 
 import by.sakuuj.annotations.JpaTest;
 import by.sakuuj.blogsite.article.TopicTestDataBuilder;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit_;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity_;
-import by.sakuuj.blogsite.article.service.IdempotencyTokenServiceImpl;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit_;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity_;
+import by.sakuuj.blogsite.service.IdempotencyTokenServiceImpl;
 import by.sakuuj.testcontainers.PostgresSingletonContainerLauncher;
 import by.sakuuj.utils.LocalDateTimeComparator;
 import by.sakuuj.utils.PostgresDBCleaner;

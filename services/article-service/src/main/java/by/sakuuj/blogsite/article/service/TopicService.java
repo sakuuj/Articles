@@ -2,9 +2,9 @@ package by.sakuuj.blogsite.article.service;
 
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
-import by.sakuuj.blogsite.article.paging.PageView;
-import by.sakuuj.blogsite.article.paging.RequestedPage;
-import by.sakuuj.blogsite.article.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.paging.PageView;
+import by.sakuuj.blogsite.paging.RequestedPage;
+import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
 
 import java.util.Optional;
 import java.util.UUID;

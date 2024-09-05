@@ -2,7 +2,7 @@ package by.sakuuj.blogsite.article.mapper.elasticsearch;
 
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

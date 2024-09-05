@@ -4,9 +4,9 @@ import by.sakuuj.annotations.JpaMapperTest;
 import by.sakuuj.blogsite.article.TopicTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleTopicEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleTopicEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

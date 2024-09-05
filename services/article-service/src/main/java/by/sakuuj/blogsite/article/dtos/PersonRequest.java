@@ -6,7 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record PersonRequest(@NotBlank @Email @Size(max = 50)
-                            String primaryEmail
+public record PersonRequest(
+        @NotBlank @Email @Size(max = 50)
+        String primaryEmail
 ) {
 }

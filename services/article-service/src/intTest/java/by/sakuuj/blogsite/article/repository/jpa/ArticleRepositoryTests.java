@@ -4,16 +4,16 @@ import by.sakuuj.annotations.JpaTest;
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.PersonTestDataBuilder;
 import by.sakuuj.blogsite.article.TopicTestDataBuilder;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ArticleTopicId;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit_;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity_;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleTopicEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.PersonEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
-import by.sakuuj.blogsite.article.paging.PageView;
-import by.sakuuj.blogsite.article.paging.RequestedPage;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ArticleTopicId;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit_;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity_;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleTopicEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.PersonEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.paging.PageView;
+import by.sakuuj.blogsite.paging.RequestedPage;
 import by.sakuuj.testcontainers.PostgresSingletonContainerLauncher;
 import by.sakuuj.utils.LocalDateTimeComparator;
 import by.sakuuj.utils.PostgresDBCleaner;
@@ -843,24 +843,4 @@ public class ArticleRepositoryTests extends PostgresSingletonContainerLauncher {
             });
         }
     }
-
-
-    @Nested
-    class getReferenceById_UUID {
-
-        @Test
-        void shouldGetReference() {
-            // given
-            UUID uuid = ArticleTestDataBuilder.anArticle().getId();
-
-            // when, then
-            txTemplate.executeWithoutResult(txStatus -> {
-                ArticleEntity reference = articleRepository.getReferenceById(uuid);
-
-                assertThat(Hibernate.isInitialized(reference)).isFalse();
-            });
-        }
-    }
-
-
 }

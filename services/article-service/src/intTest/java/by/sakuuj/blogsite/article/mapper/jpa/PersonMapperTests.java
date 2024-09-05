@@ -2,10 +2,8 @@ package by.sakuuj.blogsite.article.mapper.jpa;
 
 import by.sakuuj.annotations.JpaMapperTest;
 import by.sakuuj.blogsite.article.PersonTestDataBuilder;
-import by.sakuuj.blogsite.article.dtos.PersonRequest;
 import by.sakuuj.blogsite.article.dtos.PersonResponse;
-import by.sakuuj.blogsite.article.entity.jpa.entities.PersonEntity;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit;
+import by.sakuuj.blogsite.entity.jpa.entities.PersonEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,27 +14,6 @@ class PersonMapperTests {
 
     @Autowired
     private PersonMapper personMapper;
-
-    @Test
-    void shouldMapToEntity() {
-
-        // given
-        var testBuilder = PersonTestDataBuilder
-                .aPerson()
-                .withId(null)
-                .withVersion((short) 0)
-                .withModificationAudit(new ModificationAudit());
-
-        PersonRequest personRequest = testBuilder.buildRequest();
-        PersonEntity expectedEntity = testBuilder.build();
-
-        // when
-        PersonEntity actualEntity = personMapper.toEntity(personRequest);
-
-        // then
-        assertThat(actualEntity).usingRecursiveComparison()
-                .isEqualTo(expectedEntity);
-    }
 
     @Test
     void shouldMapToResponse() {

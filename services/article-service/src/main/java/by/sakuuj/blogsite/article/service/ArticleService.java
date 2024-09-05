@@ -3,9 +3,9 @@ package by.sakuuj.blogsite.article.service;
 import by.sakuuj.blogsite.article.dtos.ArticleRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleResponse;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
-import by.sakuuj.blogsite.article.paging.PageView;
-import by.sakuuj.blogsite.article.paging.RequestedPage;
-import by.sakuuj.blogsite.article.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.paging.PageView;
+import by.sakuuj.blogsite.paging.RequestedPage;
+import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
 
 import java.util.List;
 import java.util.Optional;

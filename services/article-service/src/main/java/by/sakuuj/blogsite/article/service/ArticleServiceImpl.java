@@ -5,24 +5,25 @@ import by.sakuuj.blogsite.article.dtos.ArticleResponse;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.validator.DtoValidator;
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
-import by.sakuuj.blogsite.article.entity.jpa.CreationId;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ArticleTopicId;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.IdempotencyTokenId;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ModificationAudit_;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity_;
-import by.sakuuj.blogsite.article.exception.ExceptionMessage;
 import by.sakuuj.blogsite.article.exception.ServiceLayerException;
+import by.sakuuj.blogsite.article.exception.ServiceLayerExceptionMessage;
 import by.sakuuj.blogsite.article.mapper.elasticsearch.ArticleDocumentMapper;
 import by.sakuuj.blogsite.article.mapper.jpa.ArticleMapper;
-import by.sakuuj.blogsite.article.paging.PageView;
-import by.sakuuj.blogsite.article.paging.RequestedPage;
 import by.sakuuj.blogsite.article.repository.elasticsearch.ArticleDocumentRepository;
 import by.sakuuj.blogsite.article.repository.jpa.ArticleRepository;
 import by.sakuuj.blogsite.article.repository.jpa.ArticleTopicRepository;
 import by.sakuuj.blogsite.article.service.authorization.ArticleServiceAuthorizer;
-import by.sakuuj.blogsite.article.service.authorization.AuthenticatedUser;
-import by.sakuuj.blogsite.article.utils.PagingUtils;
+import by.sakuuj.blogsite.entity.jpa.CreationId;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ArticleTopicId;
+import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit_;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity_;
+import by.sakuuj.blogsite.paging.PageView;
+import by.sakuuj.blogsite.paging.RequestedPage;
+import by.sakuuj.blogsite.service.IdempotencyTokenService;
+import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.utils.PagingUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -133,7 +134,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         idempotencyTokenService.findById(idempotencyTokenId)
                 .ifPresent(token -> {
-                    throw new ServiceLayerException(ExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
+                    throw new ServiceLayerException(ServiceLayerExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
                 });
 
         ArticleEntity articleEntityToCreate = articleMapper.toEntity(request, authorId);
@@ -176,10 +177,10 @@ public class ArticleServiceImpl implements ArticleService {
         dtoValidator.validate(newContent);
 
         ArticleEntity entityToUpdate = articleRepository.findById(id)
-                .orElseThrow(() -> new ServiceLayerException(ExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND));
+                .orElseThrow(() -> new ServiceLayerException(ServiceLayerExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND));
 
         if (entityToUpdate.getVersion() != version) {
-            throw new ServiceLayerException(ExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH);
+            throw new ServiceLayerException(ServiceLayerExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH);
         }
 
         articleMapper.updateEntity(entityToUpdate, newContent);

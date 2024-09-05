@@ -1,6 +1,6 @@
 package by.sakuuj.blogsite.article.repository.jpa;
 
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.repository.Repository;

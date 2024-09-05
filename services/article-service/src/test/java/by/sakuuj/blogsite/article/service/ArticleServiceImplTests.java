@@ -1,6 +1,5 @@
 package by.sakuuj.blogsite.article.service;
 
-
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.PagingTestDataBuilder;
 import by.sakuuj.blogsite.article.PersonTestDataBuilder;
@@ -10,22 +9,23 @@ import by.sakuuj.blogsite.article.dtos.ArticleResponse;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.validator.DtoValidator;
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
-import by.sakuuj.blogsite.article.entity.jpa.CreationId;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.ArticleTopicId;
-import by.sakuuj.blogsite.article.entity.jpa.embeddable.IdempotencyTokenId;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.IdempotencyTokenEntity;
-import by.sakuuj.blogsite.article.exception.ExceptionMessage;
 import by.sakuuj.blogsite.article.exception.ServiceLayerException;
+import by.sakuuj.blogsite.article.exception.ServiceLayerExceptionMessage;
 import by.sakuuj.blogsite.article.mapper.elasticsearch.ArticleDocumentMapper;
 import by.sakuuj.blogsite.article.mapper.jpa.ArticleMapper;
-import by.sakuuj.blogsite.article.paging.PageView;
-import by.sakuuj.blogsite.article.paging.RequestedPage;
 import by.sakuuj.blogsite.article.repository.elasticsearch.ArticleDocumentRepository;
 import by.sakuuj.blogsite.article.repository.jpa.ArticleRepository;
 import by.sakuuj.blogsite.article.repository.jpa.ArticleTopicRepository;
 import by.sakuuj.blogsite.article.service.authorization.ArticleServiceAuthorizer;
-import by.sakuuj.blogsite.article.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.entity.jpa.CreationId;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ArticleTopicId;
+import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.IdempotencyTokenEntity;
+import by.sakuuj.blogsite.paging.PageView;
+import by.sakuuj.blogsite.paging.RequestedPage;
+import by.sakuuj.blogsite.service.IdempotencyTokenService;
+import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -694,8 +694,8 @@ class ArticleServiceImplTests {
             assertThatThrownBy(() -> articleServiceImpl.updateById(articleId, articleRequest, incorrectVersion, authenticatedUser))
                     .isInstanceOfSatisfying(ServiceLayerException.class, ex ->
                     {
-                        assertThat(ex.getExceptionMessage())
-                                .isEqualTo(ExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH);
+                        assertThat(ex.getServiceLayerExceptionMessage())
+                                .isEqualTo(ServiceLayerExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH);
 
                     });
 
@@ -744,8 +744,8 @@ class ArticleServiceImplTests {
             assertThatThrownBy(() -> articleServiceImpl.updateById(articleId, articleRequest, version, authenticatedUser))
                     .isInstanceOfSatisfying(ServiceLayerException.class, ex ->
                     {
-                        assertThat(ex.getExceptionMessage())
-                                .isEqualTo(ExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND);
+                        assertThat(ex.getServiceLayerExceptionMessage())
+                                .isEqualTo(ServiceLayerExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND);
 
                     });
 
@@ -807,8 +807,8 @@ class ArticleServiceImplTests {
                     authenticatedUser
             )).isInstanceOfSatisfying(ServiceLayerException.class, ex ->
             {
-                assertThat(ex.getExceptionMessage())
-                        .isEqualTo(ExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
+                assertThat(ex.getServiceLayerExceptionMessage())
+                        .isEqualTo(ServiceLayerExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
             });
 
             InOrder inOrder = inOrder(

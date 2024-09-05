@@ -2,8 +2,8 @@ package by.sakuuj.blogsite.article.mapper.jpa;
 
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleTopicEntity;
-import by.sakuuj.blogsite.article.entity.jpa.entities.TopicEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleTopicEntity;
+import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
 import org.mapstruct.InheritConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -18,7 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class QueryProviderImplTests {
+class QueryProviderImplTests {
 
     private final QueryProvider queryProvider = new QueryProviderImpl();
 

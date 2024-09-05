@@ -26,7 +26,7 @@ logging.level.tracer: trace
 logging.level.org.springframework.orm.jpa.JpaTransactionManager: DEBUG
 
 #spring.datasource.hikari.auto-commit: false
-
+logging.level.org.springframework.security: DEBUG
 spring.jpa.properties.hibernate.format_sql: true
 #spring.jpa.properties.hibernate.show_sql: true
 

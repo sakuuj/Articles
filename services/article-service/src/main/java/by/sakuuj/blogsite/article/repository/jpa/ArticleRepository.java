@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.article.repository.jpa;
 
-import by.sakuuj.blogsite.article.entity.jpa.entities.ArticleEntity;
-import by.sakuuj.blogsite.article.entity.jpa.utils.EntityGraphNames;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.blogsite.entity.jpa.utils.EntityGraphNames;
 import by.sakuuj.blogsite.article.repository.jpa.custom.ArticleCustomRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -22,6 +22,4 @@ public interface ArticleRepository extends Repository<ArticleEntity, UUID>, Arti
     void deleteById(UUID id);
 
     ArticleEntity save(ArticleEntity article);
-
-    ArticleEntity getReferenceById(UUID id);
 }

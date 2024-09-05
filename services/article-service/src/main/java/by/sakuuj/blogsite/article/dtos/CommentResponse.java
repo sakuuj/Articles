@@ -6,9 +6,11 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
-public record CommentResponse(UUID id,
-                              String content,
-                              LocalDateTime createdAt,
-                              LocalDateTime updatedAt,
-                              PersonResponse author) {
+public record CommentResponse(
+        UUID id,
+        String content,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt,
+        PersonResponse author
+) {
 }

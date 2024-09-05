@@ -37,5 +37,11 @@ dependencies {
         val mapstructVersion = "1.5.5.Final"
         api("org.mapstruct:mapstruct:$mapstructVersion")
         api("org.mapstruct:mapstruct-processor:$mapstructVersion")
+
+        val grpcVersion = "1.66.0"
+        api("io.grpc:grpc-stub:$grpcVersion")
+        api("io.grpc:grpc-protobuf:$grpcVersion")
+        api("io.grpc:grpc-netty-shaded:$grpcVersion")
+        api("org.apache.tomcat:annotations-api:6.0.53")
     }
 }
