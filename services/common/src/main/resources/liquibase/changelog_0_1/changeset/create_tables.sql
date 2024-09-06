@@ -8,6 +8,29 @@ CREATE TABLE persons
     version       SMALLINT           NOT NULL
 );
 
+CREATE TABLE person_roles
+(
+    person_role_id SMALLINT PRIMARY KEY,
+
+    name    VARCHAR(50) NOT NULL,
+    version SMALLINT    NOT NULL
+);
+
+CREATE TABLE person_to_person_role
+(
+    person_role_id SMALLINT NOT NULL,
+    person_id      UUID     NOT NULL,
+
+    created_at TIMESTAMP NOT NULL,
+    updated_at TIMESTAMP NOT NULL,
+    version    SMALLINT  NOT NULL,
+
+
+    PRIMARY KEY (person_role_id, person_id),
+    FOREIGN KEY (person_id)      REFERENCES persons (person_id) ON DELETE CASCADE,
+    FOREIGN KEY (person_role_id) REFERENCES person_roles (person_role_id)
+);
+
 CREATE TABLE topics
 (
     topic_id   UUID PRIMARY KEY,

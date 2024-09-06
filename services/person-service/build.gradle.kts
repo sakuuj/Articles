@@ -1,3 +1,4 @@
+
 plugins {
     id("java")
     id("int-test")
@@ -5,7 +6,9 @@ plugins {
     alias(libs.plugins.springBoot)
     alias(libs.plugins.hibernate)
     id("jacoco")
+//    id("com.google.protobuf") version "0.9.4"
 }
+
 
 
 
@@ -46,11 +49,6 @@ tasks.getByName(JACOCO_INT_TEST_REPORT_TASK_NAME) {
     dependsOn(tasks.intTest)
 }
 
-
-
-
-
-
 tasks.jacocoTestReport {
 
     reports {
@@ -76,13 +74,10 @@ dependencies {
     compileOnly("org.mapstruct:mapstruct")
     compileOnly("org.projectlombok:lombok")
 
-//    implementation(project(":concurrency-utils"))
     implementation(platform(project(":platform")))
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-//    implementation("org.springframework.boot:spring-security-oauth2-jose")
-
-    implementation(project(":services:common"))
     implementation(project(":services:person-service-grpc-common"))
+    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation(project(":services:common"))
     implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-aop")
@@ -90,8 +85,6 @@ dependencies {
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
-    implementation("by.sakuuj.elasticsearch:index-creator-elasticsearch-spring-boot-starter")
 
     runtimeOnly("org.postgresql:postgresql")
 

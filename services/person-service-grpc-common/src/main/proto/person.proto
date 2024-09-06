@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+option java_multiple_files = true;
+option java_package = "by.sakuuj.blogsite.person.grpc";
+
+message UUID {
+    string value = 1;
+}
+
+message Role {
+    string name = 1;
+}
+
+message Email {
+    string value = 1;
+}
+
+message SavePersonRequest {
+    Email primary_email = 1;
+    repeated Role roles = 2;
+}
+
+message PersonResponse {
+    UUID id = 1;
+    Email primary_email = 2;
+    repeated Role roles = 3;
+}
+
+message MaybePersonResponse {
+    oneof maybe_person {
+        PersonResponse person_response = 1;
+    }
+}
+
+message AddRolesRequest {
+    UUID person_id = 1;
+    repeated Role roles = 2;
+}
+
+service PersonService {
+
+    rpc GetPersonByEmail(Email) returns (MaybePersonResponse);
+
+    rpc SavePerson(SavePersonRequest) returns (PersonResponse);
+
+    rpc AddRolesToPerson(AddRolesRequest) returns (google.protobuf.Empty);
+}

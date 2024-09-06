@@ -1,12 +1,18 @@
 package by.sakuuj.blogsite.entity.jpa.entities;
 
 import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit;
+import by.sakuuj.blogsite.entity.jpa.embeddable.PersonToPersonRoleId_;
+import by.sakuuj.blogsite.entity.jpa.utils.EntityGraphNames;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
+import jakarta.persistence.NamedSubgraph;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
@@ -15,6 +21,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -24,6 +32,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "persons")
+@NamedEntityGraph(name = EntityGraphNames.PERSON_EAGER_WITH_PERSON_ROLES_EAGER,
+        attributeNodes = {
+                @NamedAttributeNode(value = PersonEntity_.PERSON_TO_PERSON_ROLE_LIST, subgraph = "person_role_list_eager")
+        },
+        subgraphs = {
+                @NamedSubgraph(name = "person_role_list_eager", attributeNodes = {
+                        @NamedAttributeNode(PersonToPersonRoleEntity_.PERSON),
+                        @NamedAttributeNode(PersonToPersonRoleEntity_.PERSON_ROLE)
+                })
+        }
+)
 public class PersonEntity {
 
     @Id
@@ -33,6 +52,10 @@ public class PersonEntity {
 
     @Column(name = SqlAttributes.PRIMARY_EMAIL)
     private String primaryEmail;
+
+    @Builder.Default
+    @OneToMany(mappedBy = PersonToPersonRoleEntity_.PERSON)
+    private List<PersonToPersonRoleEntity> personToPersonRoleList = new ArrayList<>();
 
     @Embedded
     @Builder.Default
