@@ -75,9 +75,9 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
 
     implementation(platform(project(":platform")))
-    implementation(project(":services:person-service-grpc-common"))
+    implementation(project(":services:common:person-service-grpc-common"))
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation(project(":services:common"))
+    implementation(project(":services:common:service-common"))
     implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-aop")
@@ -98,7 +98,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    intTestImplementation(project(":services:int-test-common"))
+    intTestImplementation(project(":services:common:int-test-common"))
     intTestImplementation("com.h2database:h2")
     intTestImplementation("org.testcontainers:postgresql")
     intTestImplementation("org.testcontainers:junit-jupiter")

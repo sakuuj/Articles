@@ -2,11 +2,12 @@ rootProject.name = "blogsite"
 include("platform")
 
 include("services:article-service")
-
-include("services:common")
-include("services:int-test-common")
-
-include("concurrency-utils")
-include("index-creator-elasticsearch-spring-boot-starter")
 include("services:person-service")
-include("services:person-service-grpc-common")
+
+
+include("services:common:service-common")
+include("services:common:int-test-common")
+include("services:common:security-common")
+include("services:common:person-service-grpc-common")
+
+include("index-creator-elasticsearch-spring-boot-starter")

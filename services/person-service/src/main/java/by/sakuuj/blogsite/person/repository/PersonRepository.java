@@ -11,5 +11,8 @@ import java.util.UUID;
 public interface PersonRepository extends JpaRepository<PersonEntity, UUID> {
 
     @EntityGraph(value = EntityGraphNames.PERSON_EAGER_WITH_PERSON_ROLES_EAGER)
+    Optional<PersonEntity> findById(UUID id);
+
+    @EntityGraph(value = EntityGraphNames.PERSON_EAGER_WITH_PERSON_ROLES_EAGER)
     Optional<PersonEntity> findByPrimaryEmail(String primaryEmail);
 }

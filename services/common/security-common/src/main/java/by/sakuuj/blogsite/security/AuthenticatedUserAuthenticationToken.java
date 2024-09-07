@@ -1,22 +1,36 @@
 package by.sakuuj.blogsite.security;
 
 import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
+import lombok.Data;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collection;
 
-public record AuthenticatedUserAuthenticationToken (AuthenticatedUser authenticatedUser)
-        implements Authentication {
+@Data
+public class AuthenticatedUserAuthenticationToken implements Authentication {
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return authenticatedUser.roles()
+    private final AuthenticatedUser authenticatedUser;
+    private final Collection<? extends GrantedAuthority> authorities;
+    private final boolean isAuthenticated;
+
+    public AuthenticatedUserAuthenticationToken(AuthenticatedUser authenticatedUser) {
+
+        this.authenticatedUser = authenticatedUser;
+
+        this.authorities =  authenticatedUser.roles()
                 .stream()
                 .map(r -> "ROLE_" + r.toString())
                 .map(SimpleGrantedAuthority::new)
                 .toList();
+
+        this.isAuthenticated = !authenticatedUser.isBlocked();
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return authorities;
     }
 
     @Override
@@ -36,12 +50,12 @@ public record AuthenticatedUserAuthenticationToken (AuthenticatedUser authentica
 
     @Override
     public boolean isAuthenticated() {
-        return true;
+        return isAuthenticated;
     }
 
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
-        // The token implies that user is already authenticated using jwt
+        throw new UnsupportedOperationException();
     }
 
     @Override

@@ -67,31 +67,25 @@ repositories {
 
 dependencies {
 
+
     annotationProcessor(platform(project(":platform")))
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.mapstruct:mapstruct-processor")
-    annotationProcessor("org.projectlombok:lombok-mapstruct-binding")
     annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen")
+    annotationProcessor("org.projectlombok:lombok-mapstruct-binding")
 
     compileOnly("org.mapstruct:mapstruct")
     compileOnly("org.projectlombok:lombok")
 
-//    implementation(project(":concurrency-utils"))
     implementation(platform(project(":platform")))
+    implementation(project(":services:common:person-service-grpc-common"))
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-//    implementation("org.springframework.boot:spring-security-oauth2-jose")
-
-    implementation(project(":services:common:service-common"))
-    implementation(project(":services:common:security-common"))
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-aop")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
-    implementation("by.sakuuj.elasticsearch:index-creator-elasticsearch-spring-boot-starter")
+
 
     runtimeOnly("org.postgresql:postgresql")
 
@@ -105,11 +99,11 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+
     intTestImplementation(project(":services:common:int-test-common"))
     intTestImplementation("com.h2database:h2")
-    intTestImplementation("org.testcontainers:postgresql")
+//    intTestImplementation("org.testcontainers:postgresql")
     intTestImplementation("org.testcontainers:junit-jupiter")
-    intTestImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
 }
 
 // mark intTest directories as Test Sources and Test Resources

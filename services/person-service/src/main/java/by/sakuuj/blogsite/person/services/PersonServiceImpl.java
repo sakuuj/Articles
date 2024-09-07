@@ -15,13 +15,14 @@ import by.sakuuj.blogsite.person.repository.PersonRepository;
 import by.sakuuj.blogsite.person.repository.PersonRoleRepository;
 import by.sakuuj.blogsite.person.repository.PersonToPersonRoleRepository;
 import io.grpc.Status;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -32,6 +33,8 @@ public class PersonServiceImpl implements PersonService {
     private final PersonRepository personRepository;
     private final PersonRoleRepository personRoleRepository;
     private final PersonToPersonRoleRepository personToPersonRoleRepository;
+
+    private final EntityManager entityManager;
 
     private final PersonMapper personMapper;
 
@@ -160,7 +163,6 @@ public class PersonServiceImpl implements PersonService {
     private void addRolesToPerson(List<String> personRoleNames, PersonEntity person) {
 
         List<PersonRoleEntity> foundRoles = mapRoleNamesToPersonRoleEntities(personRoleNames);
-
         foundRoles.forEach(foundRole -> {
 
             var personToPersonRoleId = PersonToPersonRoleId.builder()
@@ -168,39 +170,42 @@ public class PersonServiceImpl implements PersonService {
                     .personRoleId(foundRole.getId())
                     .build();
 
-            personToPersonRoleRepository.save(personToPersonRoleId);
+            try {
+                var addedPersonToPersonRoleEntity = personToPersonRoleRepository.save(personToPersonRoleId);
+                person.getPersonToPersonRoleList().add(addedPersonToPersonRoleEntity);
+
+            } catch (DuplicateKeyException ex) {
+                throw Status.INVALID_ARGUMENT
+                        .withCause(ex)
+                        .withDescription(
+                                String.format("Specified role to add '%s' was already present, can not add it twice",
+                                        foundRole.getName())
+                        )
+                        .asRuntimeException();
+            }
         });
-
-        List<PersonToPersonRoleEntity> personToPersonRoleEntitiesToAdd = personToPersonRoleRepository
-                .findByPersonAndPersonRoleIn(person, foundRoles);
-
-        if (person.getPersonToPersonRoleList() == null) {
-            person.setPersonToPersonRoleList(new ArrayList<>());
-        }
-        person.getPersonToPersonRoleList().addAll(personToPersonRoleEntitiesToAdd);
     }
 
     private void removeRolesFromPerson(List<String> personRoleNamesToRemove, PersonEntity person) {
 
-        List<PersonRoleEntity> foundRolesToRemove = mapRoleNamesToPersonRoleEntities(personRoleNamesToRemove);
-
-        foundRolesToRemove.forEach(foundRole -> {
-
-            var personToPersonRoleId = PersonToPersonRoleId.builder()
-                    .personId(person.getId())
-                    .personRoleId(foundRole.getId())
-                    .build();
-
-            personToPersonRoleRepository.removeById(personToPersonRoleId);
-        });
-
-        List<PersonToPersonRoleEntity> personToPersonRoleEntitiesToRemove = personToPersonRoleRepository
-                .findByPersonAndPersonRoleIn(person, foundRolesToRemove);
-
-        if (person.getPersonToPersonRoleList() == null) {
-            return;
+        List<PersonToPersonRoleId> personToPersonRoleIdsToRemove = person.getPersonToPersonRoleList().stream()
+                .filter(
+                        personToPersonRole -> personRoleNamesToRemove.contains(
+                                personToPersonRole.getPersonRole().getName()
+                        )
+                )
+                .map(PersonToPersonRoleEntity::getId)
+                .toList();
+        if (personToPersonRoleIdsToRemove.size() != personRoleNamesToRemove.size()) {
+            throw Status.INVALID_ARGUMENT
+                    .withDescription("Roles to remove are not assigned to the person OR incorrectly specified")
+                    .asRuntimeException();
         }
-        person.getPersonToPersonRoleList().removeAll(personToPersonRoleEntitiesToRemove);
+
+        personToPersonRoleRepository.deleteAllByIdInBatch(personToPersonRoleIdsToRemove);
+        person.getPersonToPersonRoleList().removeIf(
+                e -> personToPersonRoleIdsToRemove.contains(e.getId())
+        );
     }
 
     private List<PersonRoleEntity> mapRoleNamesToPersonRoleEntities(List<String> personRoleNames) {
@@ -215,7 +220,7 @@ public class PersonServiceImpl implements PersonService {
 
             List<String> nonExistingRoleNames = personRoleNames
                     .stream()
-                    .filter(roleName -> !foundRoleNames.contains(roleName))
+                    .filter(personRoleName -> !foundRoleNames.contains(personRoleName))
                     .toList();
 
             if (nonExistingRoleNames.isEmpty()) {

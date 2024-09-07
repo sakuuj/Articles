@@ -16,10 +16,12 @@ public class PersonToPersonRoleCustomRepositoryImpl implements PersonToPersonRol
 
 
     @Override
-    public void save(PersonToPersonRoleId id) {
+    public PersonToPersonRoleEntity save(PersonToPersonRoleId id) {
 
         PersonToPersonRoleEntity entityToPersist = personToPersonRoleMapper.toEntity(id);
 
         entityManager.persist(entityToPersist);
+
+        return entityToPersist;
     }
 }

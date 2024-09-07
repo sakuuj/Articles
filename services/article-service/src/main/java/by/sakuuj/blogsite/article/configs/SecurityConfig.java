@@ -1,6 +1,7 @@
 package by.sakuuj.blogsite.article.configs;
 
 import by.sakuuj.blogsite.security.AuthenticatedUserAuthenticationFilter;
+import by.sakuuj.blogsite.service.PersonService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,7 +14,15 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    AuthenticatedUserAuthenticationFilter authenticatedUserAuthenticationFilter(PersonService personService) {
+        return new AuthenticatedUserAuthenticationFilter(personService);
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity httpSecurity,
+            AuthenticatedUserAuthenticationFilter authenticatedUserAuthenticationFilter
+    ) throws Exception {
 
         httpSecurity
                 .authorizeHttpRequests(authorize -> authorize
@@ -25,7 +34,7 @@ public class SecurityConfig {
                         )
                 )
                 .addFilterAfter(
-                        new AuthenticatedUserAuthenticationFilter(),
+                        authenticatedUserAuthenticationFilter,
                         BearerTokenAuthenticationFilter.class
                 );
 

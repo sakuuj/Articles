@@ -21,6 +21,8 @@ spring.threads.virtual.enabled: true
 
 logging.level.tracer: trace
 
+by.sakuuj.person-grpc-server.target: dns:///localhost:9000
+
 #logging.level.org.hibernate.SQL: DEBUG
 #logging.level.org.hibernate.type.descriptor.sql.BasicBinder: DEBUG
 logging.level.org.springframework.orm.jpa.JpaTransactionManager: DEBUG

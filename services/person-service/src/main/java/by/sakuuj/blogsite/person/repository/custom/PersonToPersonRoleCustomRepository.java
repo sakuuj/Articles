@@ -1,8 +1,9 @@
 package by.sakuuj.blogsite.person.repository.custom;
 
 import by.sakuuj.blogsite.entity.jpa.embeddable.PersonToPersonRoleId;
+import by.sakuuj.blogsite.entity.jpa.entities.PersonToPersonRoleEntity;
 
 public interface PersonToPersonRoleCustomRepository {
 
-    void save(PersonToPersonRoleId id);
+    PersonToPersonRoleEntity save(PersonToPersonRoleId id);
 }

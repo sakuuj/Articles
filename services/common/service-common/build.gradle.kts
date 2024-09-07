@@ -67,6 +67,7 @@ repositories {
 
 dependencies {
 
+
     annotationProcessor(platform(project(":platform")))
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.mapstruct:mapstruct-processor")
@@ -98,7 +99,7 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 
-    intTestImplementation(project(":services:int-test-common"))
+    intTestImplementation(project(":services:common:int-test-common"))
     intTestImplementation("com.h2database:h2")
 //    intTestImplementation("org.testcontainers:postgresql")
     intTestImplementation("org.testcontainers:junit-jupiter")

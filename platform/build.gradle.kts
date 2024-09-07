@@ -27,7 +27,6 @@ dependencies {
     api(platform("org.springframework.cloud:spring-cloud-dependencies:2023.0.3"))
 
     constraints {
-        api(project(":concurrency-utils"))
         api(project(":index-creator-elasticsearch-spring-boot-starter"))
 
         api("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
