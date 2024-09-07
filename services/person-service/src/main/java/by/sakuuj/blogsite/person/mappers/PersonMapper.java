@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.person.mapper;
+package by.sakuuj.blogsite.person.mappers;
 
 import by.sakuuj.blogsite.entity.jpa.entities.PersonEntity;
 import by.sakuuj.blogsite.person.grpc.MaybePersonResponse;
@@ -18,6 +18,7 @@ import org.mapstruct.MappingConstants;
 )
 public interface PersonMapper {
 
+    @Mapping(target = "isBlocked", source = "blocked")
     @Mapping(target = "rolesList", source = "entity.personToPersonRoleList")
     PersonResponse toPersonResponse(PersonEntity entity);
 
@@ -26,6 +27,7 @@ public interface PersonMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "version", ignore = true)
+    @Mapping(target = "isBlocked", ignore = true)
     @Mapping(target = "modificationAudit", ignore = true)
     @Mapping(target = "personToPersonRoleList", ignore = true)
     PersonEntity toPersonEntityWithoutRoles(SavePersonRequest request);

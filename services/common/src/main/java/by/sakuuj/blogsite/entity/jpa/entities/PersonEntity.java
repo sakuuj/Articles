@@ -1,7 +1,6 @@
 package by.sakuuj.blogsite.entity.jpa.entities;
 
 import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit;
-import by.sakuuj.blogsite.entity.jpa.embeddable.PersonToPersonRoleId_;
 import by.sakuuj.blogsite.entity.jpa.utils.EntityGraphNames;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -61,12 +60,17 @@ public class PersonEntity {
     @Builder.Default
     private ModificationAudit modificationAudit = new ModificationAudit();
 
+    @Builder.Default
+    @Column(name = SqlAttributes.IS_BLOCKED)
+    private boolean isBlocked = false;
+
     @Version
     private short version;
 
     public static class SqlAttributes {
         public static final String ID = "person_id";
         public static final String PRIMARY_EMAIL = "primary_email";
+        public static final String IS_BLOCKED = "is_blocked";
     }
 
     @Override

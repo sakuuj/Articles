@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
 
 option java_multiple_files = true;
 option java_package = "by.sakuuj.blogsite.person.grpc";
@@ -9,8 +9,10 @@ message UUID {
     string value = 1;
 }
 
-message Role {
-    string name = 1;
+enum Role {
+    USER = 0;
+    ADMIN = 1;
+    PUBLISHER = 2;
 }
 
 message Email {
@@ -26,6 +28,7 @@ message PersonResponse {
     UUID id = 1;
     Email primary_email = 2;
     repeated Role roles = 3;
+    google.protobuf.BoolValue is_blocked = 4;
 }
 
 message MaybePersonResponse {
@@ -34,7 +37,7 @@ message MaybePersonResponse {
     }
 }
 
-message AddRolesRequest {
+message RolesRequest {
     UUID person_id = 1;
     repeated Role roles = 2;
 }
@@ -43,7 +46,15 @@ service PersonService {
 
     rpc GetPersonByEmail(Email) returns (MaybePersonResponse);
 
+    rpc GetPersonById(UUID) returns (MaybePersonResponse);
+
     rpc SavePerson(SavePersonRequest) returns (PersonResponse);
 
-    rpc AddRolesToPerson(AddRolesRequest) returns (google.protobuf.Empty);
+    rpc BlockPerson(UUID) returns (PersonResponse);
+
+    rpc UnblockPerson(UUID) returns (PersonResponse);
+
+    rpc AddRolesToPerson(RolesRequest) returns (PersonResponse);
+
+    rpc RemoveRolesFromPerson(RolesRequest) returns (PersonResponse);
 }

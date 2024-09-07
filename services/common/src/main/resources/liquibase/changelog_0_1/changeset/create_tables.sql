@@ -3,6 +3,7 @@ CREATE TABLE persons
     person_id     UUID PRIMARY KEY,
 
     primary_email VARCHAR(50) UNIQUE NOT NULL,
+    is_blocked    BOOLEAN            NOT NULL,
     created_at    TIMESTAMP          NOT NULL,
     updated_at    TIMESTAMP          NOT NULL,
     version       SMALLINT           NOT NULL
@@ -10,10 +11,10 @@ CREATE TABLE persons
 
 CREATE TABLE person_roles
 (
-    person_role_id SMALLINT PRIMARY KEY,
+    person_role_id SMALLINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
 
-    name    VARCHAR(50) NOT NULL,
-    version SMALLINT    NOT NULL
+    name    VARCHAR(50) UNIQUE NOT NULL,
+    version SMALLINT           NOT NULL
 );
 
 CREATE TABLE person_to_person_role
@@ -87,8 +88,8 @@ CREATE TABLE comments
 CREATE TABLE idempotency_tokens
 (
     idempotency_token UUID,
-    client_id UUID,
-    creation_id VARCHAR(50) UNIQUE NOT NULL,
+    client_id         UUID,
+    creation_id       VARCHAR(50) UNIQUE NOT NULL,
 
     PRIMARY KEY (idempotency_token, client_id),
     FOREIGN KEY (client_id) REFERENCES persons(person_id)

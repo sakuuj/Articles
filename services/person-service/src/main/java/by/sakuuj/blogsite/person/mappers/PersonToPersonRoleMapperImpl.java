@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.person.mapper;
+package by.sakuuj.blogsite.person.mappers;
 
 import by.sakuuj.blogsite.entity.jpa.embeddable.PersonToPersonRoleId;
 import by.sakuuj.blogsite.entity.jpa.entities.PersonEntity;

@@ -1,20 +1,21 @@
 package by.sakuuj.blogsite.person.controller;
 
-import by.sakuuj.blogsite.person.grpc.AddRolesRequest;
 import by.sakuuj.blogsite.person.grpc.Email;
 import by.sakuuj.blogsite.person.grpc.MaybePersonResponse;
 import by.sakuuj.blogsite.person.grpc.PersonResponse;
 import by.sakuuj.blogsite.person.grpc.PersonServiceGrpc;
+import by.sakuuj.blogsite.person.grpc.RolesRequest;
 import by.sakuuj.blogsite.person.grpc.SavePersonRequest;
+import by.sakuuj.blogsite.person.grpc.UUID;
 import by.sakuuj.blogsite.person.services.PersonService;
-import com.google.protobuf.Empty;
 import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
+
+import java.util.function.Supplier;
 
 @Slf4j
 @Component
@@ -23,65 +24,93 @@ public class PersonGrpcService extends PersonServiceGrpc.PersonServiceImplBase {
 
     private final PersonService personService;
 
-    @Override
-    public void getPersonByEmail(Email email, io.grpc.stub.StreamObserver<MaybePersonResponse> responseObserver) {
+    public static <T> void handleServiceCall(
+            StreamObserver<? super T> responseObserver,
+            Supplier<? extends T> responseSupplier,
+            String runtimeExceptionLogMessage
+    ) {
         try {
-            MaybePersonResponse maybePerson = personService.getPersonByEmail(email);
+            T response = responseSupplier.get();
 
-            responseObserver.onNext(maybePerson);
+            responseObserver.onNext(response);
             responseObserver.onCompleted();
 
         } catch (RuntimeException ex) {
 
-            log.error("PersonService/GetPersonByEmail exception", ex);
+            log.error(runtimeExceptionLogMessage, ex);
 
             StatusRuntimeException exception = Status.fromThrowable(ex).asRuntimeException();
             responseObserver.onError(exception);
-            throw new RuntimeException(ex);
         }
+    }
+
+    @Override
+    public void getPersonByEmail(Email email, io.grpc.stub.StreamObserver<MaybePersonResponse> responseObserver) {
+
+        handleServiceCall(
+                responseObserver,
+                () -> personService.getPersonByEmail(email),
+                "PersonService/GetPersonByEmail exception"
+        );
+    }
+
+    @Override
+    public void getPersonById(UUID request, StreamObserver<MaybePersonResponse> responseObserver) {
+        handleServiceCall(
+                responseObserver,
+                () -> personService.getPersonById(request),
+                "PersonService/GetPersonById exception"
+        );
     }
 
     @Override
     public void savePerson(SavePersonRequest request, StreamObserver<PersonResponse> responseObserver) {
-        try {
-            PersonResponse personResponse = personService.savePerson(request);
 
-            responseObserver.onNext(personResponse);
-            responseObserver.onCompleted();
+        handleServiceCall(
+                responseObserver,
+                () -> personService.savePerson(request),
+                "PersonService/SavePerson exception"
+        );
+    }
 
-        } catch (RuntimeException ex) {
 
-            log.error("PersonService/SavePerson exception", ex);
+    @Override
+    public void addRolesToPerson(RolesRequest request, StreamObserver<PersonResponse> responseObserver) {
 
-            StatusRuntimeException exception = Status.fromThrowable(ex).asRuntimeException();
-            responseObserver.onError(exception);
-        }
+        handleServiceCall(
+                responseObserver,
+                () -> personService.addRolesToPerson(request),
+                "PersonService/AddRolesToPerson exception"
+        );
     }
 
     @Override
-    public void addRolesToPerson(AddRolesRequest request, StreamObserver<Empty> responseObserver) {
-        try {
-            Empty empty = personService.addRolesToPerson(request);
+    public void removeRolesFromPerson(RolesRequest request, StreamObserver<PersonResponse> responseObserver) {
 
-            responseObserver.onNext(empty);
-            responseObserver.onCompleted();
-
-        } catch (DataIntegrityViolationException ex) {
-
-            StatusRuntimeException exception = Status.fromCode(Status.Code.INVALID_ARGUMENT)
-                    .withDescription("One of the roles you are trying to assign has been already assigned")
-                    .asRuntimeException();
-
-            responseObserver.onError(exception);
-
-        } catch (RuntimeException ex) {
-
-            log.error("PersonService/AddRolesToPerson exception", ex);
-
-            StatusRuntimeException exception = Status.fromThrowable(ex).asRuntimeException();
-            responseObserver.onError(exception);
-        }
+        handleServiceCall(
+                responseObserver,
+                () -> personService.removeRolesFromPerson(request),
+                "PersonService/RemoveRolesFromPerson exception"
+        );
     }
 
+    @Override
+    public void blockPerson(UUID request, StreamObserver<PersonResponse> responseObserver) {
+
+        handleServiceCall(
+                responseObserver,
+                () -> personService.blockPerson(request),
+                "PersonService/BlockPerson exception"
+        );
+    }
+
+    @Override
+    public void unblockPerson(UUID request, StreamObserver<PersonResponse> responseObserver) {
+        handleServiceCall(
+                responseObserver,
+                () -> personService.unblockPerson(request),
+                "PersonService/UnblockPerson exception"
+        );
+    }
 
 }

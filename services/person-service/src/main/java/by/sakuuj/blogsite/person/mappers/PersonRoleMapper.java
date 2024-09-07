@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.person.mapper;
+package by.sakuuj.blogsite.person.mappers;
 
 import by.sakuuj.blogsite.entity.jpa.entities.PersonToPersonRoleEntity;
 import by.sakuuj.blogsite.person.grpc.Role;
@@ -16,8 +16,6 @@ public interface  PersonRoleMapper {
 
         String personRoleName = entity.getPersonRole().getName();
 
-        return Role.newBuilder()
-                .setName(personRoleName)
-                .build();
+        return Role.valueOf(personRoleName);
     }
 }

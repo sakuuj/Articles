@@ -1,6 +1,7 @@
-package by.sakuuj.blogsite.person.mapper;
+package by.sakuuj.blogsite.person.mappers;
 
 import by.sakuuj.blogsite.person.grpc.Email;
+import com.google.protobuf.BoolValue;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -19,6 +20,14 @@ public interface WrapperMapper {
 
     default UUID toJavaUUID(by.sakuuj.blogsite.person.grpc.UUID uuid) {
         return UUID.fromString(uuid.getValue());
+    }
+
+    default BoolValue toBoolValue(boolean bool) {
+        return BoolValue.of(bool);
+    }
+
+    default boolean toBoolean(BoolValue boolValue) {
+        return boolValue.getValue();
     }
 
     default Email toGrpcEmail(String email) {

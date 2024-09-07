@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: changelog_0_1_insert_roles
+      author: sakuuj
+      changes:
+        - sqlFile:
+            path: liquibase/changelog_0_1/changeset/insert_roles.sql
