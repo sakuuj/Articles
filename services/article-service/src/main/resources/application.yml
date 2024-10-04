@@ -3,6 +3,9 @@ server.tomcat.threads.max: 8
 
 springdoc.swagger-ui.path: /swagger
 
+spring.kafka.producer.key-serializer: org.apache.kafka.common.serialization.UUIDSerializer
+spring.kafka.producer.value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 spring.aop.proxy-target-class: true
 spring.elasticsearch.password: ignored
 spring.elasticsearch.username: ignored

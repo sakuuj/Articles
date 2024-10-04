@@ -695,7 +695,7 @@ class ArticleServiceImplTests {
                     .isInstanceOfSatisfying(ServiceLayerException.class, ex ->
                     {
                         assertThat(ex.getServiceLayerExceptionMessage())
-                                .isEqualTo(ServiceLayerExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH);
+                                .isEqualTo(ServiceLayerExceptionMessage.OPERATION_FAILED_ENTITY_VERSION_DOES_NOT_MATCH);
 
                     });
 
@@ -745,7 +745,7 @@ class ArticleServiceImplTests {
                     .isInstanceOfSatisfying(ServiceLayerException.class, ex ->
                     {
                         assertThat(ex.getServiceLayerExceptionMessage())
-                                .isEqualTo(ServiceLayerExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND);
+                                .isEqualTo(ServiceLayerExceptionMessage.UPDATE_FAILED_ENTITY_NOT_FOUND);
 
                     });
 
@@ -808,7 +808,7 @@ class ArticleServiceImplTests {
             )).isInstanceOfSatisfying(ServiceLayerException.class, ex ->
             {
                 assertThat(ex.getServiceLayerExceptionMessage())
-                        .isEqualTo(ServiceLayerExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
+                        .isEqualTo(ServiceLayerExceptionMessage.CREATE_FAILED_IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
             });
 
             InOrder inOrder = inOrder(

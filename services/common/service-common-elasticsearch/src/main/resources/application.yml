@@ -1,0 +1,5 @@
+spring.elasticsearch.password: ignored
+spring.elasticsearch.username: ignored
+by.sakuuj.elasticsearch.index-creator.username: ${spring.elasticsearch.username}
+by.sakuuj.elasticsearch.index-creator.password: ${spring.elasticsearch.password}
+by.sakuuj.elasticsearch.index-creator.index-to-json-file-pairs: ["articles<->elasticsearchQueries/createArticlesIndex.json"]

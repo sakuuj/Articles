@@ -25,6 +25,7 @@ publishing {
 dependencies {
     api(platform("org.springframework.boot:spring-boot-dependencies:3.3.1"))
     api(platform("org.springframework.cloud:spring-cloud-dependencies:2023.0.3"))
+    api(platform("io.grpc:grpc-bom:1.54.1"))
 
     constraints {
         api(project(":index-creator-elasticsearch-spring-boot-starter"))
@@ -37,10 +38,11 @@ dependencies {
         api("org.mapstruct:mapstruct:$mapstructVersion")
         api("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
-        val grpcVersion = "1.66.0"
-        api("io.grpc:grpc-stub:$grpcVersion")
-        api("io.grpc:grpc-protobuf:$grpcVersion")
-        api("io.grpc:grpc-netty-shaded:$grpcVersion")
+        // used by java grpc client
         api("org.apache.tomcat:annotations-api:6.0.53")
+
+        val temporalVersion = "1.25.1"
+        api("io.temporal:temporal-sdk:$temporalVersion")
+        api("io.temporal:temporal-testing:$temporalVersion")
     }
 }

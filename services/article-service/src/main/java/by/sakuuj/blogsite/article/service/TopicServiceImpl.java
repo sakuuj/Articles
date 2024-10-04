@@ -76,7 +76,7 @@ public class TopicServiceImpl implements TopicService {
 
         Optional<IdempotencyTokenEntity> foundToken = idempotencyTokenService.findById(idempotencyTokenId);
         if (foundToken.isPresent()) {
-            throw new ServiceLayerException(ServiceLayerExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
+            throw new ServiceLayerException(ServiceLayerExceptionMessage.CREATE_FAILED_IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
         }
 
         TopicEntity topicEntityToSave = topicMapper.toEntity(request);
@@ -107,11 +107,11 @@ public class TopicServiceImpl implements TopicService {
         dtoValidator.validate(newContent);
 
         TopicEntity topicToUpdate = topicRepository.findById(id).orElseThrow(() ->
-                new ServiceLayerException(ServiceLayerExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND)
+                new ServiceLayerException(ServiceLayerExceptionMessage.UPDATE_FAILED_ENTITY_NOT_FOUND)
         );
 
         if (topicToUpdate.getVersion() != version) {
-            throw new ServiceLayerException(ServiceLayerExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH);
+            throw new ServiceLayerException(ServiceLayerExceptionMessage.OPERATION_FAILED_ENTITY_VERSION_DOES_NOT_MATCH);
         }
 
         topicMapper.updateEntity(topicToUpdate, newContent);

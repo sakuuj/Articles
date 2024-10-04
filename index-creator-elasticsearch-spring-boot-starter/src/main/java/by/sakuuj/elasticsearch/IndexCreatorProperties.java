@@ -38,7 +38,7 @@ public class IndexCreatorProperties {
 
                 indexToJsonFilePairsParsed = indexToJsonFilePairs.stream()
                         .map(string -> {
-                            String[] split = string.split("<->", 2);
+                            String[] split = string.split(INDEX_TO_JSON_FILE_SEPARATOR, 2);
                             if (split.length != 2) {
                                 throw new RuntimeException("""
                                         Incorrect index to json file mapping is specified.

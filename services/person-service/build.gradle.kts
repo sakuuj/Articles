@@ -5,8 +5,6 @@ plugins {
     id("idea")
     alias(libs.plugins.springBoot)
     alias(libs.plugins.hibernate)
-    id("jacoco")
-//    id("com.google.protobuf") version "0.9.4"
 }
 
 
@@ -14,49 +12,6 @@ plugins {
 
 group = "by.sakuuj.blogsite"
 version = "0.1"
-
-jacoco {
-    reportsDirectory = layout.buildDirectory.dir("jacocoReport")
-}
-
-val JACOCO_INT_TEST_REPORT_TASK_NAME = "jacocoIntTestReport"
-
-tasks.register<JacocoReport>(JACOCO_INT_TEST_REPORT_TASK_NAME) {
-    executionData(tasks.intTest.get())
-    sourceSets(sourceSets.main.get())
-    group = "verification"
-
-    reports {
-        xml.required = false
-        csv.required = false
-        html.required = true
-    }
-}
-
-
-
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
-}
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-}
-
-tasks.intTest {
-    finalizedBy(tasks.getByName(JACOCO_INT_TEST_REPORT_TASK_NAME))
-}
-tasks.getByName(JACOCO_INT_TEST_REPORT_TASK_NAME) {
-    dependsOn(tasks.intTest)
-}
-
-tasks.jacocoTestReport {
-
-    reports {
-        xml.required = false
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
-    }
-}
 
 repositories {
     mavenLocal()
@@ -77,7 +32,7 @@ dependencies {
     implementation(platform(project(":platform")))
     implementation(project(":services:common:person-service-grpc-common"))
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-    implementation(project(":services:common:service-common"))
+    implementation(project(":services:common:service-common-jpa"))
     implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-aop")
@@ -98,7 +53,6 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-    intTestImplementation(project(":services:common:int-test-common"))
     intTestImplementation("com.h2database:h2")
     intTestImplementation("org.testcontainers:postgresql")
     intTestImplementation("org.testcontainers:junit-jupiter")

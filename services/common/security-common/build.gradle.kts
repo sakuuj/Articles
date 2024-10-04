@@ -4,61 +4,10 @@ plugins {
     id("idea")
     alias(libs.plugins.springBoot)
     alias(libs.plugins.hibernate)
-    id("jacoco")
 }
-
-
 
 group = "by.sakuuj.blogsite"
 version = "0.1"
-
-jacoco {
-    reportsDirectory = layout.buildDirectory.dir("jacocoReport")
-}
-
-val JACOCO_INT_TEST_REPORT_TASK_NAME = "jacocoIntTestReport"
-
-tasks.register<JacocoReport>(JACOCO_INT_TEST_REPORT_TASK_NAME) {
-    executionData(tasks.intTest.get())
-    sourceSets(sourceSets.main.get())
-    group = "verification"
-
-    reports {
-        xml.required = false
-        csv.required = false
-        html.required = true
-    }
-}
-
-
-
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
-}
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-}
-
-tasks.intTest {
-    finalizedBy(tasks.getByName(JACOCO_INT_TEST_REPORT_TASK_NAME))
-}
-tasks.getByName(JACOCO_INT_TEST_REPORT_TASK_NAME) {
-    dependsOn(tasks.intTest)
-}
-
-
-
-
-
-
-tasks.jacocoTestReport {
-
-    reports {
-        xml.required = false
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
-    }
-}
 
 repositories {
     mavenLocal()
@@ -66,43 +15,27 @@ repositories {
 }
 
 dependencies {
-
-
     annotationProcessor(platform(project(":platform")))
     annotationProcessor("org.projectlombok:lombok")
-    annotationProcessor("org.mapstruct:mapstruct-processor")
-    annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen")
-    annotationProcessor("org.projectlombok:lombok-mapstruct-binding")
 
-    compileOnly("org.mapstruct:mapstruct")
     compileOnly("org.projectlombok:lombok")
 
     implementation(platform(project(":platform")))
     implementation(project(":services:common:person-service-grpc-common"))
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-
-
-    runtimeOnly("org.postgresql:postgresql")
-
 
     testAnnotationProcessor(platform(project(":platform")))
     testAnnotationProcessor("org.projectlombok:lombok")
 
-    testCompileOnly("org.mapstruct:mapstruct")
     testCompileOnly("org.projectlombok:lombok")
 
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
 
-    intTestImplementation(project(":services:common:int-test-common"))
-    intTestImplementation("com.h2database:h2")
-//    intTestImplementation("org.testcontainers:postgresql")
     intTestImplementation("org.testcontainers:junit-jupiter")
 }
 

@@ -4,61 +4,10 @@ plugins {
     id("idea")
     alias(libs.plugins.springBoot)
     alias(libs.plugins.hibernate)
-    id("jacoco")
 }
-
-
 
 group = "by.sakuuj.blogsite"
 version = "0.1"
-
-jacoco {
-    reportsDirectory = layout.buildDirectory.dir("jacocoReport")
-}
-
-val JACOCO_INT_TEST_REPORT_TASK_NAME = "jacocoIntTestReport"
-
-tasks.register<JacocoReport>(JACOCO_INT_TEST_REPORT_TASK_NAME) {
-    executionData(tasks.intTest.get())
-    sourceSets(sourceSets.main.get())
-    group = "verification"
-
-    reports {
-        xml.required = false
-        csv.required = false
-        html.required = true
-    }
-}
-
-
-
-tasks.test {
-    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
-}
-tasks.jacocoTestReport {
-    dependsOn(tasks.test)
-}
-
-tasks.intTest {
-    finalizedBy(tasks.getByName(JACOCO_INT_TEST_REPORT_TASK_NAME))
-}
-tasks.getByName(JACOCO_INT_TEST_REPORT_TASK_NAME) {
-    dependsOn(tasks.intTest)
-}
-
-
-
-
-
-
-tasks.jacocoTestReport {
-
-    reports {
-        xml.required = false
-        csv.required = false
-        html.outputLocation = layout.buildDirectory.dir("jacocoHtml")
-    }
-}
 
 repositories {
     mavenLocal()
@@ -82,6 +31,8 @@ dependencies {
 //    implementation("org.springframework.boot:spring-security-oauth2-jose")
 
     implementation(project(":services:common:service-common"))
+    implementation(project(":services:common:service-common-jpa"))
+    implementation(project(":services:common:service-common-elasticsearch"))
     implementation(project(":services:common:security-common"))
     implementation("org.liquibase:liquibase-core")
     implementation("org.springframework.boot:spring-boot-starter")
@@ -92,6 +43,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     implementation("by.sakuuj.elasticsearch:index-creator-elasticsearch-spring-boot-starter")
+    implementation("org.springframework.kafka:spring-kafka")
 
     runtimeOnly("org.postgresql:postgresql")
 
@@ -101,11 +53,17 @@ dependencies {
 
     testCompileOnly("org.mapstruct:mapstruct")
     testCompileOnly("org.projectlombok:lombok")
+    implementation("io.temporal:temporal-sdk")
 
+    testImplementation(project(":services:common:service-common"))
+    testImplementation(project(":services:common:service-common-jpa"))
+    testImplementation(project(":services:common:service-common-elasticsearch"))
+    testImplementation("io.temporal:temporal-testing")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.springframework.kafka:spring-kafka-test")
 
-    intTestImplementation(project(":services:common:int-test-common"))
+//    intTestImplementation(project(":services:common:int-test-common"))
     intTestImplementation("com.h2database:h2")
     intTestImplementation("org.testcontainers:postgresql")
     intTestImplementation("org.testcontainers:junit-jupiter")

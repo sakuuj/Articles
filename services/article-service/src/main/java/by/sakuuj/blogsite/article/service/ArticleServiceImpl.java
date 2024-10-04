@@ -4,12 +4,12 @@ import by.sakuuj.blogsite.article.dtos.ArticleRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleResponse;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.validator.DtoValidator;
+import by.sakuuj.blogsite.article.producer.ElasticsearchEventProducer;
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.exception.ServiceLayerException;
 import by.sakuuj.blogsite.article.exception.ServiceLayerExceptionMessage;
 import by.sakuuj.blogsite.article.mapper.elasticsearch.ArticleDocumentMapper;
 import by.sakuuj.blogsite.article.mapper.jpa.ArticleMapper;
-import by.sakuuj.blogsite.article.repository.elasticsearch.ArticleDocumentRepository;
 import by.sakuuj.blogsite.article.repository.jpa.ArticleRepository;
 import by.sakuuj.blogsite.article.repository.jpa.ArticleTopicRepository;
 import by.sakuuj.blogsite.article.service.authorization.ArticleServiceAuthorizer;
@@ -49,12 +49,12 @@ public class ArticleServiceImpl implements ArticleService {
 
     private final ArticleRepository articleRepository;
     private final ArticleTopicRepository articleTopicRepository;
-    private final ArticleDocumentRepository articleDocumentRepository;
+
+    private final ElasticsearchEventProducer elasticsearchEventProducer;
 
     private final IdempotencyTokenService idempotencyTokenService;
 
     private final TransactionTemplate txTemplate;
-
 
     @Override
     @Transactional(readOnly = true)
@@ -134,7 +134,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         idempotencyTokenService.findById(idempotencyTokenId)
                 .ifPresent(token -> {
-                    throw new ServiceLayerException(ServiceLayerExceptionMessage.CREATE_FAILED__IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
+                    throw new ServiceLayerException(ServiceLayerExceptionMessage.CREATE_FAILED_IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
                 });
 
         ArticleEntity articleEntityToCreate = articleMapper.toEntity(request, authorId);
@@ -177,10 +177,10 @@ public class ArticleServiceImpl implements ArticleService {
         dtoValidator.validate(newContent);
 
         ArticleEntity entityToUpdate = articleRepository.findById(id)
-                .orElseThrow(() -> new ServiceLayerException(ServiceLayerExceptionMessage.UPDATE_FAILED__ENTITY_NOT_FOUND));
+                .orElseThrow(() -> new ServiceLayerException(ServiceLayerExceptionMessage.UPDATE_FAILED_ENTITY_NOT_FOUND));
 
         if (entityToUpdate.getVersion() != version) {
-            throw new ServiceLayerException(ServiceLayerExceptionMessage.OPERATION_FAILED__ENTITY_VERSION_DOES_NOT_MATCH);
+            throw new ServiceLayerException(ServiceLayerExceptionMessage.OPERATION_FAILED_ENTITY_VERSION_DOES_NOT_MATCH);
         }
 
         articleMapper.updateEntity(entityToUpdate, newContent);
