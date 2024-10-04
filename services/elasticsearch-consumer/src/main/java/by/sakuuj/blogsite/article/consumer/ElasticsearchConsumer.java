@@ -11,9 +11,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ElasticsearchConsumer {
 
+    public static final String TOPIC_NAME = "articles";
+    public static final String CONSUMED_TYPE_NAME = "articleDocReq";
+
     private final ArticleDocumentRepository articleDocumentRepository;
 
-    @KafkaListener(topics = "articles", groupId = "1", concurrency = "3")
+    @KafkaListener(topics = TOPIC_NAME, groupId = "1", concurrency = "3")
     public void consumeArticle(ArticleDocumentRequest articleDocumentRequest) {
 
         ArticleDocumentRequest.RequestType requestType = articleDocumentRequest.type();

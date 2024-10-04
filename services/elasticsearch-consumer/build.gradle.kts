@@ -30,9 +30,17 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     implementation("org.springframework.kafka:spring-kafka")
 
+    testAnnotationProcessor(platform(project(":platform")))
+    testAnnotationProcessor("org.projectlombok:lombok")
+
+    testCompileOnly("org.projectlombok:lombok")
+
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
+
+    intTestImplementation("org.testcontainers:junit-jupiter")
+    intTestImplementation("org.testcontainers:kafka:1.19.8")
 }
 
 // mark intTest directories as Test Sources and Test Resources

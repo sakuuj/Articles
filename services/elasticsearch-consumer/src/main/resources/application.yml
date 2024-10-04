@@ -1,9 +1,10 @@
-spring.config.import: configtree:${DOCKER_SECRETS_DIR:docker/secrets/}
+#spring.config.import: configtree:${DOCKER_SECRETS_DIR:docker/secrets/}
 
 spring.main.web-application-type: NONE
 
 spring.kafka.bootstrap-servers: ["localhost:10002"]
+spring.kafka.consumer.properties.spring.json.type.mapping: "articleDocReq:"
 
 spring.elasticsearch.uris: ["localhost:9200"]
-spring.elasticsearch.connection-timeout: 5s
-spring.elasticsearch.socket-timeout: 3s
+spring.elasticsearch.username: elastic
+spring.elasticsearch.password: elastic

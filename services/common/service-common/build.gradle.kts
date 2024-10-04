@@ -16,7 +16,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
 
     implementation(platform(project(":platform")))
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
 
