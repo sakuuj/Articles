@@ -1,44 +1,57 @@
-<h1>Blogsite (backend)</h1>
-<p>Backend web-приложения аналогичного <a href="https://habr.com">Хабр</a>, <a href="https://medium.com">Medium</a> </p>
-<p> Используемые фреймворки/библиотеки для продакшена</p>
-<ul>
-    <li>Spring Boot 3.3.1</li>
-    <li>Spring Web MVC</li>
-    <li>gRPC</li>
-    <li>Spring Data JPA</li>
-    <li>Spring Data Elasticsearch</li>
-    <li>Spring Validation</li>
-    <li>Spring OAuth2 Resource Server</li>
-    <li>Hibernate 6.5.2</li>
-    <li>MapStruct</li>
-    <li>Liquibase</li>
-    <li>Lombok</li>
-</ul>
-<p> Используемые фреймворки/библиотеки для тестирования</p>
-<ul>
-    <li>JUnit5</li>
-    <li>AssertJ</li>
-    <li>Spring Boot Test</li>
-    <li>Mockito</li>
-    <li>Testcontainers</li>
-    <li>H2</li>
-    <li>Wiremock</li>
-</ul>
-<p>Используемые технологии</p>
-<ul>
-    <li>Java 21 & Gradle (Kotlin)</li>
-    <li>PostgreSQL 16</li>
-    <li>Elasticsearch 8</li>
-</ul>
+# articles
 
-<p>Создан удобный frontend на React для получения токенов аутентификации от Google,
-которые нужны для вызова некоторых HTTP-эндпоинтов. Скриншоты: 
-<p align="center">
-<img src="readme-pics/auth-frontend-1.png" width="800"/>
-<img src="readme-pics/auth-frontend-2.png" width="800"/>
-<img src="readme-pics/auth-frontend-3.png" width="800"/>
-<img src="readme-pics/auth-frontend-4.png" width="800"/>
-</p>
-<p>Написан спринг бут стартер, создающий схемы индексов в Elasticsearch, если индексы с такими названиями отсутствуют.
-(RestClient + Elasticsearch REST API) </p>
+---
+
+Back-end web-приложение, содержит статьи различных тематик. Можно проводить поиск статей по тематикам, ключевым словам
+имеющимся в заголовках и внутри самих статей (ключевые слова могут быть написаны с ошибками). Для получения доступа 
+к статьям и для их поиска аутентификация не требуется.
+Для публикации статей требуется аутентификация и наличие у пользователя роли "PUBLISHER" либо "ADMIN".
+Регистрация и аутентификация в приложении осуществляется через аутентификацию в Google (OIDC). 
+
+Используемые технологии:
+- Java 21 & Spring Boot
+- Elasticsearch
+- PostgreSQL
+- Apache Kafka
+- Temporal
+
+---
+
+Используемые фреймворки/библиотеки:
+- Spring Boot 3.3.1
+- Spring Web MVC 
+- gRPC
+- Spring Data JPA
+- Spring Data Elasticsearch
+- Spring Kafka
+- Spring Validation
+- Spring OAuth2 Resource Server
+- Hibernate 6.5.2
+- Temporal SDK
+- MapStruct
+- Liquibase
+- Lombok
+
+---
+
+Используемые фреймворки/библиотеки для тестирования:
+- JUnit5
+- Spring Boot Test
+- Mockito
+- Testcontainers
+- H2
+- Wiremock
+
+---
+
+Процесс аутентификации: 
+
+![](readme-pics/auth-frontend-1.png)
+![](readme-pics/auth-frontend-2.png)
+![](readme-pics/auth-frontend-3.png)
+![](readme-pics/auth-frontend-4.png)
+
+---
+
+Написан спринг бут стартер, создающий схемы индексов в Elasticsearch, если соответствующие индексы отсутствуют.
 
