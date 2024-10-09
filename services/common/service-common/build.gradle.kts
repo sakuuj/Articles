@@ -14,9 +14,9 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
 
     compileOnly("org.projectlombok:lombok")
+    compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
 
     implementation(platform(project(":platform")))
-    compileOnly("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-web")
 

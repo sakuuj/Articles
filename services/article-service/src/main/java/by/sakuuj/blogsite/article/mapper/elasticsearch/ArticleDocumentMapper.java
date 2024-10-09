@@ -1,6 +1,7 @@
 package by.sakuuj.blogsite.article.mapper.elasticsearch;
 
-import by.sakuuj.blogsite.entity.elasticsearch.ArticleDocument;
+import by.sakuuj.blogsite.article.dtos.ArticleResponse;
+import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -15,4 +16,7 @@ public interface ArticleDocumentMapper {
 
     @Mapping(target = "datePublishedOn", source = "entity.modificationAudit.createdAt")
     ArticleDocument toDocument(ArticleEntity entity);
+
+    @Mapping(target = "datePublishedOn", source = "response.createdAt")
+    ArticleDocument toDocument(ArticleResponse response);
 }
