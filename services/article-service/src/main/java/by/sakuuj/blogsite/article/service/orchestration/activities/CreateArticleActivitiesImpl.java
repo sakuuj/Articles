@@ -1,15 +1,14 @@
-package by.sakuuj.blogsite.article.service.orchestration;
+package by.sakuuj.blogsite.article.service.orchestration.activities;
 
+import by.sakuuj.blogsite.article.dto.ArticleDocumentRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleResponse;
+import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.exception.IdempotencyTokenExistsException;
-import by.sakuuj.blogsite.article.exception.NotFoundException;
 import by.sakuuj.blogsite.article.mapper.elasticsearch.ArticleDocumentMapper;
 import by.sakuuj.blogsite.article.mapper.jpa.ArticleMapper;
 import by.sakuuj.blogsite.article.producer.ElasticsearchEventProducer;
 import by.sakuuj.blogsite.article.repository.jpa.ArticleRepository;
-import by.sakuuj.blogsite.entity.elasticsearch.ArticleDocument;
-import by.sakuuj.blogsite.entity.elasticsearch.ArticleDocumentRequest;
 import by.sakuuj.blogsite.entity.jpa.CreationId;
 import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
 import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
@@ -24,11 +23,12 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CreateArticleActivitiesImpl implements CreateArticleActivities {
 
-    private final ArticleRepository articleRepository;
     private final ArticleMapper articleMapper;
+    private final ArticleDocumentMapper articleDocumentMapper;
 
     private final ElasticsearchEventProducer elasticsearchEventProducer;
-    private final ArticleDocumentMapper articleDocumentMapper;
+
+    private final ArticleRepository articleRepository;
 
     private final IdempotencyTokenService idempotencyTokenService;
 
@@ -53,13 +53,9 @@ public class CreateArticleActivitiesImpl implements CreateArticleActivities {
     }
 
     @Override
-    public void sendElasticsearchSaveEvent(UUID articleId) {
-        ArticleEntity articleEntity = articleRepository.findById(articleId).orElseThrow(NotFoundException::new);
+    public void sendSaveDocumentEvent(ArticleResponse articleResponse) {
 
-        ArticleDocument documentToSave = articleDocumentMapper.toDocument(articleEntity);
-        elasticsearchEventProducer.produce(
-                ArticleDocumentRequest.RequestType.UPSERT,
-                documentToSave
-        );
+        ArticleDocument articleDocument = articleDocumentMapper.toDocument(articleResponse);
+        elasticsearchEventProducer.produce(ArticleDocumentRequest.RequestType.UPSERT, articleDocument);
     }
 }

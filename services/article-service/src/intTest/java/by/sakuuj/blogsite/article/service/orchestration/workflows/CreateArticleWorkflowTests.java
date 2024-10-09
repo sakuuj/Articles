@@ -1,11 +1,9 @@
-package by.sakuuj.blogsite.article.service.orchestration;
+package by.sakuuj.blogsite.article.service.orchestration.workflows;
 
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.ArticleRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleResponse;
 import by.sakuuj.blogsite.article.service.orchestration.activities.CreateArticleActivities;
-import by.sakuuj.blogsite.article.service.orchestration.workflows.CreateArticleWorkflow;
-import by.sakuuj.blogsite.article.service.orchestration.workflows.CreateArticleWorkflowImpl;
 import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
 import io.temporal.client.WorkflowFailedException;
 import io.temporal.testing.TestWorkflowEnvironment;

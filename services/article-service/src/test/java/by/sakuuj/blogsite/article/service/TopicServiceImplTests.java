@@ -6,19 +6,20 @@ import by.sakuuj.blogsite.article.TopicTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
 import by.sakuuj.blogsite.article.dtos.validator.DtoValidator;
+import by.sakuuj.blogsite.article.exception.EntityNotFoundException;
+import by.sakuuj.blogsite.article.exception.IdempotencyTokenExistsException;
+import by.sakuuj.blogsite.article.exception.EntityVersionDoesNotMatch;
+import by.sakuuj.blogsite.article.mapper.jpa.TopicMapper;
+import by.sakuuj.blogsite.article.repository.jpa.TopicRepository;
+import by.sakuuj.blogsite.article.service.authorization.TopicServiceAuthorizer;
 import by.sakuuj.blogsite.entity.jpa.CreationId;
 import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
 import by.sakuuj.blogsite.entity.jpa.entities.IdempotencyTokenEntity;
 import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
-import by.sakuuj.blogsite.article.exception.ServiceLayerException;
-import by.sakuuj.blogsite.article.exception.ServiceLayerExceptionMessage;
-import by.sakuuj.blogsite.article.mapper.jpa.TopicMapper;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
-import by.sakuuj.blogsite.article.repository.jpa.TopicRepository;
-import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
-import by.sakuuj.blogsite.article.service.authorization.TopicServiceAuthorizer;
 import by.sakuuj.blogsite.service.IdempotencyTokenService;
+import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -301,11 +302,7 @@ public class TopicServiceImplTests {
 
             // when, then
             assertThatThrownBy(() -> topicServiceImpl.create(topicRequest, clientId, idempotencyTokenValue, authenticatedUser))
-                    .isInstanceOfSatisfying(ServiceLayerException.class, ex ->
-
-                            assertThat(ex.getServiceLayerExceptionMessage())
-                                    .isEqualTo(ServiceLayerExceptionMessage.CREATE_FAILED_IDEMPOTENCY_TOKEN_ALREADY_EXISTS)
-                    );
+                    .isInstanceOf(IdempotencyTokenExistsException.class);
 
             InOrder inOrder = Mockito.inOrder(
                     topicServiceAuthorizer,
@@ -347,13 +344,8 @@ public class TopicServiceImplTests {
             when(topicRepository.findById(any())).thenReturn(Optional.empty());
 
             // when
-            assertThatThrownBy(() ->
-                    topicServiceImpl.updateById(topicId, topicRequest, topicVersion, authenticatedUser)
-            ).isInstanceOfSatisfying(ServiceLayerException.class, ex ->
-
-                    assertThat(ex.getServiceLayerExceptionMessage())
-                            .isEqualTo(ServiceLayerExceptionMessage.UPDATE_FAILED_ENTITY_NOT_FOUND)
-            );
+            assertThatThrownBy(() -> topicServiceImpl.updateById(topicId, topicRequest, topicVersion, authenticatedUser))
+                    .isInstanceOf(EntityNotFoundException.class);
 
             // then
 
@@ -396,16 +388,10 @@ public class TopicServiceImplTests {
             when(topicRepository.findById(any())).thenReturn(Optional.of(topicEntity));
 
             // when
-            assertThatThrownBy(() ->
-                    topicServiceImpl.updateById(topicId, topicRequest, incorrectTopicVersion, authenticatedUser)
-            ).isInstanceOfSatisfying(ServiceLayerException.class, ex ->
-
-                    assertThat(ex.getServiceLayerExceptionMessage())
-                            .isEqualTo(ServiceLayerExceptionMessage.OPERATION_FAILED_ENTITY_VERSION_DOES_NOT_MATCH)
-            );
+            assertThatThrownBy(() -> topicServiceImpl.updateById(topicId, topicRequest, incorrectTopicVersion, authenticatedUser))
+                    .isInstanceOf(EntityVersionDoesNotMatch.class);
 
             // then
-
             InOrder inOrder = Mockito.inOrder(
                     topicServiceAuthorizer,
                     dtoValidator,

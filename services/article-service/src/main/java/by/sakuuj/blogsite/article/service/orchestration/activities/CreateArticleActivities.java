@@ -1,16 +1,18 @@
-package by.sakuuj.blogsite.article.service.orchestration;
+package by.sakuuj.blogsite.article.service.orchestration.activities;
 
 import by.sakuuj.blogsite.article.dtos.ArticleRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleResponse;
 import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
 import io.temporal.activity.ActivityInterface;
-
-import java.util.UUID;
+import io.temporal.activity.ActivityMethod;
 
 @ActivityInterface
 public interface CreateArticleActivities {
 
+    String SEND_SAVE_DOCUMENT_EVENT_ACTIVITY_NAME = "SendSaveDocumentEvent";
+
     ArticleResponse saveInDatabase(ArticleRequest articleRequest, IdempotencyTokenId idempotencyTokenId);
 
-    void sendElasticsearchSaveEvent(UUID articleId);
+    @ActivityMethod(name = SEND_SAVE_DOCUMENT_EVENT_ACTIVITY_NAME)
+    void sendSaveDocumentEvent(ArticleResponse articleResponse);
 }

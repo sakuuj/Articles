@@ -4,8 +4,9 @@ import by.sakuuj.annotations.JpaMapperTest;
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.ArticleRequest;
 import by.sakuuj.blogsite.article.dtos.ArticleResponse;
-import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
 import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit;
+import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
+import by.sakuuj.testcontainers.PostgresSingletonContainerLauncher;
 import org.hibernate.Hibernate;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @JpaMapperTest
-class ArticleMapperTests {
+class ArticleMapperImplTests extends PostgresSingletonContainerLauncher {
 
     @Autowired
-    private ArticleMapper articleMapper;
+    private ArticleMapperImpl articleMapper;
 
     @Autowired
     private TransactionTemplate txTemplate;

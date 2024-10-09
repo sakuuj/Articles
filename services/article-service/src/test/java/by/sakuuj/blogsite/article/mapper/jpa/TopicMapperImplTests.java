@@ -1,22 +1,18 @@
 package by.sakuuj.blogsite.article.mapper.jpa;
 
-import by.sakuuj.annotations.JpaMapperTest;
 import by.sakuuj.blogsite.article.TopicTestDataBuilder;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
+import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit;
 import by.sakuuj.blogsite.entity.jpa.entities.ArticleTopicEntity;
 import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
-import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@JpaMapperTest
-class TopicMapperTests {
+class TopicMapperImplTests {
 
-    @Autowired
-    private TopicMapper topicMapper;
+    private final TopicMapperImpl topicMapper = new TopicMapperImpl();
 
     @Test
     void shouldMapToEntity() {

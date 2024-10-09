@@ -3,8 +3,9 @@ package by.sakuuj.blogsite.article.service;
 import by.sakuuj.blogsite.article.dtos.TopicRequest;
 import by.sakuuj.blogsite.article.dtos.TopicResponse;
 import by.sakuuj.blogsite.article.dtos.validator.DtoValidator;
-import by.sakuuj.blogsite.article.exception.ServiceLayerException;
-import by.sakuuj.blogsite.article.exception.ServiceLayerExceptionMessage;
+import by.sakuuj.blogsite.article.exception.EntityNotFoundException;
+import by.sakuuj.blogsite.article.exception.IdempotencyTokenExistsException;
+import by.sakuuj.blogsite.article.exception.EntityVersionDoesNotMatch;
 import by.sakuuj.blogsite.article.mapper.jpa.TopicMapper;
 import by.sakuuj.blogsite.article.repository.jpa.TopicRepository;
 import by.sakuuj.blogsite.article.service.authorization.TopicServiceAuthorizer;
@@ -76,7 +77,7 @@ public class TopicServiceImpl implements TopicService {
 
         Optional<IdempotencyTokenEntity> foundToken = idempotencyTokenService.findById(idempotencyTokenId);
         if (foundToken.isPresent()) {
-            throw new ServiceLayerException(ServiceLayerExceptionMessage.CREATE_FAILED_IDEMPOTENCY_TOKEN_ALREADY_EXISTS);
+            throw new IdempotencyTokenExistsException();
         }
 
         TopicEntity topicEntityToSave = topicMapper.toEntity(request);
@@ -106,12 +107,11 @@ public class TopicServiceImpl implements TopicService {
         topicServiceAuthorizer.authorizeUpdate(id, authenticatedUser);
         dtoValidator.validate(newContent);
 
-        TopicEntity topicToUpdate = topicRepository.findById(id).orElseThrow(() ->
-                new ServiceLayerException(ServiceLayerExceptionMessage.UPDATE_FAILED_ENTITY_NOT_FOUND)
-        );
+        TopicEntity topicToUpdate = topicRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
 
         if (topicToUpdate.getVersion() != version) {
-            throw new ServiceLayerException(ServiceLayerExceptionMessage.OPERATION_FAILED_ENTITY_VERSION_DOES_NOT_MATCH);
+            throw new EntityVersionDoesNotMatch();
         }
 
         topicMapper.updateEntity(topicToUpdate, newContent);

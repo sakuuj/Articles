@@ -1,11 +1,11 @@
 package by.sakuuj.blogsite.article.exception;
 
-public class NotFoundException extends RuntimeException {
+public class EntityNotFoundException extends RuntimeException {
 
-    public NotFoundException() {
+    public EntityNotFoundException() {
     }
 
-    public NotFoundException(String message) {
+    public EntityNotFoundException(String message) {
         super(message);
     }
 }
