@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.article.mapper.jpa;
 
 import by.sakuuj.blogsite.article.PersonTestDataBuilder;
-import by.sakuuj.blogsite.article.dtos.PersonResponse;
+import by.sakuuj.blogsite.article.dto.PersonResponse;
 import by.sakuuj.blogsite.entity.jpa.entities.PersonEntity;
 import org.junit.jupiter.api.Test;
 

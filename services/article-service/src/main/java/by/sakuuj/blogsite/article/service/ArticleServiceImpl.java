@@ -1,9 +1,9 @@
 package by.sakuuj.blogsite.article.service;
 
-import by.sakuuj.blogsite.article.dtos.ArticleRequest;
-import by.sakuuj.blogsite.article.dtos.ArticleResponse;
-import by.sakuuj.blogsite.article.dtos.TopicRequest;
-import by.sakuuj.blogsite.article.dtos.validator.DtoValidator;
+import by.sakuuj.blogsite.article.dto.ArticleRequest;
+import by.sakuuj.blogsite.article.dto.ArticleResponse;
+import by.sakuuj.blogsite.article.dto.TopicRequest;
+import by.sakuuj.blogsite.article.dto.validator.DtoValidator;
 import by.sakuuj.blogsite.article.mapper.jpa.ArticleMapper;
 import by.sakuuj.blogsite.article.repository.elasticsearch.ArticleDocumentRepository;
 import by.sakuuj.blogsite.article.repository.jpa.ArticleRepository;

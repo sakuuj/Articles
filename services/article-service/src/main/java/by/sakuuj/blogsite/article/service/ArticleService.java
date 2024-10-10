@@ -1,8 +1,8 @@
 package by.sakuuj.blogsite.article.service;
 
-import by.sakuuj.blogsite.article.dtos.ArticleRequest;
-import by.sakuuj.blogsite.article.dtos.ArticleResponse;
-import by.sakuuj.blogsite.article.dtos.TopicRequest;
+import by.sakuuj.blogsite.article.dto.ArticleRequest;
+import by.sakuuj.blogsite.article.dto.ArticleResponse;
+import by.sakuuj.blogsite.article.dto.TopicRequest;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
 import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;

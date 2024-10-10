@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.article.mapper.jpa;
 
-import by.sakuuj.blogsite.article.dtos.ArticleRequest;
-import by.sakuuj.blogsite.article.dtos.ArticleResponse;
+import by.sakuuj.blogsite.article.dto.ArticleRequest;
+import by.sakuuj.blogsite.article.dto.ArticleResponse;
 import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;

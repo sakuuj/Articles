@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.article.service.orchestration;
 
-import by.sakuuj.blogsite.article.dtos.ArticleRequest;
-import by.sakuuj.blogsite.article.dtos.ArticleResponse;
+import by.sakuuj.blogsite.article.dto.ArticleRequest;
+import by.sakuuj.blogsite.article.dto.ArticleResponse;
 import by.sakuuj.blogsite.article.service.orchestration.workflows.CreateArticleWorkflow;
 import by.sakuuj.blogsite.article.service.orchestration.workflows.DeleteArticleWorkflow;
 import by.sakuuj.blogsite.article.service.orchestration.workflows.UpdateArticleWorkflow;

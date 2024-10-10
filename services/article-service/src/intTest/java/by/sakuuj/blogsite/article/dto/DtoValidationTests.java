@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.dtos;
+package by.sakuuj.blogsite.article.dto;
 
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.CommentTestDataBuilder;

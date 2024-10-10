@@ -1,6 +1,6 @@
 package by.sakuuj.blogsite.article.mapper.elasticsearch;
 
-import by.sakuuj.blogsite.article.dtos.ArticleResponse;
+import by.sakuuj.blogsite.article.dto.ArticleResponse;
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
 import org.mapstruct.InjectionStrategy;

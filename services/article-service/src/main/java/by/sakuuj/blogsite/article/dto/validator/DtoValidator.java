@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.dtos.validator;
+package by.sakuuj.blogsite.article.dto.validator;
 
 public interface DtoValidator {
 

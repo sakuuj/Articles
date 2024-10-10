@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.article.service.orchestration.workflows;
 
-import by.sakuuj.blogsite.article.dtos.ArticleRequest;
-import by.sakuuj.blogsite.article.dtos.ArticleResponse;
+import by.sakuuj.blogsite.article.dto.ArticleRequest;
+import by.sakuuj.blogsite.article.dto.ArticleResponse;
 import by.sakuuj.blogsite.article.service.orchestration.activities.CreateArticleActivities;
 import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
 import io.temporal.activity.ActivityOptions;

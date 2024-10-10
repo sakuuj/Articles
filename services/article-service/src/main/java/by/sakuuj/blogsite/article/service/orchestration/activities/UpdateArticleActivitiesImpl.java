@@ -1,8 +1,8 @@
 package by.sakuuj.blogsite.article.service.orchestration.activities;
 
 import by.sakuuj.blogsite.article.dto.ArticleDocumentRequest;
-import by.sakuuj.blogsite.article.dtos.ArticleRequest;
-import by.sakuuj.blogsite.article.dtos.ArticleResponse;
+import by.sakuuj.blogsite.article.dto.ArticleRequest;
+import by.sakuuj.blogsite.article.dto.ArticleResponse;
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.exception.EntityNotFoundException;
 import by.sakuuj.blogsite.article.exception.EntityVersionDoesNotMatch;

@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.dtos;
+package by.sakuuj.blogsite.article.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

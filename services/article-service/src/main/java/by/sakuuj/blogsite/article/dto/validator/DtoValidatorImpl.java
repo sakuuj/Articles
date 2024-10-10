@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.dtos.validator;
+package by.sakuuj.blogsite.article.dto.validator;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;

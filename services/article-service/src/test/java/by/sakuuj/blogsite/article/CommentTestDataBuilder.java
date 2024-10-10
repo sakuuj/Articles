@@ -1,8 +1,8 @@
 package by.sakuuj.blogsite.article;
 
-import by.sakuuj.blogsite.article.dtos.CommentRequest;
-import by.sakuuj.blogsite.article.dtos.CommentResponse;
-import by.sakuuj.blogsite.article.dtos.PersonResponse;
+import by.sakuuj.blogsite.article.dto.CommentRequest;
+import by.sakuuj.blogsite.article.dto.CommentResponse;
+import by.sakuuj.blogsite.article.dto.PersonResponse;
 import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit;
 import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
 import by.sakuuj.blogsite.entity.jpa.entities.CommentEntity;

@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.article;
 
-import by.sakuuj.blogsite.article.dtos.PersonRequest;
-import by.sakuuj.blogsite.article.dtos.PersonResponse;
+import by.sakuuj.blogsite.article.dto.PersonRequest;
+import by.sakuuj.blogsite.article.dto.PersonResponse;
 import by.sakuuj.blogsite.entity.jpa.entities.PersonEntity;
 import by.sakuuj.blogsite.entity.jpa.embeddable.ModificationAudit;
 import lombok.AllArgsConstructor;

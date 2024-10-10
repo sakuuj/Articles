@@ -1,6 +1,6 @@
 package by.sakuuj.blogsite.article.controller;
 
-import by.sakuuj.blogsite.article.dtos.TopicResponse;
+import by.sakuuj.blogsite.article.dto.TopicResponse;
 import by.sakuuj.blogsite.article.service.TopicService;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
