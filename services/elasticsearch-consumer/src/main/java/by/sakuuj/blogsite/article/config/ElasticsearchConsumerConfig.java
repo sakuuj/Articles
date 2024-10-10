@@ -2,6 +2,7 @@ package by.sakuuj.blogsite.article.config;
 
 import by.sakuuj.blogsite.article.consumer.ElasticsearchConsumer;
 import by.sakuuj.blogsite.article.dto.ArticleDocumentRequest;
+import by.sakuuj.blogsite.article.exceptions.RecordKeyIsAbsentException;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.UUIDDeserializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -83,7 +84,10 @@ public class ElasticsearchConsumerConfig {
     @Bean
     public DefaultErrorHandler defaultErrorHandler(BackOff backOff) {
 
-        return new DefaultErrorHandler(backOff);
+        var errorHandler = new DefaultErrorHandler(backOff);
+        errorHandler.addNotRetryableExceptions(RecordKeyIsAbsentException.class);
+
+        return errorHandler;
     }
 
 }

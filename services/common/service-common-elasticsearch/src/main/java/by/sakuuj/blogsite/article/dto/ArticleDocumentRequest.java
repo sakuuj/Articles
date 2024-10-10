@@ -1,12 +1,12 @@
 package by.sakuuj.blogsite.article.dto;
 
 import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
-import jakarta.validation.constraints.NotNull;
+import by.sakuuj.blogsite.article.dto.validator.ValidArticleDocumentRequest;
 import lombok.Builder;
 
 @Builder
-public record ArticleDocumentRequest(@NotNull RequestType type,
-                                     @NotNull ArticleDocument articleDocument) {
+@ValidArticleDocumentRequest
+public record ArticleDocumentRequest(RequestType type, ArticleDocument articleDocument) {
 
     public enum RequestType {
         UPSERT,

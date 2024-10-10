@@ -4,25 +4,26 @@ import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.CommentTestDataBuilder;
 import by.sakuuj.blogsite.article.PersonTestDataBuilder;
 import by.sakuuj.blogsite.article.TopicTestDataBuilder;
+import by.sakuuj.testconfigs.EmptyConfig;
 import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
 import jakarta.validation.Validator;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
+import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class DtoJakartaValidationTests {
+@SpringJUnitConfig(EmptyConfig.class)
+@ImportAutoConfiguration(ValidationAutoConfiguration.class)
+public class DtoValidationTests {
 
-    @BeforeAll
-    static void setUpValidator() {
-        validator = Validation.buildDefaultValidatorFactory().getValidator();
-    }
-
-    private static Validator validator;
+    @Autowired
+    private Validator validator;
 
     @Nested
     class ArticleRequestDTO {
@@ -239,8 +240,6 @@ class DtoJakartaValidationTests {
     }
 
 
-
-
     @Nested
     class CommentRequestDTO {
 
@@ -350,10 +349,9 @@ class DtoJakartaValidationTests {
             violations.forEach(violation ->
             {
                 assertThat(violation.getPropertyPath().toString()).isEqualTo(CONTENT_PROPERTY_NAME);
-            });        }
+            });
+        }
     }
-
-
 
 
     @Nested
@@ -450,8 +448,6 @@ class DtoJakartaValidationTests {
         }
 
     }
-
-
 
 
     @Nested
@@ -567,5 +563,6 @@ class DtoJakartaValidationTests {
         }
 
     }
+
 
 }
