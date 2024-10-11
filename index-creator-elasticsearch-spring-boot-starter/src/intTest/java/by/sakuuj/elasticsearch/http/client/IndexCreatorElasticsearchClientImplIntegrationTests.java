@@ -10,7 +10,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,8 +17,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import java.io.IOException;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
@@ -40,7 +37,7 @@ class IndexCreatorElasticsearchClientImplIntegrationTests {
     private static final String ELASTICSEARCH_HOST = "localhost";
 
     @DynamicPropertySource
-    static void setDynamicProps(DynamicPropertyRegistry registry) throws IOException {
+    static void setDynamicProps(DynamicPropertyRegistry registry) {
         registry.add("by.sakuuj.elasticsearch.index-creator.password", () -> ELASTICSEARCH_PASSWORD);
         registry.add("by.sakuuj.elasticsearch.index-creator.username", () -> ELASTICSEARCH_USERNAME);
         registry.add("by.sakuuj.elasticsearch.index-creator.uri", () ->
@@ -54,18 +51,11 @@ class IndexCreatorElasticsearchClientImplIntegrationTests {
             .build();
 
     @Autowired
-    private IndexCreatorElasticsearchClient elasticsearchClient;
+    private IndexCreatorElasticsearchClientImpl elasticsearchClient;
 
     @BeforeAll
     static void configureWireMockClient() {
         WireMock.configureFor(ELASTICSEARCH_HOST, wireMock.getPort());
-    }
-
-    @Test
-    void shouldAutowireIndexCreatorElasticsearchClientImpl() {
-
-        assertThat(AopUtils.getTargetClass(elasticsearchClient))
-                .isSameAs(IndexCreatorElasticsearchClientImpl.class);
     }
 
     @Test
