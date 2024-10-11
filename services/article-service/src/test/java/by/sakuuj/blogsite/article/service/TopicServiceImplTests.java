@@ -1,14 +1,13 @@
 package by.sakuuj.blogsite.article.service;
 
 import by.sakuuj.blogsite.article.PagingTestDataBuilder;
-import by.sakuuj.blogsite.article.PersonTestDataBuilder;
 import by.sakuuj.blogsite.article.TopicTestDataBuilder;
 import by.sakuuj.blogsite.article.dto.TopicRequest;
 import by.sakuuj.blogsite.article.dto.TopicResponse;
 import by.sakuuj.blogsite.article.dto.validator.DtoValidator;
 import by.sakuuj.blogsite.article.exception.EntityNotFoundException;
-import by.sakuuj.blogsite.article.exception.IdempotencyTokenExistsException;
 import by.sakuuj.blogsite.article.exception.EntityVersionDoesNotMatch;
+import by.sakuuj.blogsite.article.exception.IdempotencyTokenExistsException;
 import by.sakuuj.blogsite.article.mapper.jpa.TopicMapper;
 import by.sakuuj.blogsite.article.repository.jpa.TopicRepository;
 import by.sakuuj.blogsite.article.service.authorization.TopicServiceAuthorizer;
@@ -19,7 +18,7 @@ import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
 import by.sakuuj.blogsite.service.IdempotencyTokenService;
-import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.authorization.AuthenticatedUser;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -228,12 +227,9 @@ public class TopicServiceImplTests {
             when(topicMapper.toEntity(any(TopicRequest.class))).thenReturn(topicEntity);
             when(topicRepository.save(any())).thenReturn(topicEntity);
 
-            var personTestDataBuilder = PersonTestDataBuilder.aPerson();
-
-            UUID clientId = personTestDataBuilder.getId();
             UUID idempotencyTokenValue = UUID.fromString("d95b3c07-91c0-4443-aaa0-beffb98f452a");
             var idempotencyTokenId = IdempotencyTokenId.builder()
-                    .clientId(clientId)
+                    .clientId(authenticatedUser.id())
                     .idempotencyTokenValue(idempotencyTokenValue)
                     .build();
             var creationId = CreationId.of(TopicEntity.class, topicEntity.getId());
@@ -242,7 +238,7 @@ public class TopicServiceImplTests {
             doNothing().when(idempotencyTokenService).create(any(), any());
 
             // when
-            UUID actual = topicServiceImpl.create(topicRequest, clientId, idempotencyTokenValue, authenticatedUser);
+            UUID actual = topicServiceImpl.create(topicRequest, idempotencyTokenValue, authenticatedUser);
 
             // then
             assertThat(actual).isEqualTo(expected);
@@ -283,12 +279,9 @@ public class TopicServiceImplTests {
             TopicEntity topicEntity = topicBuilder.build();
             TopicRequest topicRequest = topicBuilder.buildRequest();
 
-            var personTestDataBuilder = PersonTestDataBuilder.aPerson();
-
-            UUID clientId = personTestDataBuilder.getId();
             UUID idempotencyTokenValue = UUID.fromString("d95b3c07-91c0-4443-aaa0-beffb98f452a");
             var idempotencyTokenId = IdempotencyTokenId.builder()
-                    .clientId(clientId)
+                    .clientId(authenticatedUser.id())
                     .idempotencyTokenValue(idempotencyTokenValue)
                     .build();
             var creationId = CreationId.of(TopicEntity.class, topicEntity.getId());
@@ -301,7 +294,7 @@ public class TopicServiceImplTests {
             when(idempotencyTokenService.findById(any())).thenReturn(Optional.of(idempotencyToken));
 
             // when, then
-            assertThatThrownBy(() -> topicServiceImpl.create(topicRequest, clientId, idempotencyTokenValue, authenticatedUser))
+            assertThatThrownBy(() -> topicServiceImpl.create(topicRequest, idempotencyTokenValue, authenticatedUser))
                     .isInstanceOf(IdempotencyTokenExistsException.class);
 
             InOrder inOrder = Mockito.inOrder(
@@ -348,7 +341,6 @@ public class TopicServiceImplTests {
                     .isInstanceOf(EntityNotFoundException.class);
 
             // then
-
             InOrder inOrder = Mockito.inOrder(
                     topicServiceAuthorizer,
                     dtoValidator,

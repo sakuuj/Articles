@@ -1,7 +1,7 @@
 package by.sakuuj.blogsite.controller.resolvers;
 
 import by.sakuuj.blogsite.security.AuthenticatedUserAuthenticationToken;
-import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.authorization.AuthenticatedUser;
 import org.springframework.core.MethodParameter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

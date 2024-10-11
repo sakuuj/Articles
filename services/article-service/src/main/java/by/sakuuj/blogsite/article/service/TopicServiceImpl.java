@@ -18,7 +18,7 @@ import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
 import by.sakuuj.blogsite.service.IdempotencyTokenService;
-import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.authorization.AuthenticatedUser;
 import by.sakuuj.blogsite.utils.PagingUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -65,14 +65,14 @@ public class TopicServiceImpl implements TopicService {
     }
 
     @Override
-    public UUID create(TopicRequest request, UUID clientId, UUID idempotencyTokenValue, AuthenticatedUser authenticatedUser) {
+    public UUID create(TopicRequest request, UUID idempotencyTokenValue, AuthenticatedUser authenticatedUser) {
 
         topicServiceAuthorizer.authorizeCreate(authenticatedUser);
         dtoValidator.validate(request);
 
         IdempotencyTokenId idempotencyTokenId = IdempotencyTokenId.builder()
                 .idempotencyTokenValue(idempotencyTokenValue)
-                .clientId(clientId)
+                .clientId(authenticatedUser.id())
                 .build();
 
         Optional<IdempotencyTokenEntity> foundToken = idempotencyTokenService.findById(idempotencyTokenId);

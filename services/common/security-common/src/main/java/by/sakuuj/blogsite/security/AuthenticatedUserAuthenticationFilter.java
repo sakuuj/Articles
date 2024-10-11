@@ -6,7 +6,7 @@ import by.sakuuj.blogsite.person.grpc.PersonResponse;
 import by.sakuuj.blogsite.person.grpc.Role;
 import by.sakuuj.blogsite.person.grpc.SavePersonRequest;
 import by.sakuuj.blogsite.service.PersonService;
-import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.authorization.AuthenticatedUser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +21,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public class AuthenticatedUserAuthenticationFilter extends OncePerRequestFilter {
@@ -99,6 +100,7 @@ public class AuthenticatedUserAuthenticationFilter extends OncePerRequestFilter 
         }
 
         return AuthenticatedUser.builder()
+                .id(UUID.fromString(personResponse.getId().getValue()))
                 .primaryEmail(personResponse.getPrimaryEmail().getValue())
                 .roles(personResponse.getRolesList())
                 .isBlocked(personResponse.getIsBlocked().getValue())

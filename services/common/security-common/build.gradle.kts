@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    id("java-library")
     id("int-test")
     id("idea")
     alias(libs.plugins.springBoot)
@@ -21,7 +21,7 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
 
     implementation(platform(project(":platform")))
-    implementation(project(":services:common:person-service-grpc-common"))
+    api(project(":services:common:person-service-grpc-common"))
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter")

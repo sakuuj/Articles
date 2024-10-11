@@ -9,6 +9,10 @@ plugins {
 group = "by.sakuuj.blogsite"
 version = "0.1"
 
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
 repositories {
     mavenLocal()
     mavenCentral()
@@ -67,6 +71,7 @@ dependencies {
     intTestImplementation("com.h2database:h2")
     intTestImplementation("org.testcontainers:postgresql")
     intTestImplementation("org.testcontainers:junit-jupiter")
+    intTestImplementation("org.springframework.security:spring-security-test")
     intTestImplementation("org.springframework.cloud:spring-cloud-starter-contract-stub-runner")
 }
 

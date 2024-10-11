@@ -15,15 +15,169 @@ import org.springframework.boot.autoconfigure.validation.ValidationAutoConfigura
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringJUnitConfig(EmptyConfig.class)
 @ImportAutoConfiguration(ValidationAutoConfiguration.class)
-public class DtoValidationTests {
+public class DtoValidatorTests {
 
     @Autowired
     private Validator validator;
+
+
+    @Nested
+    class CreateRequestDtoTests {
+
+        private static final String IDEMPOTENCY_TOKEN_VALUE_PROPERTY_NAME = "idempotencyTokenValue";
+        private static final String PAYLOAD_PROPERTY_NAME = "payload";
+
+        @Test
+        void shouldAcceptOnNotNullIdempotencyTokenAndValidNotNullPayload() {
+            // given
+            UUID idempotencyTokenValue = UUID.fromString("1f46ba93-f4b1-4762-a3dc-e48356945d34");
+            ArticleRequest validPayload = ArticleTestDataBuilder.anArticle().buildRequest();
+
+            var createRequest = new CreateRequestDTO<>(
+                    idempotencyTokenValue,
+                    validPayload
+            );
+
+            // when
+            Set<ConstraintViolation<CreateRequestDTO<ArticleRequest>>> violations = validator.validate(createRequest);
+
+            // then
+            assertThat(violations).isEmpty();
+        }
+
+        @Test
+        void shouldRejectOnNullIdempotencyTokenValue() {
+
+            // given
+            ArticleRequest validPayload = ArticleTestDataBuilder.anArticle().buildRequest();
+            var createRequest = new CreateRequestDTO<>(
+                    null,
+                    validPayload
+            );
+
+            // when
+            Set<ConstraintViolation<CreateRequestDTO<ArticleRequest>>> violations = validator.validate(createRequest);
+
+            // then
+            assertThat(violations).hasSize(1);
+            violations.forEach(violation -> assertThat(violation.getPropertyPath()).hasToString(IDEMPOTENCY_TOKEN_VALUE_PROPERTY_NAME));
+        }
+
+        @Test
+        void shouldRejectOnNotNullIdempotencyTokenAndNullPayload() {
+            // given
+            UUID idempotencyTokenValue = UUID.fromString("1f46ba93-f4b1-4762-a3dc-e48356945d34");
+
+            var createRequest = new CreateRequestDTO<ArticleRequest>(
+                    idempotencyTokenValue,
+                    null
+            );
+
+            // when
+            Set<ConstraintViolation<CreateRequestDTO<ArticleRequest>>> violations = validator.validate(createRequest);
+
+            // then
+            assertThat(violations).hasSize(1);
+            violations.forEach(violation -> assertThat(violation.getPropertyPath()).hasToString(PAYLOAD_PROPERTY_NAME));
+        }
+
+        @Test
+        void shouldRejectOnNotNullIdempotencyTokenAndNotNullInvalidPayload() {
+            // given
+            UUID idempotencyTokenValue = UUID.fromString("1f46ba93-f4b1-4762-a3dc-e48356945d34");
+            ArticleRequest invalidPayload = ArticleTestDataBuilder.anArticle()
+                    .withTitle("")
+                    .buildRequest();
+
+            var createRequest = new CreateRequestDTO<>(
+                    idempotencyTokenValue,
+                    invalidPayload
+            );
+
+            // when
+            Set<ConstraintViolation<CreateRequestDTO<ArticleRequest>>> violations = validator.validate(createRequest);
+
+            // then
+            assertThat(violations).hasSize(1);
+            violations.forEach(violation ->
+                    assertThat(violation.getPropertyPath()).hasToString(PAYLOAD_PROPERTY_NAME + ".title")
+            );
+        }
+    }
+
+    @Nested
+    class UpdateRequestDtoTests {
+
+        private static final String PAYLOAD_PROPERTY_NAME = "payload";
+
+        @Test
+        void shouldAcceptValidNotNullPayload() {
+            // given
+            ArticleTestDataBuilder articleBuilder = ArticleTestDataBuilder.anArticle();
+            short version = articleBuilder.getVersion();
+            ArticleRequest validPayload = articleBuilder.buildRequest();
+
+            var updateRequestDTO = new UpdateRequestDTO<>(
+                    version,
+                    validPayload
+            );
+
+            // when
+            Set<ConstraintViolation<UpdateRequestDTO<ArticleRequest>>> violations = validator.validate(updateRequestDTO);
+
+            // then
+            assertThat(violations).isEmpty();
+        }
+
+        @Test
+        void shouldRejectOnNullPayload() {
+            // given
+            short version = ArticleTestDataBuilder.anArticle().getVersion();
+
+            var updateRequestDTO = new UpdateRequestDTO<ArticleRequest>(
+                    version,
+                    null
+            );
+
+            // when
+            Set<ConstraintViolation<UpdateRequestDTO<ArticleRequest>>> violations = validator.validate(updateRequestDTO);
+
+            // then
+            assertThat(violations).hasSize(1);
+            violations.forEach(violation -> assertThat(violation.getPropertyPath()).hasToString(PAYLOAD_PROPERTY_NAME));
+        }
+
+        @Test
+        void shouldRejectOnNotNullIdempotencyTokenAndNotNullInvalidPayload() {
+            // given
+
+            ArticleTestDataBuilder articleBuilder = ArticleTestDataBuilder.anArticle();
+            short version = articleBuilder.getVersion();
+            ArticleRequest invalidPayload = articleBuilder
+                    .withTitle("")
+                    .buildRequest();
+
+            var updateRequest = new UpdateRequestDTO<>(
+                    version,
+                    invalidPayload
+            );
+
+            // when
+            Set<ConstraintViolation<UpdateRequestDTO<ArticleRequest>>> violations = validator.validate(updateRequest);
+
+            // then
+            assertThat(violations).hasSize(1);
+            violations.forEach(violation ->
+                    assertThat(violation.getPropertyPath()).hasToString(PAYLOAD_PROPERTY_NAME + ".title")
+            );
+        }
+    }
 
     @Nested
     class ArticleRequestDTO {
@@ -65,9 +219,7 @@ public class DtoValidationTests {
             assertThat(violations).isNotEmpty();
 
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(TITLE_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(TITLE_PROPERTY_NAME));
         }
 
         @Test
@@ -85,9 +237,7 @@ public class DtoValidationTests {
             assertThat(violations).isNotEmpty();
 
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(TITLE_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(TITLE_PROPERTY_NAME));
         }
 
         @Test
@@ -106,9 +256,7 @@ public class DtoValidationTests {
             assertThat(violations).isNotEmpty();
 
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(TITLE_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(TITLE_PROPERTY_NAME));
         }
 
         @Test
@@ -142,9 +290,7 @@ public class DtoValidationTests {
             assertThat(violations).isNotEmpty();
 
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(CONTENT_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(CONTENT_PROPERTY_NAME));
         }
 
         @Test
@@ -176,9 +322,7 @@ public class DtoValidationTests {
             assertThat(violations).isNotEmpty();
 
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(CONTENT_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(CONTENT_PROPERTY_NAME));
         }
 
         @Test
@@ -195,9 +339,7 @@ public class DtoValidationTests {
             assertThat(violations).isNotEmpty();
 
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(CONTENT_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(CONTENT_PROPERTY_NAME));
         }
 
         @Test
@@ -214,9 +356,7 @@ public class DtoValidationTests {
             assertThat(violations).isNotEmpty();
 
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(CONTENT_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(CONTENT_PROPERTY_NAME));
         }
 
         @Test
@@ -233,9 +373,7 @@ public class DtoValidationTests {
             assertThat(violations).isNotEmpty();
 
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(TITLE_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(TITLE_PROPERTY_NAME));
         }
     }
 
@@ -275,9 +413,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(CONTENT_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(CONTENT_PROPERTY_NAME));
         }
 
         @Test
@@ -294,9 +430,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(CONTENT_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(CONTENT_PROPERTY_NAME));
         }
 
         @Test
@@ -313,9 +447,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(CONTENT_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(CONTENT_PROPERTY_NAME));
         }
 
         @Test
@@ -347,9 +479,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(CONTENT_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(CONTENT_PROPERTY_NAME));
         }
     }
 
@@ -404,9 +534,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(PRIMARY_EMAIL_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(PRIMARY_EMAIL_PROPERTY_NAME));
         }
 
         @Test
@@ -423,9 +551,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(PRIMARY_EMAIL_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(PRIMARY_EMAIL_PROPERTY_NAME));
         }
 
         @Test
@@ -442,9 +568,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(PRIMARY_EMAIL_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(PRIMARY_EMAIL_PROPERTY_NAME));
         }
 
     }
@@ -453,10 +577,10 @@ public class DtoValidationTests {
     @Nested
     class TopicRequestDTO {
 
-        private final static int MAX_NAME_LENGTH = 50;
-        private final static int MIN_NAME_LENGTH = 1;
+        private static final int MAX_NAME_LENGTH = 50;
+        private static final int MIN_NAME_LENGTH = 1;
 
-        private final static String NAME_PROPERTY_NAME = "name";
+        private static final String NAME_PROPERTY_NAME = "name";
 
         @Test
         void shouldAccept_OnCorrectArgument() {
@@ -500,9 +624,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(NAME_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(NAME_PROPERTY_NAME));
         }
 
         @Test
@@ -519,9 +641,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(NAME_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(NAME_PROPERTY_NAME));
         }
 
         @Test
@@ -538,9 +658,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(NAME_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(NAME_PROPERTY_NAME));
         }
 
         @Test
@@ -557,9 +675,7 @@ public class DtoValidationTests {
             // then
             assertThat(violations).isNotEmpty();
             violations.forEach(violation ->
-            {
-                assertThat(violation.getPropertyPath().toString()).isEqualTo(NAME_PROPERTY_NAME);
-            });
+                    assertThat(violation.getPropertyPath()).hasToString(NAME_PROPERTY_NAME));
         }
 
     }

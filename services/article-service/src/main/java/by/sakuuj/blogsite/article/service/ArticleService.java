@@ -5,7 +5,7 @@ import by.sakuuj.blogsite.article.dto.ArticleResponse;
 import by.sakuuj.blogsite.article.dto.TopicRequest;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
-import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.authorization.AuthenticatedUser;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +21,7 @@ public interface ArticleService {
 
     PageView<ArticleResponse> findAllByTopicsSortedByCreatedAtDesc(List<TopicRequest> topics, RequestedPage requestedPage);
 
-    UUID create(ArticleRequest request, UUID authorId, UUID idempotencyTokenValue, AuthenticatedUser authenticatedUser);
+    UUID create(ArticleRequest request, UUID idempotencyTokenValue, AuthenticatedUser authenticatedUser);
 
     void deleteById(UUID id, AuthenticatedUser authenticatedUser);
     void updateById(UUID id, ArticleRequest newContent, short version, AuthenticatedUser authenticatedUser);

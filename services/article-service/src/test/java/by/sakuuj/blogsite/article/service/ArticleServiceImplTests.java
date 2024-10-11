@@ -20,7 +20,7 @@ import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
 import by.sakuuj.blogsite.service.IdempotencyTokenService;
-import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.authorization.AuthenticatedUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -596,19 +596,18 @@ class ArticleServiceImplTests {
             ArticleRequest request = articleBuilder.buildRequest();
             ArticleResponse response = articleBuilder.buildResponse();
 
-            UUID authorId = UUID.fromString("1f46ba93-f4b1-4762-a3dc-e48356945d34");
             UUID idempotencyTokenValue = UUID.fromString("873fcef0-a83a-4637-91df-21ea5f4c8a62");
 
             IdempotencyTokenId expectedIdempotencyTokenId = IdempotencyTokenId.builder()
                     .idempotencyTokenValue(idempotencyTokenValue)
-                    .clientId(authorId)
+                    .clientId(authenticatedUser.id())
                     .build();
 
             when(orchestratedArticleService.createArticle(any(), any()))
                     .thenReturn(response);
 
             // when
-            UUID actual = articleServiceImpl.create(request, authorId, idempotencyTokenValue, authenticatedUser);
+            UUID actual = articleServiceImpl.create(request, idempotencyTokenValue, authenticatedUser);
 
             // then
             assertThat(actual).isEqualTo(response.id());

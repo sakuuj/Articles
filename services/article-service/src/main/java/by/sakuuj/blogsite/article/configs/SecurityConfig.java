@@ -4,8 +4,10 @@ import by.sakuuj.blogsite.security.AuthenticatedUserAuthenticationFilter;
 import by.sakuuj.blogsite.service.PersonService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -14,7 +16,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     @Bean
-    AuthenticatedUserAuthenticationFilter authenticatedUserAuthenticationFilter(PersonService personService) {
+    public AuthenticatedUserAuthenticationFilter authenticatedUserAuthenticationFilter(PersonService personService) {
         return new AuthenticatedUserAuthenticationFilter(personService);
     }
 
@@ -26,8 +28,10 @@ public class SecurityConfig {
 
         httpSecurity
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers(HttpMethod.GET,"/topics", "/topics/*").permitAll()
                         .anyRequest().authenticated()
                 )
+                .csrf(AbstractHttpConfigurer::disable)
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwt ->
                                 jwt.jwkSetUri("https://www.googleapis.com/oauth2/v3/certs")

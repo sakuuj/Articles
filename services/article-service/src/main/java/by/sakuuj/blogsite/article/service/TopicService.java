@@ -4,7 +4,7 @@ import by.sakuuj.blogsite.article.dto.TopicRequest;
 import by.sakuuj.blogsite.article.dto.TopicResponse;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
-import by.sakuuj.blogsite.service.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.authorization.AuthenticatedUser;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -15,7 +15,7 @@ public interface TopicService {
 
     PageView<TopicResponse> findAllSortByCreatedAtDesc(RequestedPage requestedPage);
 
-    UUID create(TopicRequest request, UUID clientId, UUID idempotencyTokenValue, AuthenticatedUser authenticatedUser);
+    UUID create(TopicRequest request, UUID idempotencyTokenValue, AuthenticatedUser authenticatedUser);
 
     void deleteById(UUID id, AuthenticatedUser authenticatedUser);
 
