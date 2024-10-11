@@ -61,7 +61,7 @@ public class ArticleServiceImpl implements ArticleService {
                 .idempotencyTokenValue(idempotencyTokenValue)
                 .build();
 
-        ArticleResponse createdArticle = orchestratedArticleService.createArticle(request, idempotencyTokenId);
+        ArticleResponse createdArticle = orchestratedArticleService.create(request, idempotencyTokenId);
 
         return createdArticle.id();
     }
@@ -71,7 +71,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         articleServiceAuthorizer.authorizeDeleteById(id, authenticatedUser);
 
-        orchestratedArticleService.deleteDocumentById(id);
+        orchestratedArticleService.deleteById(id);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ArticleServiceImpl implements ArticleService {
 
         dtoValidator.validate(request);
 
-        orchestratedArticleService.updateArticle(request, id, version);
+        orchestratedArticleService.updateById(request, id, version);
     }
 
     @Override

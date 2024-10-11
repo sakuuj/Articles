@@ -22,19 +22,19 @@ public class OrchestratedArticleServiceImpl implements OrchestratedArticleServic
     private final UpdateArticleWorkflow updateArticleWorkflow;
 
     @Override
-    public ArticleResponse createArticle(ArticleRequest articleRequest, IdempotencyTokenId idempotencyTokenId) {
+    public ArticleResponse create(ArticleRequest articleRequest, IdempotencyTokenId idempotencyTokenId) {
 
         return createArticleWorkflow.createArticle(articleRequest, idempotencyTokenId);
     }
 
     @Override
-    public ArticleResponse updateArticle(ArticleRequest articleRequest, UUID id, short version) {
+    public ArticleResponse updateById(ArticleRequest articleRequest, UUID id, short version) {
 
         return updateArticleWorkflow.updateArticle(articleRequest, id, version);
     }
 
     @Override
-    public void deleteDocumentById(UUID id) {
+    public void deleteById(UUID id) {
 
         deleteArticleWorkflow.deleteDocumentById(id);
     }

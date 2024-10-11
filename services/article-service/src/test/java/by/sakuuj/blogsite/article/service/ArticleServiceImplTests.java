@@ -603,7 +603,7 @@ class ArticleServiceImplTests {
                     .clientId(authenticatedUser.id())
                     .build();
 
-            when(orchestratedArticleService.createArticle(any(), any()))
+            when(orchestratedArticleService.create(any(), any()))
                     .thenReturn(response);
 
             // when
@@ -619,7 +619,7 @@ class ArticleServiceImplTests {
             );
             inOrder.verify(articleServiceAuthorizer).authorizeCreate(authenticatedUser);
             inOrder.verify(dtoValidator).validate(request);
-            inOrder.verify(orchestratedArticleService).createArticle(request, expectedIdempotencyTokenId);
+            inOrder.verify(orchestratedArticleService).create(request, expectedIdempotencyTokenId);
             inOrder.verifyNoMoreInteractions();
         }
     }
@@ -645,7 +645,7 @@ class ArticleServiceImplTests {
                     orchestratedArticleService
             );
             inOrder.verify(articleServiceAuthorizer).authorizeDeleteById(idToDeleteBy, authenticatedUser);
-            inOrder.verify(orchestratedArticleService).deleteDocumentById(idToDeleteBy);
+            inOrder.verify(orchestratedArticleService).deleteById(idToDeleteBy);
             inOrder.verifyNoMoreInteractions();
         }
     }
@@ -667,7 +667,7 @@ class ArticleServiceImplTests {
             ArticleRequest request = articleBuilder.buildRequest();
             ArticleResponse response = articleBuilder.buildResponse();
 
-            when(orchestratedArticleService.updateArticle(request, idToUpdateBy, version))
+            when(orchestratedArticleService.updateById(request, idToUpdateBy, version))
                     .thenReturn(response);
 
             // when
@@ -681,7 +681,7 @@ class ArticleServiceImplTests {
             );
             inOrder.verify(articleServiceAuthorizer).authorizeUpdateById(idToUpdateBy, authenticatedUser);
             inOrder.verify(dtoValidator).validate(request);
-            inOrder.verify(orchestratedArticleService).updateArticle(request, idToUpdateBy, version);
+            inOrder.verify(orchestratedArticleService).updateById(request, idToUpdateBy, version);
             inOrder.verifyNoMoreInteractions();
         }
     }

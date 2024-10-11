@@ -8,10 +8,10 @@ import java.util.UUID;
 
 public interface OrchestratedArticleService {
 
-    ArticleResponse createArticle(ArticleRequest articleRequest, IdempotencyTokenId idempotencyTokenId);
+    ArticleResponse create(ArticleRequest articleRequest, IdempotencyTokenId idempotencyTokenId);
 
-    ArticleResponse updateArticle(ArticleRequest articleRequest, UUID id, short version);
+    ArticleResponse updateById(ArticleRequest articleRequest, UUID id, short version);
 
-    void deleteDocumentById(UUID id);
+    void deleteById(UUID id);
 
 }
