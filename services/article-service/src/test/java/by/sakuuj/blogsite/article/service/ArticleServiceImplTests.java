@@ -13,7 +13,7 @@ import by.sakuuj.blogsite.article.repository.elasticsearch.ArticleDocumentReposi
 import by.sakuuj.blogsite.article.repository.jpa.ArticleRepository;
 import by.sakuuj.blogsite.article.repository.jpa.ArticleTopicRepository;
 import by.sakuuj.blogsite.article.service.authorization.ArticleServiceAuthorizer;
-import by.sakuuj.blogsite.article.service.orchestration.OrchestratedArticleService;
+import by.sakuuj.blogsite.article.orchestration.OrchestratedArticleService;
 import by.sakuuj.blogsite.entity.jpa.embeddable.ArticleTopicId;
 import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
 import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;

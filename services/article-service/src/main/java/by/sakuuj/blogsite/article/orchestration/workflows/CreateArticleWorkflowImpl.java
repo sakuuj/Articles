@@ -1,8 +1,8 @@
-package by.sakuuj.blogsite.article.service.orchestration.workflows;
+package by.sakuuj.blogsite.article.orchestration.workflows;
 
 import by.sakuuj.blogsite.article.dto.ArticleRequest;
 import by.sakuuj.blogsite.article.dto.ArticleResponse;
-import by.sakuuj.blogsite.article.service.orchestration.activities.CreateArticleActivities;
+import by.sakuuj.blogsite.article.orchestration.activities.CreateArticleActivities;
 import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;

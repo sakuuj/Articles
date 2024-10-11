@@ -1,8 +1,6 @@
-package by.sakuuj.blogsite.article.service.orchestration.workflows;
+package by.sakuuj.blogsite.article.orchestration.workflows;
 
-import by.sakuuj.blogsite.article.dto.ArticleRequest;
-import by.sakuuj.blogsite.article.dto.ArticleResponse;
-import by.sakuuj.blogsite.article.service.orchestration.activities.UpdateArticleActivities;
+import by.sakuuj.blogsite.article.orchestration.activities.DeleteArticleActivities;
 import io.temporal.activity.ActivityOptions;
 import io.temporal.common.RetryOptions;
 import io.temporal.workflow.Workflow;
@@ -12,11 +10,10 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.UUID;
 
-public class UpdateArticleWorkflowImpl implements UpdateArticleWorkflow {
+public class DeleteArticleWorkflowImpl implements DeleteArticleWorkflow {
 
-    private static final Logger LOGGER = Workflow.getLogger(UpdateArticleWorkflowImpl.class);
+    private static final Logger LOGGER = Workflow.getLogger(DeleteArticleWorkflowImpl.class);
     private static final int KAFKA_PRODUCER_DELIVERY_TIMEOUT_MS_DEFAULT_IN_SEC = 120;
-
 
     private final RetryOptions retryOptionsZeroRetries = RetryOptions.newBuilder()
             .setMaximumAttempts(1)
@@ -27,10 +24,9 @@ public class UpdateArticleWorkflowImpl implements UpdateArticleWorkflow {
             .setScheduleToCloseTimeout(Duration.ofSeconds(5))
             .build();
 
-
-    private final UpdateArticleActivities activities = Workflow.newActivityStub(UpdateArticleActivities.class, defaultActivityOptions,
+    private final DeleteArticleActivities activities = Workflow.newActivityStub(DeleteArticleActivities.class, defaultActivityOptions,
             Map.of(
-                    UpdateArticleActivities.SEND_UPDATE_DOCUMENT_EVENT_ACTIVITY_NAME,
+                    DeleteArticleActivities.SEND_DELETE_DOCUMENT_EVENT_ACTIVITY_NAME,
                     ActivityOptions.newBuilder()
                             .setRetryOptions(
                                     RetryOptions.newBuilder()
@@ -44,16 +40,14 @@ public class UpdateArticleWorkflowImpl implements UpdateArticleWorkflow {
             ));
 
     @Override
-    public ArticleResponse updateArticle(ArticleRequest articleRequest, UUID id, short version) {
+    public void deleteDocumentById(UUID id) {
 
-        LOGGER.debug("[BEFORE UPDATE IN DATABASE]");
-        ArticleResponse articleResponse = activities.updateByIdInDatabase(articleRequest, id, version);
-        LOGGER.debug("[UPDATED IN DATABASE]");
+        LOGGER.debug("[BEFORE DELETE IN DATABASE]");
+        activities.deleteFromDatabase(id);
+        LOGGER.debug("[DELETED FROM DATABASE]");
 
-        LOGGER.debug("[BEFORE SENDING UPDATE EVENT]");
-        activities.sendUpdateDocumentEvent(articleResponse);
-        LOGGER.debug("[UPDATE EVENT HAS BEEN SENT]");
-
-        return articleResponse;
+        LOGGER.debug("[BEFORE SENDING DELETE EVENT]");
+        activities.sendDeleteDocumentEvent(id);
+        LOGGER.debug("[DELETE EVENT HAS BEEN SENT]");
     }
 }

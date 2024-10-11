@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.service.orchestration.activities;
+package by.sakuuj.blogsite.article.orchestration.activities;
 
 import io.temporal.activity.ActivityInterface;
 import io.temporal.activity.ActivityMethod;

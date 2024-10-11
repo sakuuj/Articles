@@ -1,10 +1,10 @@
-package by.sakuuj.blogsite.article.service.orchestration;
+package by.sakuuj.blogsite.article.orchestration;
 
 import by.sakuuj.blogsite.article.dto.ArticleRequest;
 import by.sakuuj.blogsite.article.dto.ArticleResponse;
-import by.sakuuj.blogsite.article.service.orchestration.workflows.CreateArticleWorkflow;
-import by.sakuuj.blogsite.article.service.orchestration.workflows.DeleteArticleWorkflow;
-import by.sakuuj.blogsite.article.service.orchestration.workflows.UpdateArticleWorkflow;
+import by.sakuuj.blogsite.article.orchestration.workflows.CreateArticleWorkflow;
+import by.sakuuj.blogsite.article.orchestration.workflows.DeleteArticleWorkflow;
+import by.sakuuj.blogsite.article.orchestration.workflows.UpdateArticleWorkflow;
 import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

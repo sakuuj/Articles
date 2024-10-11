@@ -1,17 +1,14 @@
-package by.sakuuj.blogsite.article.service.orchestration;
+package by.sakuuj.blogsite.article.orchestration.workflows;
 
 import by.sakuuj.blogsite.article.dto.ArticleRequest;
 import by.sakuuj.blogsite.article.dto.ArticleResponse;
 import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
+import io.temporal.workflow.WorkflowInterface;
+import io.temporal.workflow.WorkflowMethod;
 
-import java.util.UUID;
+@WorkflowInterface
+public interface CreateArticleWorkflow {
 
-public interface OrchestratedArticleService {
-
+    @WorkflowMethod
     ArticleResponse createArticle(ArticleRequest articleRequest, IdempotencyTokenId idempotencyTokenId);
-
-    ArticleResponse updateArticle(ArticleRequest articleRequest, UUID id, short version);
-
-    void deleteDocumentById(UUID id);
-
 }

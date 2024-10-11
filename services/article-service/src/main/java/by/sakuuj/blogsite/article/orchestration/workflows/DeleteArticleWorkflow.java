@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.service.orchestration.workflows;
+package by.sakuuj.blogsite.article.orchestration.workflows;
 
 import io.temporal.workflow.WorkflowInterface;
 import io.temporal.workflow.WorkflowMethod;

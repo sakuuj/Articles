@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.service.orchestration.workflows;
+package by.sakuuj.blogsite.article.orchestration.workflows;
 
 import by.sakuuj.blogsite.article.dto.ArticleRequest;
 import by.sakuuj.blogsite.article.dto.ArticleResponse;

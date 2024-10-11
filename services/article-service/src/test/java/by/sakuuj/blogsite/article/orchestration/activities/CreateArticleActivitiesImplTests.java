@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.service.orchestration.activities;
+package by.sakuuj.blogsite.article.orchestration.activities;
 
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.PersonTestDataBuilder;
@@ -9,6 +9,7 @@ import by.sakuuj.blogsite.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.blogsite.article.exception.IdempotencyTokenExistsException;
 import by.sakuuj.blogsite.article.mapper.elasticsearch.ArticleDocumentMapper;
 import by.sakuuj.blogsite.article.mapper.jpa.ArticleMapper;
+import by.sakuuj.blogsite.article.orchestration.activities.CreateArticleActivitiesImpl;
 import by.sakuuj.blogsite.article.producer.ElasticsearchEventProducer;
 import by.sakuuj.blogsite.article.repository.jpa.ArticleRepository;
 import by.sakuuj.blogsite.entity.jpa.CreationId;

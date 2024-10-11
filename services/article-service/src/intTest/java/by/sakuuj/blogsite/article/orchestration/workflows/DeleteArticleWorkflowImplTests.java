@@ -1,7 +1,9 @@
-package by.sakuuj.blogsite.article.service.orchestration.workflows;
+package by.sakuuj.blogsite.article.orchestration.workflows;
 
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
-import by.sakuuj.blogsite.article.service.orchestration.activities.DeleteArticleActivities;
+import by.sakuuj.blogsite.article.orchestration.activities.DeleteArticleActivities;
+import by.sakuuj.blogsite.article.orchestration.workflows.DeleteArticleWorkflow;
+import by.sakuuj.blogsite.article.orchestration.workflows.DeleteArticleWorkflowImpl;
 import io.temporal.client.WorkflowFailedException;
 import io.temporal.testing.TestWorkflowEnvironment;
 import io.temporal.testing.TestWorkflowExtension;

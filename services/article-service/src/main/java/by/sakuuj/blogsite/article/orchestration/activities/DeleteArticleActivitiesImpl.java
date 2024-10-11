@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.article.service.orchestration.activities;
+package by.sakuuj.blogsite.article.orchestration.activities;
 
 import by.sakuuj.blogsite.article.dto.ArticleDocumentRequest;
 import by.sakuuj.blogsite.article.exception.EntityNotFoundException;
