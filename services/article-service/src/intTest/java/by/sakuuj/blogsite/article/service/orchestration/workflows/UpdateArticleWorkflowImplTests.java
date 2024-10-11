@@ -3,8 +3,7 @@ package by.sakuuj.blogsite.article.service.orchestration.workflows;
 import by.sakuuj.blogsite.article.ArticleTestDataBuilder;
 import by.sakuuj.blogsite.article.dto.ArticleRequest;
 import by.sakuuj.blogsite.article.dto.ArticleResponse;
-import by.sakuuj.blogsite.article.service.orchestration.activities.CreateArticleActivities;
-import by.sakuuj.blogsite.entity.jpa.embeddable.IdempotencyTokenId;
+import by.sakuuj.blogsite.article.service.orchestration.activities.UpdateArticleActivities;
 import io.temporal.client.WorkflowFailedException;
 import io.temporal.testing.TestWorkflowEnvironment;
 import io.temporal.testing.TestWorkflowExtension;
@@ -12,24 +11,27 @@ import io.temporal.worker.Worker;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.doNothing;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyShort;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.withSettings;
 
-class CreateArticleWorkflowTests {
+class UpdateArticleWorkflowImplTests {
 
     @RegisterExtension
     private static final TestWorkflowExtension testWorkflowExtension = TestWorkflowExtension.newBuilder()
-            .registerWorkflowImplementationTypes(CreateArticleWorkflowImpl.class)
+            .registerWorkflowImplementationTypes(UpdateArticleWorkflowImpl.class)
             .setDoNotStart(true)
             .build();
 
@@ -39,59 +41,61 @@ class CreateArticleWorkflowTests {
     }
 
     @Test
-    void shouldSaveInDatabase_AndThenSaveDocumentEvent_WhenNoErrors(
+    void shouldUpdateInDatabase_AndThenSendDocumentEvent_WhenNoErrors(
             TestWorkflowEnvironment workflowEnv,
-            CreateArticleWorkflow workflow,
+            UpdateArticleWorkflow workflow,
             Worker worker
     ) {
-        CreateArticleActivities activities = Mockito.mock(CreateArticleActivities.class, withSettings().withoutAnnotations());
+        UpdateArticleActivities activities = Mockito.mock(UpdateArticleActivities.class, withSettings().withoutAnnotations());
 
         ArticleTestDataBuilder articleBuilder = ArticleTestDataBuilder.anArticle();
         ArticleRequest articleRequest = articleBuilder.buildRequest();
-        IdempotencyTokenId idempotencyTokenId = IdempotencyTokenId.builder()
-                .idempotencyTokenValue(UUID.fromString("cef9d95f-2197-4d4d-82eb-a7ab5090eccf"))
-                .clientId(UUID.fromString("453060c1-e4fe-4a18-9075-74d89252f84e"))
-                .build();
+        UUID id = articleBuilder.getId();
+        short version = articleBuilder.getVersion();
 
         ArticleResponse expected = articleBuilder.buildResponse();
 
-        when(activities.saveInDatabase(articleRequest, idempotencyTokenId))
+        when(activities.updateByIdInDatabase(any(), any(), anyShort()))
                 .thenReturn(expected);
-        doNothing().when(activities).sendSaveDocumentEvent(expected);
 
         worker.registerActivitiesImplementations(activities);
 
         workflowEnv.start();
 
-        ArticleResponse actual = workflow.createArticle(articleRequest, idempotencyTokenId);
+        ArticleResponse actual = workflow.updateArticle(articleRequest, id, version);
 
         assertThat(actual).isEqualTo(expected);
+
+        InOrder inOrder = Mockito.inOrder(activities);
+        inOrder.verify(activities).updateByIdInDatabase(articleRequest, id, version);
+        inOrder.verify(activities).sendUpdateDocumentEvent(expected);
+
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    void shouldNotProceed_WhenCanNotSaveInDatabase(
+    void shouldNotProceed_WhenCanNotUpdateInDatabase(
             TestWorkflowEnvironment workflowEnv,
-            CreateArticleWorkflow workflow,
+            UpdateArticleWorkflow workflow,
             Worker worker
     ) {
-        CreateArticleActivities activities = Mockito.mock(CreateArticleActivities.class, withSettings().withoutAnnotations());
+        UpdateArticleActivities activities = Mockito.mock(UpdateArticleActivities.class, withSettings().withoutAnnotations());
 
         ArticleTestDataBuilder articleBuilder = ArticleTestDataBuilder.anArticle();
         ArticleRequest articleRequest = articleBuilder.buildRequest();
-        IdempotencyTokenId idempotencyTokenId = IdempotencyTokenId.builder()
-                .idempotencyTokenValue(UUID.fromString("cef9d95f-2197-4d4d-82eb-a7ab5090eccf"))
-                .clientId(UUID.fromString("453060c1-e4fe-4a18-9075-74d89252f84e"))
-                .build();
+        UUID id = articleBuilder.getId();
+        short version = articleBuilder.getVersion();
 
-        doThrow(new RuntimeException("ERROR")).when(activities).saveInDatabase(articleRequest, idempotencyTokenId);
+        doThrow(new RuntimeException("ERROR")).when(activities).updateByIdInDatabase(any(), any(), anyShort());
 
         worker.registerActivitiesImplementations(activities);
 
         workflowEnv.start();
 
-        assertThatThrownBy(() -> workflow.createArticle(articleRequest, idempotencyTokenId))
+        assertThatThrownBy(() -> workflow.updateArticle(articleRequest, id, version))
                 .isInstanceOf(WorkflowFailedException.class);
 
-        verify(activities, times(1)).saveInDatabase(articleRequest, idempotencyTokenId);
+        verify(activities, times(1)).updateByIdInDatabase(articleRequest, id, version);
+        verifyNoMoreInteractions(activities);
     }
 }

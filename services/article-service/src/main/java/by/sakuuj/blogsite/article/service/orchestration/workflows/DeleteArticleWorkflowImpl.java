@@ -47,7 +47,7 @@ public class DeleteArticleWorkflowImpl implements DeleteArticleWorkflow {
         LOGGER.debug("[DELETED FROM DATABASE]");
 
         LOGGER.debug("[BEFORE SENDING DELETE EVENT]");
-        activities.deleteFromDatabase(id);
+        activities.sendDeleteDocumentEvent(id);
         LOGGER.debug("[DELETE EVENT HAS BEEN SENT]");
     }
 }
