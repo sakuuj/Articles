@@ -1,6 +1,6 @@
 package by.sakuuj.blogsite.article.controller;
 
-import by.sakuuj.blogsite.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.security.AuthenticatedUser;
 import by.sakuuj.blogsite.security.AuthenticatedUserAuthenticationToken;
 import lombok.experimental.UtilityClass;
 import org.springframework.security.core.context.SecurityContext;

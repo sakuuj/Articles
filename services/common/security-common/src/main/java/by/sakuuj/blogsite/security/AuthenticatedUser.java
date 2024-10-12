@@ -1,4 +1,4 @@
-package by.sakuuj.blogsite.authorization;
+package by.sakuuj.blogsite.security;
 
 import by.sakuuj.blogsite.person.grpc.Role;
 import lombok.Builder;

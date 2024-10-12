@@ -20,7 +20,7 @@ import by.sakuuj.blogsite.entity.jpa.entities.ArticleEntity;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
 import by.sakuuj.blogsite.service.IdempotencyTokenService;
-import by.sakuuj.blogsite.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.security.AuthenticatedUser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

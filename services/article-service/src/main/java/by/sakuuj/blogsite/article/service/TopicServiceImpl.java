@@ -18,7 +18,7 @@ import by.sakuuj.blogsite.entity.jpa.entities.TopicEntity;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
 import by.sakuuj.blogsite.service.IdempotencyTokenService;
-import by.sakuuj.blogsite.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.security.AuthenticatedUser;
 import by.sakuuj.blogsite.utils.PagingUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

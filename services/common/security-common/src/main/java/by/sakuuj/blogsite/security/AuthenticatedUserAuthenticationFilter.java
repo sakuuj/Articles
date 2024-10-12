@@ -6,7 +6,6 @@ import by.sakuuj.blogsite.person.grpc.PersonResponse;
 import by.sakuuj.blogsite.person.grpc.Role;
 import by.sakuuj.blogsite.person.grpc.SavePersonRequest;
 import by.sakuuj.blogsite.service.PersonService;
-import by.sakuuj.blogsite.authorization.AuthenticatedUser;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

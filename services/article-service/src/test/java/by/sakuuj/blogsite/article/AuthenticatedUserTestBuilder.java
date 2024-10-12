@@ -1,6 +1,6 @@
 package by.sakuuj.blogsite.article;
 
-import by.sakuuj.blogsite.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.security.AuthenticatedUser;
 import by.sakuuj.blogsite.person.grpc.Role;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

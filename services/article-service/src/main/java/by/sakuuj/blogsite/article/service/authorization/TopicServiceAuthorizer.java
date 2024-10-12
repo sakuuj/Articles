@@ -1,6 +1,6 @@
 package by.sakuuj.blogsite.article.service.authorization;
 
-import by.sakuuj.blogsite.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.security.AuthenticatedUser;
 
 import java.util.UUID;
 

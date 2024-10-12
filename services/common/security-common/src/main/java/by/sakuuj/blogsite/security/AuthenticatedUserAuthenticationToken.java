@@ -1,6 +1,5 @@
 package by.sakuuj.blogsite.security;
 
-import by.sakuuj.blogsite.authorization.AuthenticatedUser;
 import lombok.Data;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

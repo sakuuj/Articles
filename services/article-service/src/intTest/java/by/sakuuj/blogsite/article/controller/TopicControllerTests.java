@@ -9,12 +9,14 @@ import by.sakuuj.blogsite.article.dto.TopicRequest;
 import by.sakuuj.blogsite.article.dto.TopicResponse;
 import by.sakuuj.blogsite.article.dto.UpdateRequestDTO;
 import by.sakuuj.blogsite.article.service.TopicService;
-import by.sakuuj.blogsite.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.security.AuthenticatedUser;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -44,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SecuredControllerTest
 @WebMvcTest(controllers = TopicController.class)
-class TopicControllerTests extends HavingSecurityMocksPrepared{
+class TopicControllerTests extends HavingSecurityMocksPrepared {
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,6 +56,25 @@ class TopicControllerTests extends HavingSecurityMocksPrepared{
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Nested
+    class securedUris {
+
+        @MethodSource
+        @ParameterizedTest
+        void shouldReturnStatusUnauthorizedOnTheForbiddenUris(String forbiddenUri) throws Exception {
+
+            mockMvc.perform(get(forbiddenUri))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        static List<String> shouldReturnStatusUnauthorizedOnTheForbiddenUris() {
+            return List.of(
+                    "/topics/something/something",
+                    "/random-uri"
+            );
+        }
+    }
 
     @Nested
     class findById {

@@ -4,7 +4,7 @@ import by.sakuuj.blogsite.article.dto.TopicRequest;
 import by.sakuuj.blogsite.article.dto.TopicResponse;
 import by.sakuuj.blogsite.paging.PageView;
 import by.sakuuj.blogsite.paging.RequestedPage;
-import by.sakuuj.blogsite.authorization.AuthenticatedUser;
+import by.sakuuj.blogsite.security.AuthenticatedUser;
 
 import java.util.Optional;
 import java.util.UUID;
