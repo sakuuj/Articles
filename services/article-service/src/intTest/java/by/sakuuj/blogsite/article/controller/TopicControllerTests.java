@@ -32,6 +32,7 @@ import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.securityContext;
@@ -180,6 +181,24 @@ class TopicControllerTests extends HavingSecurityMocksPrepared {
             verify(topicService).findAllSortByCreatedAtDesc(requestedPage);
             verifyNoMoreInteractions(topicService);
         }
+
+        @Test
+        void  shouldRespondWith4xx_onInvalidPageRequest() throws Exception {
+
+            // given
+            RequestedPage invalidRequestedPage = RequestedPage.aPage()
+                    .withSize(-10)
+                    .withNumber(-10);
+
+            // when, then
+            mockMvc.perform(get("/topics")
+                            .queryParam("page-size", String.valueOf(invalidRequestedPage.size()))
+                            .queryParam("page-number", String.valueOf(invalidRequestedPage.number()))
+                    )
+                    .andExpect(status().is4xxClientError());
+
+            verifyNoInteractions(topicService);
+        }
     }
 
     @Nested
@@ -222,6 +241,32 @@ class TopicControllerTests extends HavingSecurityMocksPrepared {
             verify(topicService).create(topicRequest, idempotencyTokenValue, authenticatedUser);
             verifyNoMoreInteractions(topicService);
         }
+
+        @Test
+        void shouldResponseWith4xx_onInvalidCreateRequest() throws Exception {
+
+            // given
+            AuthenticatedUser authenticatedUser = AuthenticatedUserTestBuilder.newInstance().build();
+            SecurityContext securityContext = SecurityUtils.createSecurityContext(authenticatedUser);
+
+            var invalidCreateRequest = new CreateRequestDTO<>(
+                    null,
+                    null
+            );
+
+            String requestBodyJson = objectMapper.writeValueAsString(invalidCreateRequest);
+
+            // when, then
+            mockMvc.perform(
+                            post("/topics")
+                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                    .content(requestBodyJson)
+                                    .with(securityContext(securityContext))
+                    )
+                    .andExpect(status().is4xxClientError());
+
+            verifyNoInteractions(topicService);
+        }
     }
 
     @Nested
@@ -259,6 +304,32 @@ class TopicControllerTests extends HavingSecurityMocksPrepared {
 
             verify(topicService).updateById(idOfTopicToUpdate, topicRequest, version, authenticatedUser);
             verifyNoMoreInteractions(topicService);
+        }
+
+        @Test
+        void shouldResponseWith4xx_onInvalidUpdateRequest() throws Exception {
+
+            // given
+            AuthenticatedUser authenticatedUser = AuthenticatedUserTestBuilder.newInstance().build();
+            SecurityContext securityContext = SecurityUtils.createSecurityContext(authenticatedUser);
+
+            var invalidUpdateRequest = new UpdateRequestDTO<>(
+                    (short) 1,
+                    null
+            );
+
+            String requestBodyJson = objectMapper.writeValueAsString(invalidUpdateRequest);
+
+            // when, then
+            mockMvc.perform(
+                            put("/topics")
+                                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                                    .content(requestBodyJson)
+                                    .with(securityContext(securityContext))
+                    )
+                    .andExpect(status().is4xxClientError());
+
+            verifyNoInteractions(topicService);
         }
     }
 
