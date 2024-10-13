@@ -1,6 +1,6 @@
 package by.sakuuj.annotations;
 
-import by.sakuuj.blogsite.article.configs.JpaConfig;
+import by.sakuuj.articles.article.configs.JpaConfig;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;

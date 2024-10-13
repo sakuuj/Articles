@@ -1,4 +1,4 @@
-rootProject.name = "blogsite"
+rootProject.name = "articles"
 include("platform")
 
 include("services:person-service")

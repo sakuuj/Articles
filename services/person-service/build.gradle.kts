@@ -10,7 +10,7 @@ plugins {
 
 
 
-group = "by.sakuuj.blogsite"
+group = "by.sakuuj.articles"
 version = "0.1"
 
 repositories {

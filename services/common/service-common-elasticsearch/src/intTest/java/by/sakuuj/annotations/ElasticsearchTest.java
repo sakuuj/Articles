@@ -15,10 +15,10 @@ import java.lang.annotation.RetentionPolicy;
 @DataElasticsearchTest
 @ContextConfiguration(classes = EmptyConfig.class)
 @ImportAutoConfiguration(IndexCreatorAutoConfiguration.class)
-@EnableElasticsearchRepositories(basePackages = "by.sakuuj.blogsite.article.repository.elasticsearch")
+@EnableElasticsearchRepositories(basePackages = "by.sakuuj.articles.article.repository.elasticsearch")
 @ComponentScan(basePackages = {
-        "by.sakuuj.blogsite.article.entity.elasticsearch",
-        "by.sakuuj.blogsite.article.repository.elasticsearch"
+        "by.sakuuj.articles.article.entity.elasticsearch",
+        "by.sakuuj.articles.article.repository.elasticsearch"
 })
 public @interface ElasticsearchTest {
 

@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.hibernate)
 }
 
-group = "by.sakuuj.blogsite"
+group = "by.sakuuj.articles"
 version = "0.1"
 
 java {
