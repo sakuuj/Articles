@@ -1,10 +1,5 @@
 name: articles
 
-
-secrets:
-  elastic_search_password:
-    file: secrets/spring.elasticsearch.password
-
 services:
 
   api_gateway:
@@ -132,12 +127,10 @@ services:
       - net_kafka
 
   elastic_search:
-    secrets:
-      - elastic_search_password
     container_name: elasticsearch-articles
     image: elasticsearch:8.14.3
     environment:
-      - ELASTIC_PASSWORD_FILE=/run/secrets/elastic_search_password
+      - ELASTIC_PASSWORD=elastic
       - ES_SETTING_DISCOVERY_TYPE=single-node
       - ES_SETTING_XPACK_SECURITY_HTTP_SSL_ENABLED=false
       - ES_SETTING_XPACK_LICENSE_SELF__GENERATED_TYPE=basic
