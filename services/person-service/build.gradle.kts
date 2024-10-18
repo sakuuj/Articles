@@ -1,4 +1,3 @@
-
 plugins {
     id("java")
     id("int-test")
@@ -7,7 +6,9 @@ plugins {
     alias(libs.plugins.hibernate)
 }
 
-
+springBoot {
+    mainClass = "by.sakuuj.articles.PersonServiceApplication"
+}
 
 
 group = "by.sakuuj.articles"

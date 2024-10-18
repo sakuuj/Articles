@@ -17,11 +17,11 @@ public class RequestedPageArgumentResolver extends RequestParamMethodArgumentRes
     protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) {
 
         String pageSize = Optional.ofNullable(request.getParameter("page-size"))
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("'page-size' request parameter is not specified"));
         int parsedPageSize = parseInt(pageSize);
 
         String pageNumber = Optional.ofNullable(request.getParameter("page-number"))
-                .orElseThrow(IllegalStateException::new);
+                .orElseThrow(() -> new IllegalStateException("'page-number' request parameter is not specified"));
         int parsedPageNumber = parseInt(pageNumber);
 
         return RequestedPage.builder()

@@ -1,0 +1,18 @@
+spring.config:
+  import: configtree:${DOCKER_SECRETS_DIR:docker/secrets/}
+
+spring.kafka.bootstrap-servers:
+  - "broker-articles:9092"
+
+by.es.uri: elasticsearch-articles:9200
+spring.elasticsearch.uris:
+  - ${by.es.uri}
+
+spring:
+  elasticsearch:
+    username: elastic
+    password: elastic
+
+by.sakuuj.elasticsearch.index-creator.username: ${spring.elasticsearch.username}
+by.sakuuj.elasticsearch.index-creator.password: ${spring.elasticsearch.password}
+by.sakuuj.elasticsearch.index-creator.uri: http://${by.es.uri}

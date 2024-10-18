@@ -12,6 +12,7 @@ import by.sakuuj.articles.security.AuthenticatedUser;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +34,7 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/articles")
+@RequestMapping(value = "/articles", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ArticleController {
 
     private final ArticleService articleService;
@@ -57,10 +58,7 @@ public class ArticleController {
         return articleService.findAllSortedByCreatedAtDesc(requestedPage);
     }
 
-    @GetMapping(params = {
-            SEARCH_TERMS_REQUEST_PARAM,
-            "!" + HAVING_TOPICS_REQUEST_PARAM
-    })
+    @GetMapping(params = {SEARCH_TERMS_REQUEST_PARAM, "!" + HAVING_TOPICS_REQUEST_PARAM})
     PageView<ArticleResponse> findAllBySearchTermsSortedByRelevance(
             @RequestParam(SEARCH_TERMS_REQUEST_PARAM) @NotBlank String searchTerms,
             @Valid RequestedPage requestedPage
@@ -68,10 +66,7 @@ public class ArticleController {
         return articleService.findAllBySearchTermsSortedByRelevance(searchTerms, requestedPage);
     }
 
-    @GetMapping(params = {
-            HAVING_TOPICS_REQUEST_PARAM,
-            "!" + SEARCH_TERMS_REQUEST_PARAM
-    })
+    @GetMapping(params = {HAVING_TOPICS_REQUEST_PARAM, "!" + SEARCH_TERMS_REQUEST_PARAM})
     PageView<ArticleResponse> findAllByTopicsSortedByCreatedAtDesc(
             @RequestParam(HAVING_TOPICS_REQUEST_PARAM) List<@Valid TopicRequest> topics,
             @Valid RequestedPage requestedPage
@@ -79,7 +74,7 @@ public class ArticleController {
         return articleService.findAllByTopicsSortedByCreatedAtDesc(topics, requestedPage);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> create(
             @RequestBody @Valid CreateRequestDTO<ArticleRequest> createRequestDTO,
             AuthenticatedUser authenticatedUser
@@ -106,7 +101,7 @@ public class ArticleController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> updateById(
             @PathVariable("id") UUID id,
             @RequestBody @Valid UpdateRequestDTO<ArticleRequest> updateRequestDTO,
@@ -121,7 +116,7 @@ public class ArticleController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{articleId}/add-topic")
+    @PatchMapping(path = "/{articleId}/add-topic", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> addTopic(
             @RequestBody UUID topicId,
             @PathVariable("articleId") UUID articleId,
@@ -132,7 +127,7 @@ public class ArticleController {
         return ResponseEntity.noContent().build();
     }
 
-    @PatchMapping("/{articleId}/remove-topic")
+    @PatchMapping(path = "/{articleId}/remove-topic", consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> removeTopic(
             @RequestBody UUID topicId,
             @PathVariable("articleId") UUID articleId,

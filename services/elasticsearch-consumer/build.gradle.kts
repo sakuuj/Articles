@@ -11,6 +11,14 @@ plugins {
 group = "by.sakuuj.articles"
 version = "0.1"
 
+springBoot {
+    mainClass = "by.sakuuj.articles.article.ElasticsearchConsumerApplication"
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
 repositories {
     mavenLocal()
     mavenCentral()

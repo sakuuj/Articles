@@ -10,6 +10,7 @@ import by.sakuuj.articles.paging.RequestedPage;
 import by.sakuuj.articles.security.AuthenticatedUser;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,7 +29,7 @@ import java.util.UUID;
 @Validated
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/topics")
+@RequestMapping(value = "/topics", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TopicController {
 
     private final TopicService topicService;
@@ -49,7 +50,7 @@ public class TopicController {
         return topicService.findAllSortByCreatedAtDesc(requestedPage);
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<TopicResponse> create(
             AuthenticatedUser authenticatedUser,
             @RequestBody @Valid CreateRequestDTO<TopicRequest> createRequest
@@ -77,7 +78,7 @@ public class TopicController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> updateById(
             AuthenticatedUser authenticatedUser,
             @RequestBody @Valid UpdateRequestDTO<TopicRequest> updateRequest,

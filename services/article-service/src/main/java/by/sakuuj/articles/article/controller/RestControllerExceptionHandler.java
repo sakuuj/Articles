@@ -23,8 +23,15 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleNotHandled(Exception ex) {
 
+        Throwable t = ex;
+        StringBuilder sb = new StringBuilder();
+        do {
+            sb.append(t.getMessage());
+            sb.append("\n");
+        } while ((t = t.getCause()) != null);
+
         return ResponseEntity.internalServerError()
-                .body(ApiError.internalError(ex.getMessage()));
+                .body(ApiError.internalError(sb.toString()));
     }
 
     @ExceptionHandler({
@@ -32,7 +39,8 @@ public class RestControllerExceptionHandler {
             MethodArgumentTypeMismatchException.class,
             MethodArgumentNotValidException.class,
             IdempotencyTokenExistsException.class,
-            DataIntegrityViolationException.class
+            DataIntegrityViolationException.class,
+            IllegalStateException.class
     })
     public ResponseEntity<ApiError> handleInvalidRequest(Exception ex) {
 

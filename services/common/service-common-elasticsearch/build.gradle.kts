@@ -9,6 +9,14 @@ plugins {
 group = "org.example"
 version = "unspecified"
 
+tasks.compileJava {
+    dependsOn(project(":index-creator-elasticsearch-spring-boot-starter").tasks.jar)
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
+
 repositories {
     mavenCentral()
     mavenLocal()

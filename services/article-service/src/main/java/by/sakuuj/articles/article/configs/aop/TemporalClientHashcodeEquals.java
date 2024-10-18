@@ -2,9 +2,6 @@ package by.sakuuj.articles.article.configs.aop;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -12,14 +9,14 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Used to prevent deadlock when using virtual threads
  */
-@Aspect
-@Component
-@ConditionalOnProperty(name = "spring.threads.virtual.enabled")
-public class ElasticsearchFixDeadlockAspect {
+//@Aspect
+//@Component
+//@ConditionalOnProperty(name = "spring.threads.virtual.enabled")
+public class TemporalClientHashcodeEquals {
 
     private final Lock lock = new ReentrantLock();
 
-    @Around("within(org.elasticsearch.client.RestClient)")
+    @Around("execution(by.sakuuj.articles.article.orchestration.workflows.CreateArticleWorkflow)")
     public Object fixDeadlock(ProceedingJoinPoint pjp) throws Throwable {
         try {
             lock.lock();

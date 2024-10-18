@@ -1,8 +1,8 @@
 package by.sakuuj.articles.article.producer;
 
 
-import by.sakuuj.articles.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.articles.article.dto.ArticleDocumentRequest;
+import by.sakuuj.articles.article.entity.elasticsearch.ArticleDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -21,7 +21,11 @@ public class ElasticsearchEventProducer {
 
     public void produce(ArticleDocumentRequest.RequestType requestType, ArticleDocument articleDocument) {
 
-        ArticleDocumentRequest request = new ArticleDocumentRequest(requestType, articleDocument);
+        ArticleDocumentRequest request = switch (requestType) {
+            case DELETE -> new ArticleDocumentRequest(requestType, null);
+            case UPSERT -> new ArticleDocumentRequest(requestType, articleDocument);
+        };
+
         kafkaTemplate.send(elasticsearchEventTopic, articleDocument.getId(), request);
     }
 }

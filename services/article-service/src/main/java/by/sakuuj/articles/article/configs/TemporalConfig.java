@@ -16,19 +16,26 @@ import io.temporal.serviceclient.WorkflowServiceStubs;
 import io.temporal.serviceclient.WorkflowServiceStubsOptions;
 import io.temporal.worker.Worker;
 import io.temporal.worker.WorkerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 @Configuration(proxyBeanMethods = false)
 public class TemporalConfig {
 
     @Bean
-    public WorkflowServiceStubs workflowServiceStubs() {
+    public WorkflowServiceStubs workflowServiceStubs(@Value("${by.sakuuj.temporal.target-uri}") String targetUri) {
 
-        return WorkflowServiceStubs.newServiceStubs(
+        return WorkflowServiceStubs.newConnectedServiceStubs(
                 WorkflowServiceStubsOptions.newBuilder()
-                        .setTarget("localhost:7233")
-                        .build()
+                        .setTarget(targetUri)
+                        .build(),
+                Duration.of(5, ChronoUnit.SECONDS)
         );
     }
 
@@ -38,7 +45,8 @@ public class TemporalConfig {
         return WorkflowClient.newInstance(workflowServiceStubs);
     }
 
-    @Bean
+    @Bean(destroyMethod = "")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public CreateArticleWorkflow createArticleWorkflowStub(WorkflowClient workflowClient) {
 
         return workflowClient.newWorkflowStub(
@@ -49,7 +57,8 @@ public class TemporalConfig {
         );
     }
 
-    @Bean
+    @Bean(destroyMethod = "")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public UpdateArticleWorkflow updateArticleWorkflowStub(WorkflowClient workflowClient) {
 
         return workflowClient.newWorkflowStub(
@@ -60,7 +69,8 @@ public class TemporalConfig {
         );
     }
 
-    @Bean
+    @Bean(destroyMethod = "")
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public DeleteArticleWorkflow deleteArticleWorkflowStub(WorkflowClient workflowClient) {
 
         return workflowClient.newWorkflowStub(

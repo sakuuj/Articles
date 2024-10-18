@@ -1,13 +1,22 @@
 spring.config:
   import: configtree:${DOCKER_SECRETS_DIR:docker/secrets/}
 
-spring.elasticsearch.uris: ["localhost:9200"]
+spring.kafka.bootstrap-servers: ["broker-articles:9092"]
 
-by.sakuuj.elasticsearch.index-creator.uri: http://${spring.elasticsearch.uris[0]}
+by.sakuuj.person-grpc-server.target: dns:///person-service:9000
+
+by.sakuuj.temporal.target-uri: temporal:7233
+
+by.es.uri: elasticsearch-articles:9200
+spring.elasticsearch.uris:
+  - ${by.es.uri}
+by.sakuuj.elasticsearch.index-creator.uri: http://${by.es.uri}
+
+spring.datasource.url: jdbc:postgresql://postgres_master_articles:5432/postgres
+
 by.sakuuj.elasticsearch.index-creator.username: ${spring.elasticsearch.username}
 by.sakuuj.elasticsearch.index-creator.password: ${spring.elasticsearch.password}
 by.sakuuj.elasticsearch.index-creator.index-to-json-file-pairs:
   - "articles<->elasticsearchQueries/createArticlesIndex.json"
-  - "articles2<->elasticsearchQueries/createArticlesIndex.json"
 
-by.sakuuj.elasticsearch.index-creator.enable: false
+by.sakuuj.elasticsearch.index-creator.enable: true

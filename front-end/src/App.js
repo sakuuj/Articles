@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 
 const OAUTH_CLIENT_ID = '838811690424-3dpv9tutkp89r1sbi41mrdkihuvruvsv.apps.googleusercontent.com';
-const OAUTH_REDIRECT_URI = 'http://localhost:3000';
+const OAUTH_REDIRECT_URI = 'http://localhost:8080';
 
 function generateCryptoRandomState() {
   const randomValues = new Uint32Array(2);

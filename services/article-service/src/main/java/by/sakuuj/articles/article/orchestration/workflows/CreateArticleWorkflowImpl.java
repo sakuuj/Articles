@@ -46,13 +46,13 @@ public class CreateArticleWorkflowImpl implements CreateArticleWorkflow {
     @Override
     public ArticleResponse createArticle(ArticleRequest articleRequest, IdempotencyTokenId idempotencyTokenId) {
 
-        LOGGER.debug("[BEFORE SAVING TO DATABASE]");
+        LOGGER.info("[BEFORE SAVING TO DATABASE]");
         ArticleResponse articleResponse = activities.saveInDatabase(articleRequest, idempotencyTokenId);
-        LOGGER.debug("[SAVED TO DATABASE]");
+        LOGGER.info("[SAVED TO DATABASE]");
 
-        LOGGER.debug("[BEFORE SENDING SAVE EVENT]");
+        LOGGER.info("[BEFORE SENDING SAVE EVENT]");
         activities.sendSaveDocumentEvent(articleResponse);
-        LOGGER.debug("[SAVE EVENT HAS BEEN SENT]");
+        LOGGER.info("[SAVE EVENT HAS BEEN SENT]");
 
         return articleResponse;
     }

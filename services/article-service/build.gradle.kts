@@ -9,6 +9,14 @@ plugins {
 group = "by.sakuuj.articles"
 version = "0.1"
 
+springBoot {
+    mainClass = "by.sakuuj.articles.article.ArticleServiceApplication"
+}
+
+tasks.bootJar {
+    dependsOn(project(":index-creator-elasticsearch-spring-boot-starter").tasks.jar)
+}
+
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(21)
 }
@@ -82,10 +90,10 @@ idea {
     }
 }
 
-val CUSTOM_SYSTEM_PROPS = mapOf(
-    "jdk.virtualThreadScheduler.maxPoolSize" to "8",
-    "jdk.tracePinnedThreads" to "full"
-)
+//val CUSTOM_SYSTEM_PROPS = mapOf(
+//    "jdk.virtualThreadScheduler.maxPoolSize" to "8",
+//    "jdk.tracePinnedThreads" to "full"
+//)
 
 val SPRING_PROFILES_ACTIVE = "spring.profiles.active"
 
@@ -97,19 +105,19 @@ tasks.bootRun {
     // with a predicate PropertyFile::isPropertyFile, which returns false if a path has '..')
     setWorkingDir("$rootDir")
 
-    systemProperties(CUSTOM_SYSTEM_PROPS)
+//    systemProperties(CUSTOM_SYSTEM_PROPS)
     systemProperty(SPRING_PROFILES_ACTIVE, "prod")
 }
 
 tasks.test {
-    systemProperties(CUSTOM_SYSTEM_PROPS)
+//    systemProperties(CUSTOM_SYSTEM_PROPS)
     systemProperty(SPRING_PROFILES_ACTIVE, "test")
 
     useJUnitPlatform()
 }
 
 tasks.intTest {
-    systemProperties(CUSTOM_SYSTEM_PROPS)
+//    systemProperties(CUSTOM_SYSTEM_PROPS)
     systemProperty(SPRING_PROFILES_ACTIVE, "intTest")
 
     useJUnitPlatform()

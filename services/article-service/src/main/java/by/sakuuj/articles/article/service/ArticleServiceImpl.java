@@ -20,6 +20,7 @@ import by.sakuuj.articles.paging.RequestedPage;
 import by.sakuuj.articles.security.AuthenticatedUser;
 import by.sakuuj.articles.utils.PagingUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
@@ -31,6 +32,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ArticleServiceImpl implements ArticleService {
@@ -61,7 +63,10 @@ public class ArticleServiceImpl implements ArticleService {
                 .idempotencyTokenValue(idempotencyTokenValue)
                 .build();
 
+        log.info("Before creation");
         ArticleResponse createdArticle = orchestratedArticleService.create(request, idempotencyTokenId);
+        log.info("After creation");
+
 
         return createdArticle.id();
     }

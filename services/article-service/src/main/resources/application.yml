@@ -16,11 +16,17 @@ spring.jpa.hibernate.ddl-auto: validate
 
 spring.liquibase.change-log: liquibase/changelog_root.yml
 
+by.sakuuj.articles.article.kafka.topic-name: articles
+by.sakuuj.articles.article.kafka.replicas: 1
+by.sakuuj.articles.article.kafka.partitions: 3
+
+by.sakuuj.temporal.target-uri: localhost:7233
+
 spring.datasource.url: jdbc:postgresql://127.0.0.1:5432/postgres
 spring.datasource.username: postgres
 spring.datasource.password: postgres
 
-spring.threads.virtual.enabled: true
+#spring.threads.virtual.enabled: true
 
 logging.level.tracer: trace
 

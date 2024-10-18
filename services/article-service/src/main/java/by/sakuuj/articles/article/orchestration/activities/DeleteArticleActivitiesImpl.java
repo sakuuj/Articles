@@ -1,6 +1,7 @@
 package by.sakuuj.articles.article.orchestration.activities;
 
 import by.sakuuj.articles.article.dto.ArticleDocumentRequest;
+import by.sakuuj.articles.article.entity.elasticsearch.ArticleDocument;
 import by.sakuuj.articles.article.exception.EntityNotFoundException;
 import by.sakuuj.articles.article.producer.ElasticsearchEventProducer;
 import by.sakuuj.articles.article.repository.jpa.ArticleRepository;
@@ -34,6 +35,8 @@ public class DeleteArticleActivitiesImpl implements DeleteArticleActivities {
     @Override
     public void sendDeleteDocumentEvent(UUID id) {
 
-        elasticsearchEventProducer.produce(ArticleDocumentRequest.RequestType.DELETE, null);
+        elasticsearchEventProducer.produce(ArticleDocumentRequest.RequestType.DELETE, ArticleDocument.builder()
+                .id(id)
+                .build());
     }
 }
