@@ -11,6 +11,12 @@ services:
       - "127.0.0.1:8080:8080"
     networks:
       - net_nginx
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 100mb
 
   article_service:
     hostname: article-service
@@ -56,7 +62,7 @@ services:
       resources:
         limits:
           cpus: "1"
-          memory: 1gb
+          memory: 500mb
     restart: unless-stopped
     networks:
       - net_kafka
@@ -76,7 +82,7 @@ services:
       resources:
         limits:
           cpus: "1"
-          memory: 1gb
+          memory: 500mb
     networks:
       - net_pg
       - net_ms
@@ -94,7 +100,8 @@ services:
       resources:
         limits:
           cpus: "1"
-          memory: 1gb
+          memory: 300mb
+    restart: unless-stopped
     networks:
       - net_pg
 
@@ -123,6 +130,7 @@ services:
         limits:
           cpus: "1"
           memory: 1gb
+    restart: unless-stopped
     networks:
       - net_kafka
 
@@ -146,6 +154,7 @@ services:
         limits:
           cpus: "1"
           memory: 1gb
+    restart: unless-stopped
 
 
 
@@ -159,6 +168,12 @@ services:
       - temporal-internal
     volumes:
       - /var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 300mb
+    restart: unless-stopped
 
 
 
@@ -176,6 +191,12 @@ services:
     networks:
       - temporal-internal
       - net_temporal
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 300mb
+    restart: unless-stopped
 
 
 
@@ -191,6 +212,13 @@ services:
       - net_temporal
     ports:
       - 8081:8080
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 100mb
+    restart: unless-stopped
+
 
 volumes:
   elastic_data:
