@@ -1,0 +1,24 @@
+{
+    "bool": {
+      "should": [
+        {
+          "match": {
+            "title": {
+              "boost": 1.5,
+              "query": "?0",
+              "fuzziness": "AUTO"
+            }
+          }
+        },
+        {
+          "match": {
+            "content": {
+              "query": "?0",
+              "fuzziness": "AUTO"
+            }
+          }
+        }
+      ],
+      "minimum_should_match": 1
+    }
+}

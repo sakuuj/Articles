@@ -1,10 +1,12 @@
 .gradle
 build/
+!front-end/build
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
 
 ### IntelliJ IDEA ###
+#*.secret
 .idea/
 *.iws
 *.iml

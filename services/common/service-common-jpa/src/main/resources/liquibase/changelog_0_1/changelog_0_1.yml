@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: liquibase/changelog_0_1/changeset/create_tables.yml
+  - include:
+      file: liquibase/changelog_0_1/changeset/insert_roles.yml

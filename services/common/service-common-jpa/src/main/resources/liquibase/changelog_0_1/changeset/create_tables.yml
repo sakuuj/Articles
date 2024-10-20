@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+      id: changelog_0_1_create_tables
+      author: sakuuj
+      changes:
+        - sqlFile:
+            path: liquibase/changelog_0_1/changeset/create_tables.sql

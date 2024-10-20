@@ -1,0 +1,4 @@
+[plugins]
+springBoot = { id = "org.springframework.boot", version = "3.3.1" }
+lombok = { id = "io.freefair.lombok", version = "8.6" }
+hibernate = { id = "org.hibernate.orm", version = "6.5.2.Final" }

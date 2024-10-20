@@ -1,0 +1,12 @@
+FROM eclipse-temurin:21-jre-alpine
+
+ARG NAME="article-service"
+ARG VERSION="0.1"
+ARG JAR_FILE="services/${NAME}/build/libs/${NAME}-${VERSION}.jar"
+
+ENV APP_NAME="app.jar"
+
+COPY ./docker/secrets ./docker/secrets
+COPY ${JAR_FILE} ${APP_NAME}
+
+ENTRYPOINT ["sh", "-c", "java -Duser.timezone=UTC ${JAVA_OPTS} -jar /${APP_NAME}"]
