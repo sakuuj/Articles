@@ -149,6 +149,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional
     public void addTopic(UUID topicId, UUID articleId, AuthenticatedUser authenticatedUser) {
 
         articleServiceAuthorizer.authorizeAddTopic(articleId, authenticatedUser);
@@ -162,6 +163,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    @Transactional
     public void removeTopic(UUID topicId, UUID articleId, AuthenticatedUser authenticatedUser) {
 
         articleServiceAuthorizer.authorizeAddTopic(articleId, authenticatedUser);

@@ -35,6 +35,9 @@ public class TopicTestDataBuilder {
             ))
             .build();
 
+    private String createdAtString = "2012-05-10T12:59:10";
+    private String updatedAtString = "2013-06-11T09:39:11";
+
     private short version = 4322;
 
     public TopicEntity build() {
@@ -52,8 +55,8 @@ public class TopicTestDataBuilder {
         return TopicResponse.builder()
                 .id(id)
                 .name(name)
-                .createdAt(modificationAudit.getCreatedAt())
-                .updatedAt(modificationAudit.getUpdatedAt())
+                .createdAt(createdAtString)
+                .updatedAt(updatedAtString)
                 .build();
     }
 

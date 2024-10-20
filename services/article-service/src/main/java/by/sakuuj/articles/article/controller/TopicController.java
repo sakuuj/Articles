@@ -5,9 +5,14 @@ import by.sakuuj.articles.article.dto.TopicRequest;
 import by.sakuuj.articles.article.dto.TopicResponse;
 import by.sakuuj.articles.article.dto.UpdateRequestDTO;
 import by.sakuuj.articles.article.service.TopicService;
+import by.sakuuj.articles.controller.resolvers.RequestedPageArgumentResolver;
 import by.sakuuj.articles.paging.PageView;
 import by.sakuuj.articles.paging.RequestedPage;
 import by.sakuuj.articles.security.AuthenticatedUser;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -32,6 +37,7 @@ import java.util.UUID;
 @RequestMapping(value = "/topics", produces = MediaType.APPLICATION_JSON_VALUE)
 public class TopicController {
 
+    private static final String SECURITY_REQ_NAME = "Bearer Authentication";
     private final TopicService topicService;
 
     @GetMapping("/{id}")
@@ -44,15 +50,28 @@ public class TopicController {
     }
 
     @GetMapping
+    @Operation(parameters = {
+            @Parameter(
+                    name = RequestedPageArgumentResolver.PAGE_SIZE_PARAM,
+                    required = true,
+                    schema = @Schema(implementation = int.class)
+            ),
+            @Parameter(
+                    name = RequestedPageArgumentResolver.PAGE_NUMBER_PARAM,
+                    required = true,
+                    schema = @Schema(implementation = int.class)
+            )
+    })
     public PageView<TopicResponse> findAllSortedByCreatedAtDesc(
-            @Valid RequestedPage requestedPage
+            @Parameter(hidden = true) @Valid RequestedPage requestedPage
     ) {
         return topicService.findAllSortByCreatedAtDesc(requestedPage);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @SecurityRequirement(name = SECURITY_REQ_NAME)
     public ResponseEntity<TopicResponse> create(
-            AuthenticatedUser authenticatedUser,
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser,
             @RequestBody @Valid CreateRequestDTO<TopicRequest> createRequest
     ) {
         UUID id = topicService.create(
@@ -69,8 +88,9 @@ public class TopicController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = SECURITY_REQ_NAME)
     public ResponseEntity<Void> deleteById(
-            AuthenticatedUser authenticatedUser,
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser,
             @PathVariable("id") UUID id
     ) {
         topicService.deleteById(id, authenticatedUser);
@@ -79,8 +99,9 @@ public class TopicController {
     }
 
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @SecurityRequirement(name = SECURITY_REQ_NAME)
     public ResponseEntity<Void> updateById(
-            AuthenticatedUser authenticatedUser,
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser,
             @RequestBody @Valid UpdateRequestDTO<TopicRequest> updateRequest,
             @PathVariable("id") UUID id
     ) {

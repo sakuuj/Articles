@@ -45,6 +45,9 @@ public class CommentTestDataBuilder {
             ))
             .build();
 
+    private String createdAtString = "2012-05-10T12:59:10";
+    private String updatedAtString = "2013-06-11T09:39:11";
+
     private short version = 32013;
 
     public CommentEntity build() {
@@ -69,8 +72,8 @@ public class CommentTestDataBuilder {
                 .id(id)
                 .content(content)
                 .author(authorResponse)
-                .createdAt(modificationAudit.getCreatedAt())
-                .updatedAt(modificationAudit.getUpdatedAt())
+                .createdAt(createdAtString)
+                .updatedAt(updatedAtString)
                 .build();
     }
 }

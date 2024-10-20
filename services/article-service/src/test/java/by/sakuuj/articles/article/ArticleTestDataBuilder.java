@@ -2,10 +2,10 @@ package by.sakuuj.articles.article;
 
 import by.sakuuj.articles.article.dto.ArticleRequest;
 import by.sakuuj.articles.article.dto.ArticleResponse;
+import by.sakuuj.articles.article.dto.PersonResponse;
 import by.sakuuj.articles.article.dto.TopicRequest;
 import by.sakuuj.articles.article.dto.TopicResponse;
 import by.sakuuj.articles.article.entity.elasticsearch.ArticleDocument;
-import by.sakuuj.articles.article.dto.PersonResponse;
 import by.sakuuj.articles.entity.jpa.embeddable.ModificationAudit;
 import by.sakuuj.articles.entity.jpa.entities.ArticleEntity;
 import by.sakuuj.articles.entity.jpa.entities.ArticleTopicEntity;
@@ -95,6 +95,9 @@ public class ArticleTestDataBuilder {
             ))
             .build();
 
+    private String createdAtString = "2012-05-10T12:59:10";
+    private String updatedAtString = "2013-06-11T09:39:11";
+
     private LocalDateTime datePublishedOn = modificationAudit.getCreatedAt();
 
     private PersonTestDataBuilder authorBuilder = PersonTestDataBuilder.aPerson();
@@ -110,8 +113,8 @@ public class ArticleTestDataBuilder {
                 .content(content)
                 .topics(topicResponses)
                 .author(authorResponseDto)
-                .createdAt(modificationAudit.getCreatedAt())
-                .updatedAt(modificationAudit.getUpdatedAt())
+                .createdAt(createdAtString)
+                .updatedAt(updatedAtString)
                 .build();
     }
 

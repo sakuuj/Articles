@@ -2,6 +2,7 @@ package by.sakuuj.articles.article.mapper.jpa;
 
 import by.sakuuj.articles.article.dto.ArticleRequest;
 import by.sakuuj.articles.article.dto.ArticleResponse;
+import by.sakuuj.articles.article.mapper.LocalDateTimeMapper;
 import by.sakuuj.articles.entity.jpa.entities.ArticleEntity;
 import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
@@ -17,7 +18,8 @@ import java.util.UUID;
         uses = {
                 TopicMapper.class,
                 PersonMapper.class,
-                ToReferenceMapper.class
+                ToReferenceMapper.class,
+                LocalDateTimeMapper.class
         }
 )
 public interface ArticleMapper {

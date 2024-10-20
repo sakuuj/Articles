@@ -9,4 +9,4 @@ ENV APP_NAME="app.jar"
 COPY ./docker/secrets ./docker/secrets
 COPY ${JAR_FILE} ${APP_NAME}
 
-ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar /${APP_NAME}"]
+ENTRYPOINT ["sh", "-c", "java -Duser.timezone=UTC ${JAVA_OPTS} -jar /${APP_NAME}"]

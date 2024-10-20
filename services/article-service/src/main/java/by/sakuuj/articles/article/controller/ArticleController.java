@@ -6,9 +6,15 @@ import by.sakuuj.articles.article.dto.CreateRequestDTO;
 import by.sakuuj.articles.article.dto.TopicRequest;
 import by.sakuuj.articles.article.dto.UpdateRequestDTO;
 import by.sakuuj.articles.article.service.ArticleService;
+import by.sakuuj.articles.controller.resolvers.RequestedPageArgumentResolver;
 import by.sakuuj.articles.paging.PageView;
 import by.sakuuj.articles.paging.RequestedPage;
 import by.sakuuj.articles.security.AuthenticatedUser;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +43,7 @@ import java.util.UUID;
 @RequestMapping(value = "/articles", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ArticleController {
 
+    private static final String SECURITY_REQ_NAME = "Bearer Authentication";
     private final ArticleService articleService;
 
     public static final String HAVING_TOPICS_REQUEST_PARAM = "having-topics";
@@ -52,32 +59,53 @@ public class ArticleController {
     }
 
     @GetMapping
+    @Operation(parameters = {
+            @Parameter(
+                    name = HAVING_TOPICS_REQUEST_PARAM,
+                    array = @ArraySchema(schema = @Schema(implementation = String.class))
+            ),
+            @Parameter(
+                    name = SEARCH_TERMS_REQUEST_PARAM,
+                    schema = @Schema(implementation = String.class)
+            ),
+            @Parameter(
+                    name = RequestedPageArgumentResolver.PAGE_SIZE_PARAM,
+                    required = true,
+                    schema = @Schema(implementation = int.class)
+            ),
+            @Parameter(
+                    name = RequestedPageArgumentResolver.PAGE_NUMBER_PARAM,
+                    required = true,
+                    schema = @Schema(implementation = int.class)
+            )
+    })
     PageView<ArticleResponse> findAllSortedByCreatedAtDesc(
-            @Valid RequestedPage requestedPage
+            @Parameter(hidden = true) @Valid RequestedPage requestedPage
     ) {
         return articleService.findAllSortedByCreatedAtDesc(requestedPage);
     }
 
     @GetMapping(params = {SEARCH_TERMS_REQUEST_PARAM, "!" + HAVING_TOPICS_REQUEST_PARAM})
     PageView<ArticleResponse> findAllBySearchTermsSortedByRelevance(
-            @RequestParam(SEARCH_TERMS_REQUEST_PARAM) @NotBlank String searchTerms,
-            @Valid RequestedPage requestedPage
+            @Parameter(hidden = true) @RequestParam(SEARCH_TERMS_REQUEST_PARAM) @NotBlank String searchTerms,
+            @Parameter(hidden = true) @Valid RequestedPage requestedPage
     ) {
         return articleService.findAllBySearchTermsSortedByRelevance(searchTerms, requestedPage);
     }
 
     @GetMapping(params = {HAVING_TOPICS_REQUEST_PARAM, "!" + SEARCH_TERMS_REQUEST_PARAM})
     PageView<ArticleResponse> findAllByTopicsSortedByCreatedAtDesc(
-            @RequestParam(HAVING_TOPICS_REQUEST_PARAM) List<@Valid TopicRequest> topics,
-            @Valid RequestedPage requestedPage
+            @Parameter(hidden = true) @RequestParam(HAVING_TOPICS_REQUEST_PARAM) List<@Valid TopicRequest> topics,
+            @Parameter(hidden = true) @Valid RequestedPage requestedPage
     ) {
         return articleService.findAllByTopicsSortedByCreatedAtDesc(topics, requestedPage);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    @SecurityRequirement(name = SECURITY_REQ_NAME)
     ResponseEntity<Void> create(
             @RequestBody @Valid CreateRequestDTO<ArticleRequest> createRequestDTO,
-            AuthenticatedUser authenticatedUser
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser
     ) {
         UUID id = articleService.create(
                 createRequestDTO.payload(),
@@ -92,9 +120,10 @@ public class ArticleController {
     }
 
     @DeleteMapping("/{id}")
+    @SecurityRequirement(name = SECURITY_REQ_NAME)
     ResponseEntity<Void> deleteById(
             @PathVariable("id") UUID id,
-            AuthenticatedUser authenticatedUser
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser
     ) {
         articleService.deleteById(id, authenticatedUser);
 
@@ -102,10 +131,11 @@ public class ArticleController {
     }
 
     @PutMapping(path = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @SecurityRequirement(name = SECURITY_REQ_NAME)
     ResponseEntity<Void> updateById(
             @PathVariable("id") UUID id,
             @RequestBody @Valid UpdateRequestDTO<ArticleRequest> updateRequestDTO,
-            AuthenticatedUser authenticatedUser
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser
     ) {
         articleService.updateById(
                 id,
@@ -117,10 +147,11 @@ public class ArticleController {
     }
 
     @PatchMapping(path = "/{articleId}/add-topic", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @SecurityRequirement(name = SECURITY_REQ_NAME)
     ResponseEntity<Void> addTopic(
             @RequestBody UUID topicId,
             @PathVariable("articleId") UUID articleId,
-            AuthenticatedUser authenticatedUser
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser
     ) {
         articleService.addTopic(topicId, articleId, authenticatedUser);
 
@@ -128,10 +159,11 @@ public class ArticleController {
     }
 
     @PatchMapping(path = "/{articleId}/remove-topic", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @SecurityRequirement(name = SECURITY_REQ_NAME)
     ResponseEntity<Void> removeTopic(
             @RequestBody UUID topicId,
             @PathVariable("articleId") UUID articleId,
-            AuthenticatedUser authenticatedUser
+            @Parameter(hidden = true) AuthenticatedUser authenticatedUser
     ) {
         articleService.removeTopic(topicId, articleId, authenticatedUser);
 

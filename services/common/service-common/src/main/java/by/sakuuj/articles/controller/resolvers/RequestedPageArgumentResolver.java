@@ -9,6 +9,9 @@ import java.util.Optional;
 
 public class RequestedPageArgumentResolver extends RequestParamMethodArgumentResolver {
 
+    public static final String PAGE_SIZE_PARAM = "page-size";
+    public static final String PAGE_NUMBER_PARAM = "page-number";
+
     public RequestedPageArgumentResolver(boolean useDefaultResolution) {
         super(useDefaultResolution);
     }
@@ -16,12 +19,12 @@ public class RequestedPageArgumentResolver extends RequestParamMethodArgumentRes
     @Override
     protected Object resolveName(String name, MethodParameter parameter, NativeWebRequest request) {
 
-        String pageSize = Optional.ofNullable(request.getParameter("page-size"))
-                .orElseThrow(() -> new IllegalStateException("'page-size' request parameter is not specified"));
+        String pageSize = Optional.ofNullable(request.getParameter(PAGE_SIZE_PARAM))
+                .orElseThrow(() -> new IllegalStateException("'%s' request parameter is not specified".formatted(PAGE_SIZE_PARAM)));
         int parsedPageSize = parseInt(pageSize);
 
-        String pageNumber = Optional.ofNullable(request.getParameter("page-number"))
-                .orElseThrow(() -> new IllegalStateException("'page-number' request parameter is not specified"));
+        String pageNumber = Optional.ofNullable(request.getParameter(PAGE_NUMBER_PARAM))
+                .orElseThrow(() -> new IllegalStateException("'%s' request parameter is not specified".formatted(PAGE_NUMBER_PARAM)));
         int parsedPageNumber = parseInt(pageNumber);
 
         return RequestedPage.builder()

@@ -10,6 +10,7 @@ import by.sakuuj.articles.entity.jpa.entities.ArticleEntity;
 import by.sakuuj.articles.service.IdempotencyTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -24,6 +25,7 @@ public class DeleteArticleActivitiesImpl implements DeleteArticleActivities {
     private final IdempotencyTokenService idempotencyTokenService;
 
     @Override
+    @Transactional
     public void deleteFromDatabase(UUID id) {
 
         articleRepository.findById(id).orElseThrow(EntityNotFoundException::new);

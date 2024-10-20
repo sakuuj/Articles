@@ -4,6 +4,7 @@ import by.sakuuj.articles.article.error.ApiError;
 import by.sakuuj.articles.article.exception.EntityNotFoundException;
 import by.sakuuj.articles.article.exception.EntityVersionDoesNotMatch;
 import by.sakuuj.articles.article.exception.IdempotencyTokenExistsException;
+import io.temporal.failure.ApplicationFailure;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -16,9 +17,29 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.Map;
+import java.util.function.Function;
+
 @Slf4j
 @RestControllerAdvice
 public class RestControllerExceptionHandler {
+
+    private static final Map<Class<?>, Function<String, ResponseEntity<ApiError>>> exceptionsToGetterFunctions = Map.of(
+
+            ConstraintViolationException.class, RestControllerExceptionHandler::getInvalidRequestError,
+            MethodArgumentTypeMismatchException.class, RestControllerExceptionHandler::getInvalidRequestError,
+            MethodArgumentNotValidException.class, RestControllerExceptionHandler::getInvalidRequestError,
+            IdempotencyTokenExistsException.class, RestControllerExceptionHandler::getInvalidRequestError,
+            DataIntegrityViolationException.class, RestControllerExceptionHandler::getInvalidRequestError,
+            IllegalStateException.class, RestControllerExceptionHandler::getInvalidRequestError,
+
+            HttpRequestMethodNotSupportedException.class, RestControllerExceptionHandler::getHttpMethodNotSupportedError,
+
+            EntityNotFoundException.class, RestControllerExceptionHandler::getEntityNotFoundError,
+
+            OptimisticLockingFailureException.class, RestControllerExceptionHandler::getOptimisticLockError,
+            EntityVersionDoesNotMatch.class, RestControllerExceptionHandler::getOptimisticLockError
+    );
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleNotHandled(Exception ex) {
@@ -34,46 +55,48 @@ public class RestControllerExceptionHandler {
                 .body(ApiError.internalError(sb.toString()));
     }
 
-    @ExceptionHandler({
-            ConstraintViolationException.class,
-            MethodArgumentTypeMismatchException.class,
-            MethodArgumentNotValidException.class,
-            IdempotencyTokenExistsException.class,
-            DataIntegrityViolationException.class,
-            IllegalStateException.class
-    })
-    public ResponseEntity<ApiError> handleInvalidRequest(Exception ex) {
+    @ExceptionHandler(ApplicationFailure.class)
+    public ResponseEntity<ApiError> handleTemporalApplicationFailure(ApplicationFailure applicationFailure) {
 
-        return ResponseEntity.badRequest()
-                .body(ApiError.invalidRequest(ex.getMessage()));
+        String underlyingExceptionTypeName = applicationFailure.getType();
+        try {
+            Class<?> underlyingExceptionClass = Class.forName(underlyingExceptionTypeName);
+            Function<String, ResponseEntity<ApiError>> handler = exceptionsToGetterFunctions.get(underlyingExceptionClass);
+
+            if (handler != null) {
+                return handler.apply(applicationFailure.getOriginalMessage());
+            }
+            return ResponseEntity.internalServerError()
+                    .body(ApiError.internalError(applicationFailure.getOriginalMessage()));
+
+        } catch (Exception ex) {
+            return ResponseEntity.internalServerError()
+                    .body(ApiError.internalError(ex.getMessage()));
+        }
     }
 
-    @ExceptionHandler({
-            HttpRequestMethodNotSupportedException.class
-    })
-    public ResponseEntity<ApiError> handleHttpMethodNotSupported(Exception ex) {
+    private static ResponseEntity<ApiError> getInvalidRequestError(String errorMsg) {
 
         return ResponseEntity.badRequest()
-                .body(ApiError.httpMethodNotSupported(ex.getMessage()));
+                .body(ApiError.invalidRequest(errorMsg));
     }
 
-    @ExceptionHandler({
-            OptimisticLockingFailureException.class,
-            EntityVersionDoesNotMatch.class
-    })
-    public ResponseEntity<ApiError> handleOptimisticLockError(Exception ex) {
+    private static ResponseEntity<ApiError> getHttpMethodNotSupportedError(String errorMsg) {
 
         return ResponseEntity.badRequest()
-                .body(ApiError.optimisticLockingError(ex.getMessage()));
+                .body(ApiError.httpMethodNotSupported(errorMsg));
+    }
+
+    private static ResponseEntity<ApiError> getOptimisticLockError(String errorMsg) {
+
+        return ResponseEntity.badRequest()
+                .body(ApiError.optimisticLockingError(errorMsg));
     }
 
 
-    @ExceptionHandler({
-            EntityNotFoundException.class,
-    })
-    public ResponseEntity<ApiError> handleEntityNotFoundError(Exception ex) {
+    private static ResponseEntity<ApiError> getEntityNotFoundError(String errorMsg) {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(ApiError.notFoundError(ex.getMessage()));
+                .body(ApiError.notFoundError(errorMsg));
     }
 }

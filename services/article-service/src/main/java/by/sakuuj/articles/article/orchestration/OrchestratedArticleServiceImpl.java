@@ -6,12 +6,17 @@ import by.sakuuj.articles.article.orchestration.workflows.CreateArticleWorkflow;
 import by.sakuuj.articles.article.orchestration.workflows.DeleteArticleWorkflow;
 import by.sakuuj.articles.article.orchestration.workflows.UpdateArticleWorkflow;
 import by.sakuuj.articles.entity.jpa.embeddable.IdempotencyTokenId;
+import io.temporal.failure.ApplicationFailure;
+import io.temporal.failure.TemporalException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class OrchestratedArticleServiceImpl implements OrchestratedArticleService {
@@ -22,21 +27,57 @@ public class OrchestratedArticleServiceImpl implements OrchestratedArticleServic
 
     private final ObjectFactory<UpdateArticleWorkflow> updateArticleWorkflow;
 
-    @Override
-    public ArticleResponse create(ArticleRequest articleRequest, IdempotencyTokenId idempotencyTokenId) {
 
-        return createArticleWorkflow.getObject().createArticle(articleRequest, idempotencyTokenId);
+    private static Optional<ApplicationFailure> extractApplicationFailure(TemporalException exception) {
+
+        Throwable t = exception;
+        while (t instanceof TemporalException && !(t instanceof ApplicationFailure)) {
+
+            if (t.getCause() != null) {
+                t = t.getCause();
+            } else {
+                return Optional.empty();
+            }
+        }
+
+        if (t instanceof ApplicationFailure applicationFailure) {
+            return Optional.of(applicationFailure);
+        }
+
+        return Optional.empty();
     }
 
     @Override
-    public ArticleResponse updateById(ArticleRequest articleRequest, UUID id, short version) {
+    public ArticleResponse create(ArticleRequest articleRequest, IdempotencyTokenId idempotencyTokenId) {
+        try {
+            return createArticleWorkflow.getObject().createArticle(articleRequest, idempotencyTokenId);
 
-        return updateArticleWorkflow.getObject().updateArticle(articleRequest, id, version);
+        } catch (TemporalException ex) {
+
+            throw extractApplicationFailure(ex).orElseThrow(() -> ex);
+        }
+    }
+
+
+    @Override
+    public ArticleResponse updateById(ArticleRequest articleRequest, UUID id, short version) {
+        try {
+            return updateArticleWorkflow.getObject().updateArticle(articleRequest, id, version);
+
+        } catch (TemporalException ex) {
+
+            throw extractApplicationFailure(ex).orElseThrow(() -> ex);
+        }
     }
 
     @Override
     public void deleteById(UUID id) {
+        try {
+            deleteArticleWorkflow.getObject().deleteDocumentById(id);
 
-        deleteArticleWorkflow.getObject().deleteDocumentById(id);
+        } catch (TemporalException ex) {
+
+            throw extractApplicationFailure(ex).orElseThrow(() -> ex);
+        }
     }
 }

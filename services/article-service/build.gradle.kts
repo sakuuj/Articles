@@ -37,11 +37,8 @@ dependencies {
     compileOnly("org.mapstruct:mapstruct")
     compileOnly("org.projectlombok:lombok")
 
-//    implementation(project(":concurrency-utils"))
     implementation(platform(project(":platform")))
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
-//    implementation("org.springframework.boot:spring-security-oauth2-jose")
-
     implementation(project(":services:common:service-common"))
     implementation(project(":services:common:service-common-jpa"))
     implementation(project(":services:common:service-common-elasticsearch"))
@@ -56,16 +53,15 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
     implementation("by.sakuuj.elasticsearch:index-creator-elasticsearch-spring-boot-starter")
     implementation("org.springframework.kafka:spring-kafka")
+    implementation("io.temporal:temporal-sdk")
 
     runtimeOnly("org.postgresql:postgresql")
-
 
     testAnnotationProcessor(platform(project(":platform")))
     testAnnotationProcessor("org.projectlombok:lombok")
 
     testCompileOnly("org.mapstruct:mapstruct")
     testCompileOnly("org.projectlombok:lombok")
-    implementation("io.temporal:temporal-sdk")
 
     testImplementation(project(":services:common:service-common"))
     testImplementation(project(":services:common:service-common-jpa"))
@@ -75,7 +71,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.kafka:spring-kafka-test")
 
-//    intTestImplementation(project(":services:common:int-test-common"))
     intTestImplementation("com.h2database:h2")
     intTestImplementation("org.testcontainers:postgresql")
     intTestImplementation("org.testcontainers:junit-jupiter")
@@ -89,12 +84,6 @@ idea {
         testSources.from(sourceSets.intTest.get().allSource.srcDirs)
     }
 }
-
-//val CUSTOM_SYSTEM_PROPS = mapOf(
-//    "jdk.virtualThreadScheduler.maxPoolSize" to "8",
-//    "jdk.tracePinnedThreads" to "full"
-//)
-
 val SPRING_PROFILES_ACTIVE = "spring.profiles.active"
 
 tasks.bootRun {

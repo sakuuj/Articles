@@ -2,7 +2,6 @@ package by.sakuuj.articles.article.dto;
 
 import lombok.Builder;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,8 +11,8 @@ public record ArticleResponse(
         String title,
         String content,
         List<TopicResponse> topics,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt,
+        String createdAt,
+        String updatedAt,
         PersonResponse author
 ) {
 }

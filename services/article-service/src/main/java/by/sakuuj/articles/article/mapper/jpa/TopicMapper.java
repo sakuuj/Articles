@@ -2,15 +2,21 @@ package by.sakuuj.articles.article.mapper.jpa;
 
 import by.sakuuj.articles.article.dto.TopicRequest;
 import by.sakuuj.articles.article.dto.TopicResponse;
+import by.sakuuj.articles.article.mapper.LocalDateTimeMapper;
 import by.sakuuj.articles.entity.jpa.entities.ArticleTopicEntity;
 import by.sakuuj.articles.entity.jpa.entities.TopicEntity;
 import org.mapstruct.InheritConfiguration;
+import org.mapstruct.InjectionStrategy;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper(
+        componentModel = MappingConstants.ComponentModel.SPRING,
+        injectionStrategy = InjectionStrategy.CONSTRUCTOR,
+        uses = LocalDateTimeMapper.class
+)
 public interface TopicMapper {
 
     @Mapping(target = "id", ignore = true)

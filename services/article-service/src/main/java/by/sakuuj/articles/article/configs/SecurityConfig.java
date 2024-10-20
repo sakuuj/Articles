@@ -12,6 +12,8 @@ import org.springframework.security.config.annotation.web.configurers.RequestCac
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.web.util.matcher.RegexRequestMatcher.regexMatcher;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -32,8 +34,12 @@ public class SecurityConfig {
                 .requestCache(RequestCacheConfigurer::disable)
                 .sessionManagement(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.GET,"/topics", "/topics/*").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/articles", "/articles/*").permitAll()
+                        .requestMatchers(
+                                regexMatcher("/swagger-ui.*"),
+                                regexMatcher("/v3/api-docs.*")
+                        ).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/topics", "/topics/*").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/articles", "/articles/*").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 ->

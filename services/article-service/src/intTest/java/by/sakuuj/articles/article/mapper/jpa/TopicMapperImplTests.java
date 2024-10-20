@@ -1,18 +1,26 @@
 package by.sakuuj.articles.article.mapper.jpa;
 
 import by.sakuuj.articles.article.TopicTestDataBuilder;
+import by.sakuuj.articles.article.configs.FormatConfig;
 import by.sakuuj.articles.article.dto.TopicRequest;
 import by.sakuuj.articles.article.dto.TopicResponse;
+import by.sakuuj.articles.article.mapper.LocalDateTimeMapperImpl;
 import by.sakuuj.articles.entity.jpa.embeddable.ModificationAudit;
 import by.sakuuj.articles.entity.jpa.entities.ArticleTopicEntity;
 import by.sakuuj.articles.entity.jpa.entities.TopicEntity;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@SpringJUnitConfig(classes = FormatConfig.class)
+@Import({TopicMapperImpl.class, LocalDateTimeMapperImpl.class})
 class TopicMapperImplTests {
 
-    private final TopicMapperImpl topicMapper = new TopicMapperImpl();
+    @Autowired
+    private TopicMapperImpl topicMapper;
 
     @Test
     void shouldMapToEntity() {

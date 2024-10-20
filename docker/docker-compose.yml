@@ -152,8 +152,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "1"
-          memory: 1gb
+          cpus: "2"
+          memory: 2gb
     restart: unless-stopped
 
 

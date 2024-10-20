@@ -3,6 +3,13 @@ spring.config:
 
 spring.kafka.bootstrap-servers: ["broker-articles:9092"]
 
+server:
+  forward-headers-strategy: framework
+
+springdoc:
+  swagger-ui:
+    operations-sorter: method
+
 by.sakuuj.person-grpc-server.target: dns:///person-service:9000
 
 by.sakuuj.temporal.target-uri: temporal:7233
