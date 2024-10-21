@@ -44,6 +44,11 @@ public class RestControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleNotHandled(Exception ex) {
 
+        Function<String, ResponseEntity<ApiError>> responseEntityFunction = exceptionsToGetterFunctions.get(ex.getClass());
+        if (responseEntityFunction != null) {
+            return responseEntityFunction.apply(ex.getMessage());
+        }
+
         Throwable t = ex;
         StringBuilder sb = new StringBuilder();
         do {
